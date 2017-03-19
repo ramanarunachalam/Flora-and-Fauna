@@ -1,0 +1,143 @@
+
+*{
+  margin:  0;
+  padding: 0;
+}
+
+body {
+    background-color: #F2F2F2;
+    height: 900px;
+    /*
+    background-image: url("Trees of Bangalore/Dillenia - Elephant Apple Tree/Elephant Apple Tree - Flower.jpg");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    */
+}
+
+div#DIV_BODY {
+    border: 1px solid grey;
+}
+
+section#CONTENT {
+    width: 100%;
+    height: 92%;
+}
+
+iframe#FRAME_CONTENT {
+    width: 100%;
+    height: 100%;
+}
+
+table {
+    margin-top: 30px;
+    background-color: #FFF;
+}
+
+h2 {
+    margin-left: 5px;
+    font-size:   30px;
+    font-style:  oblique;
+    font-weight: bold;
+}
+
+h3 {
+    margin-left: 5px;
+    font-size:   25px;
+    font-style:  oblique;
+    font-weight: bold;
+}
+
+p {
+    margin: 10px;
+}
+
+a {
+    color: blue;
+}
+
+.INTRO_OL {
+    list-style-position: inside;
+    list-style-type: decimal-leading-zero;
+}
+
+.SIMPLE_OL {
+    list-style-position: inside;
+    list-style-type: decimal-leading-zero;
+}
+
+.SIMPLE_UL {
+}
+
+.H_LIST ul {
+    list-style: none;
+ }
+
+.H_LIST ol {
+    list-style: none;
+ }
+
+.IMAGE_ONLY {
+}
+
+.TEXT_ONLY {
+}
+
+.shadow-box {
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px; 
+  border-radius: 12px; 
+
+  -moz-box-shadow: 4px 4px 14px #000; 
+  -webkit-box-shadow: 4px 4px 14px #000; 
+  box-shadow: 4px 4px 14px #000; 
+}
+
+#introCarousel {
+}
+
+/*
+    Carousel fading Effect
+*/
+
+.carousel.carousel-fade .item {
+  -webkit-transition: opacity 2s ease-in-out;
+  -moz-transition: opacity 2s ease-in-out;
+  -ms-transition: opacity 2s ease-in-out;
+  -o-transition: opacity 2s ease-in-out;
+  transition: opacity 2s ease-in-out;
+}
+
+.carousel.carousel-fade .active.left,
+.carousel.carousel-fade .active.right {
+  left: 0;
+  z-index: 2;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+.carousel.carousel-fade .next,
+.carousel.carousel-fade .prev {
+  left: 0;
+  z-index: 1;
+}
+
+.carousel.carousel-fade .carousel-control {
+  z-index: 3;
+}
+
+/*
+  position: relative;
+*/
+
+.carousel-caption
+{
+  text-align: center;
+}
+
+
+.modal-content {
+    width: 680px;
+    height: 680px;
+}
+
+
