@@ -1,6 +1,6 @@
 $(document).ready(function()
 {
-    $('.item').eq(Math.floor((Math.random() * $('.item').length))).addClass("active");
+    $('.carousel-item').eq(Math.floor((Math.random() * $('.carousel-item').length))).addClass("active");
     var $img = $('.active img', this)
     $img.attr('src', $img.attr('data_src'))
 

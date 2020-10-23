@@ -1,9 +1,4 @@
 
-*{
-  margin:  0;
-  padding: 0;
-}
-
 body {
     background-color: #F2F2F2;
     height: 900px;
@@ -53,6 +48,10 @@ p {
 
 a {
     color: blue;
+}
+
+.card-header {
+    background-color:  silver;
 }
 
 .INTRO_OL {
