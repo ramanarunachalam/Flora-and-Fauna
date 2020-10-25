@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+<html lang="en">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="../css/trees.css" rel="stylesheet" type="text/css" media="all" />
+<title>Genus Hierarchy of india Trees</title>
+</head>
+<body>
+  <div class="container">
+    <div id="TOPPAGE">
+    </div>
+    <div class="row">
+      <div id="CARDINFO" class="col-12">
+      </div>
+    </div>
+    <div id="BOTTOMPAGE">
+    </div>
+  </div>
+
+  <script type="text/html" id="pagination-template">
+      {{#pageinfo}}
+      <nav id="{{N}}-page" class="d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" id="{{N}}-page-previous" aria-label="Prev"><a href="#">&laquo;</a></li>&nbsp;
+          {{#links}}
+          <li class="page-item" id="{{N}}_{{PC}}" class="active">
+            <a class="page-link" href="{{PH}}?page={{PC}}&amp;max={{PM}}">{{PC}}</a>
+          </li>
+          {{/links}}
+          <li class="page-item" id="{{N}}-page-next" aria-label="Next"><a href="#">&raquo;</a></li>
+        </ul>
+      </nav>
+      {{/pageinfo}}
+  </script>
+
+  <script type="text/html" id="card-info-template">
+        {{#cardinfo}}
+        <div class="card">
+          <div class="card-header">
+            <h4 class="CARD_HEADER">{{{N}}}</h4>
+          </div>
+          <div class="card-body">
+            <p>
+              <table border="0" cellpadding="4" class="table table-condensed" >
+                <tbody>
+                  {{#ROW}}
+                  <tr>
+                    {{#COLA}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CN}}<br/>
+                        {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br>
+                        {{CF}}
+                      </a>
+                    </td>
+                    {{/COLA}}
+                    {{#COLF}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CF}}<br>
+                        {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        {{CN}}
+                      </a>
+                    </td>
+                    {{/COLF}}
+                    {{#COLG}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        {{CF}}<br>
+                        {{CN}}
+                      </a>
+                    </td>
+                    {{/COLG}}
+                    {{#COLL}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CT}}
+                        {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        {{CN}}
+                      </a>
+                    </td>
+                    {{/COLL}}
+                    {{#COLIMAGE}}
+                    <td>
+                      <a href="{{CH}}"><img class="shadow-box" src="{{CI}}" /></a></td>
+                    </td>
+                    {{/COLIMAGE}}
+                  </tr>
+                  {{/ROW}}
+                </tbody>
+              </table>
+            </p>
+          </div>
+        </div>
+        {{/cardinfo}}
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
+  <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="../js/tree_grid.js"></script>
+  <script type="text/javascript">
+      var data = {"cardinfo": {"N": "M", "ROW": [{"COLF": {"CC": 1, "CF": "Magnoliaceae", "CB": "Magnolia mutabilis", "CA": "Regel", "CN": "Yellow Magnolia", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}, "COLIMAGE": [{"CI": "Magnolia - Yellow Magnolia/Thumbnails/Yellow Magnolia - Canopy.thumbnail", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}, {"CI": "Magnolia - Yellow Magnolia/Thumbnails/Yellow Magnolia - Leaf.thumbnail", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}, {"CI": "empty.thumbnail", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}, {"CI": "Magnolia - Yellow Magnolia/Thumbnails/Yellow Magnolia - Fruit.thumbnail", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}, {"CI": "Magnolia - Yellow Magnolia/Thumbnails/Yellow Magnolia - Bark.thumbnail", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}, {"CI": "Magnolia - Yellow Magnolia/Thumbnails/Yellow Magnolia - Flower Bud.thumbnail", "CH": "Magnolia - Yellow Magnolia/Yellow Magnolia.html"}]}, {"COLF": {"CC": 2, "CF": "Malvaceae", "CB": "Hibiscus rosa-sinensis", "CA": "L.", "CN": "Red China Rose", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}, "COLIMAGE": [{"CI": "Hibiscus - Red China Rose/Thumbnails/Red China Rose - Canopy.thumbnail", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}, {"CI": "Hibiscus - Red China Rose/Thumbnails/Red China Rose - Leaf.thumbnail", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}, {"CI": "Hibiscus - Red China Rose/Thumbnails/Red China Rose - Flower.thumbnail", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}, {"CI": "empty.thumbnail", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}, {"CI": "empty.thumbnail", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}, {"CI": "empty.thumbnail", "CH": "Hibiscus - Red China Rose/Red China Rose.html"}]}, {"COLF": {"CC": 3, "CF": "Malvaceae", "CB": "Hibiscus rosa-sinensis", "CA": "L.", "CN": "White China Rose", "CH": "Hibiscus - White China Rose/White China Rose.html"}, "COLIMAGE": [{"CI": "Hibiscus - White China Rose/Thumbnails/White China Rose - Canopy.thumbnail", "CH": "Hibiscus - White China Rose/White China Rose.html"}, {"CI": "Hibiscus - White China Rose/Thumbnails/White China Rose - Leaf.thumbnail", "CH": "Hibiscus - White China Rose/White China Rose.html"}, {"CI": "Hibiscus - White China Rose/Thumbnails/White China Rose - Flower.thumbnail", "CH": "Hibiscus - White China Rose/White China Rose.html"}, {"CI": "empty.thumbnail", "CH": "Hibiscus - White China Rose/White China Rose.html"}, {"CI": "empty.thumbnail", "CH": "Hibiscus - White China Rose/White China Rose.html"}, {"CI": "Hibiscus - White China Rose/Thumbnails/White China Rose - Flower Bud.thumbnail", "CH": "Hibiscus - White China Rose/White China Rose.html"}]}]}, "pageinfo": {"N": "Page", "PM": "V", "links": [{"PC": "A", "PH": "shrubs_india_family_page_A.html?page=A"}, {"PC": "C", "PH": "shrubs_india_family_page_C.html?page=C"}, {"PC": "E", "PH": "shrubs_india_family_page_E.html?page=E"}, {"PC": "F", "PH": "shrubs_india_family_page_F.html?page=F"}, {"PC": "H", "PH": "shrubs_india_family_page_H.html?page=H"}, {"PC": "L", "PH": "shrubs_india_family_page_L.html?page=L"}, {"PC": "M", "PH": "shrubs_india_family_page_M.html?page=M"}, {"PC": "O", "PH": "shrubs_india_family_page_O.html?page=O"}, {"PC": "P", "PH": "shrubs_india_family_page_P.html?page=P"}, {"PC": "R", "PH": "shrubs_india_family_page_R.html?page=R"}, {"PC": "S", "PH": "shrubs_india_family_page_S.html?page=S"}, {"PC": "V", "PH": "shrubs_india_family_page_V.html?page=V"}]}};
+      tree_grid_init(data);
+  </script>
+
+</body>
+</html>

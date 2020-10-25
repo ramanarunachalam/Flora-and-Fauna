@@ -50,6 +50,11 @@ a {
     color: blue;
 }
 
+.ICON {
+    width: 24px;
+    height: 24px;
+}
+
 .card-header {
     background-color:  silver;
 }

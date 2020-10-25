@@ -3,33 +3,51 @@
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
 <link href="../css/trees.css" rel="stylesheet" type="text/css" media="all" />
-<title>Adult Grid of Butterflies Of India</title>
+<title>Adult Grid Of Butterflies</title>
 </head>
 <body>
 <div class="container">
-<div class="row"><div class="col-12">
-<div class="card">
-<div class="card-header"><h4 class="SONG_HEADER">Adult</h4></div>
-<div class="card-body">
-<p><table border="0" cellpadding="4" class="table table-condensed" >
-<tbody>
-<tr><td><p align="center"><br /></p>
-<p align="center"><a href="Cepora - Common Gull/Common Gull.html"><img class="shadow-box" src="Cepora - Common Gull/Thumbnails/Common Gull - Adult.thumbnail" /></a></p>
-<p align="center"><a href="Cepora - Common Gull/Common Gull.html">Common Gull</a></p></td><td><p align="center"><br /></p>
-<p align="center"><a href="Euploea - Common Indian Crow/Common Indian Crow.html"><img class="shadow-box" src="Euploea - Common Indian Crow/Thumbnails/Common Indian Crow - Adult.thumbnail" /></a></p>
-<p align="center"><a href="Euploea - Common Indian Crow/Common Indian Crow.html">Common Indian Crow</a></p></td><td><p align="center"><br /></p>
-<p align="center"><a href="Papilio - Common Mormon/Common Mormon.html"><img class="shadow-box" src="Papilio - Common Mormon/Thumbnails/Common Mormon - Adult.thumbnail" /></a></p>
-<p align="center"><a href="Papilio - Common Mormon/Common Mormon.html">Common Mormon</a></p></td><td><p align="center"><br /></p>
-<p align="center"><a href="Tirumala - Blue Tiger/Blue Tiger.html"><img class="shadow-box" src="Tirumala - Blue Tiger/Thumbnails/Blue Tiger - Adult.thumbnail" /></a></p>
-<p align="center"><a href="Tirumala - Blue Tiger/Blue Tiger.html">Blue Tiger</a></p></td></tr>
-</tbody>
-</table></p>
-<br />
-<hr class="divider" />
-<br />
+  <div class="row">
+    <div id="CARDINFO" class="col-12">
+    </div>
+  </div>
 </div>
-</div>
-</div></div>
-</div>
+
+  <script type="text/html" id="card-info-template">
+      {{#cardinfo}}
+      <div class="card">
+        <div class="card-header">
+          <h4 class="CARD_HEADER">{{{N}}}</h4>
+        </div>
+        <div class="card-body">
+          <p>
+            <table border="0" cellpadding="4" class="table table-condensed" >
+              <tbody>
+                {{#ROW}}
+                <tr>
+                  {{#COL}}
+                  <td><p align="center"><br /></p><p align="center"><a href="{{CH}}"><img class="shadow-box" src="{{CT}}" /></a></p> <p align="center"><a href="{{CH}}">{{CN}}</a></p></td>
+                  {{/COL}}
+                </tr>
+                {{/ROW}}
+              </tbody>
+            </table>
+            <br/>
+            <hr class="divider" />
+            <br/>
+          </p>
+        </div>
+      </div>
+      {{/cardinfo}}
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
+  <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="../js/tree_module.js"></script>
+  <script type="text/javascript">
+      var data = {"cardinfo": [{"N": "Adult", "ROW": [{"COL": [{"CN": "Common Gull", "CH": "Cepora - Common Gull/Common Gull.html", "CT": "Cepora - Common Gull/Thumbnails/Common Gull - Adult.thumbnail"}, {"CN": "Common Indian Crow", "CH": "Euploea - Common Indian Crow/Common Indian Crow.html", "CT": "Euploea - Common Indian Crow/Thumbnails/Common Indian Crow - Adult.thumbnail"}, {"CN": "Common Mormon", "CH": "Papilio - Common Mormon/Common Mormon.html", "CT": "Papilio - Common Mormon/Thumbnails/Common Mormon - Adult.thumbnail"}, {"CN": "Blue Tiger", "CH": "Tirumala - Blue Tiger/Blue Tiger.html", "CT": "Tirumala - Blue Tiger/Thumbnails/Blue Tiger - Adult.thumbnail"}]}]}]};
+      tree_module_init(data);
+  </script>
 </body>
 </html>

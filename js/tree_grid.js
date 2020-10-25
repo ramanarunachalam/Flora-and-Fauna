@@ -85,6 +85,19 @@ $(document).ready(function(){
     */
 });
 
+function tree_grid_init(data) {
+    var template_name = '#pagination-template';
+    var ul_template = $(template_name).html();
+    var template_html = Mustache.to_html(ul_template, data);
+    $('#TOPPAGE').html(template_html);
+    $('#BOTTOMPAGE').html(template_html);
+
+    var template_name = '#card-info-template';
+    var ul_template = $(template_name).html();
+    var template_html = Mustache.to_html(ul_template, data);
+    $('#CARDINFO').html(template_html);
+}
+
 function load_page() {
     var page = new PageQuery(window.location.search);
 
