@@ -23,11 +23,47 @@ function tree_simple_init(data) {
     render_template_data('#card-info-template', '#CARDINFO', data);
 }
 
+var start_tree = 0;
+
 function tree_intro_init(data) {
     render_template_data('#carousel-template', '#SLIDERINFO', data);
 
+    start_tree = Math.floor((Math.random() * $('.carousel-item').length));
+    var $img = $('.carousel-item').eq(start_tree);
+    $img.attr('src', $img.attr('data_src'));
+    $next = $('img', this).next();
+    $next.attr('src', $next.attr('data_src'));
+
     window.parent.search_initialized = false;
+    search_init();
+
     window.onload = tree_info_init;
+}
+
+function tree_info_init() {
+    /*
+    $('.carousel-item').eq(Math.floor((Math.random() * $('.carousel-item').length))).addClass("active");
+    var $img = $('.active img', this);
+    $img.attr('src', $img.attr('data_src'));
+    */
+    var $img = $('.carousel-item').eq(start_tree);
+    $img.addClass("active");
+
+    $('.carousel').on('slide.bs.carousel', function(){
+        var $img = $('.active img', this);
+        $img.attr('src', $img.attr('data_src'));
+
+        var $next = $('.active', this).next();
+        if ($next != undefined) {
+            $next = $('img', $next);
+            $next.attr('src', $next.attr('data_src'));
+        }
+    });
+
+    $('.carousel').carousel({
+          pause: "hover",
+          interval: 5000
+    });
 }
 
 function search_init() {
@@ -37,30 +73,6 @@ function search_init() {
     });
     window.parent.search_initialized = false;
     search_load();
-}
-
-function tree_info_init() {
-    $('.carousel-item').eq(Math.floor((Math.random() * $('.carousel-item').length))).addClass("active");
-    var $img = $('.active img', this)
-    $img.attr('src', $img.attr('data_src'))
-
-    $('.carousel').on('slide.bs.carousel', function(){
-        var $img = $('.active img', this)
-        $img.attr('src', $img.attr('data_src'))
-
-        var $next = $('.active', this).next()
-        if ($next != undefined) {
-            $next = $('img', $next)
-            $next.attr('src', $next.attr('data_src'))
-        }
-    });
-
-    $('.carousel').carousel({
-          pause: "hover",
-          interval: 5000
-    });
-
-    search_init();
 }
 
 var current_page = 1;
@@ -97,58 +109,8 @@ function PageQuery(q) {
     this.getLength = function() { return this.keyValuePairs.length; }
 }
 
-function showPage(is_prev)
-{
-    var path_list = window.location.pathname.split('/');
-    var href = path_list[path_list.length - 1];
-
-    var new_page = 1;
-    if (is_prev == 1) {
-        new_page = 1;
-        if (current_page > 1) {
-            new_page = parseInt(current_page) - 1;
-        }
-    } else {
-        new_page = max_page;
-        if (current_page < max_page) {
-            new_page = parseInt(current_page) + 1;
-        }
-    }
-    var c_str = current_page.toString();
-    if (current_page < 10)
-        c_str = '0' + c_str 
-    var n_str = new_page.toString();
-    if (new_page < 10)
-        n_str = '0' + n_str 
-    var n_href = href.replace(c_str, n_str);
-    var new_href = n_href + '?page=' + new_page.toString() + '&max=' + max_page.toString()
-    window.open(new_href,'_self',false);
-}
-
-function showPreviousPage() {
-    showPage(1);
-}
-
-function showNextPage() {
-    showPage(0);
-}
-
-function tree_grid_init(data) {
-    render_template_data('#pagination-template', '#TOPPAGE', data);
-    render_template_data('#pagination-template', '#BOTTOMPAGE', data);
-    render_template_data('#card-info-template', '#CARDINFO', data);
-
-    $("#top-page-next").click(showNextPage);
-    $("#top-page-previous").click(showPreviousPage);
-    $("#bottom-page-next").click(showNextPage);
-    $("#bottom-page-previous").click(showPreviousPage);
-
-    window.onload = tree_grid_load;
-}
-
-function tree_grid_load() {
+function set_grid_page() {
     var page = new PageQuery(window.location.search);
-
     current_page = unescape(page.getValue('page'));
     if (current_page == '') {
         current_page = 1;
@@ -160,7 +122,6 @@ function tree_grid_load() {
     $('.active').removeClass('active');
     var id_str = 'top_' + current_page
     $('li#' + id_str).addClass('active');
-
     var id_str = 'bottom_' + current_page
     $('li#' + id_str).addClass('active');
 
@@ -171,6 +132,61 @@ function tree_grid_load() {
     else {
         max_page = parseInt(max_page);
     }
+}
+
+function show_page(which, is_prev) {
+    var path_list = window.location.pathname.split('/');
+    var new_page = 1;
+    if (is_prev) {
+        new_page = 1;
+        if (current_page > 1) {
+            new_page = parseInt(current_page) - 1;
+        }
+    } else {
+        new_page = max_page;
+        if (current_page < max_page) {
+            new_page = parseInt(current_page) + 1;
+        }
+    }
+    current_page = new_page;
+    var id_str = which + '_' + new_page;
+    var href = $('li#' + id_str).children('a').attr('href');
+    window.open(href,'_self',false);
+}
+
+function show_top_prev_page() {
+    show_page('top', true);
+}
+
+function show_top_next_page() {
+    show_page('top', false);
+}
+
+function show_bottom_prev_page() {
+    show_page('bottom', true);
+}
+
+function show_bottom_next_page() {
+    show_page('bottom', false);
+}
+
+function tree_grid_load() {
+    set_grid_page();
+}
+
+function tree_grid_init(data) {
+    data['pageinfo']['N'] = 'top';
+    render_template_data('#pagination-template', '#TOPPAGE', data);
+    data['pageinfo']['N'] = 'bottom';
+    render_template_data('#pagination-template', '#BOTTOMPAGE', data);
+    render_template_data('#card-info-template', '#CARDINFO', data);
+
+    $("#top-page-next").click(show_top_next_page);
+    $("#top-page-previous").click(show_top_prev_page);
+    $("#bottom-page-next").click(show_bottom_prev_page);
+    $("#bottom-page-previous").click(show_bottom_prev_page);
+
+    window.onload = tree_grid_load;
 }
 
 function show_bigger_image() {

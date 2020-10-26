@@ -24,7 +24,7 @@
           <li class="page-item" id="{{N}}-page-previous" aria-label="Prev"><a href="#">&laquo;</a></li>&nbsp;
           {{#links}}
           <li class="page-item" id="{{N}}_{{PC}}" class="active">
-            <a class="page-link" href="{{PH}}?page={{PC}}&amp;max={{PM}}">{{PC}}</a>
+            <a class="page-link" href="{{PH}}">{{PL}}</a>
           </li>
           {{/links}}
           <li class="page-item" id="{{N}}-page-next" aria-label="Next"><a href="#">&raquo;</a></li>
@@ -105,7 +105,7 @@
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
   <script src="../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"cardinfo": {"N": "F", "ROW": [{"COLF": {"CC": 1, "CF": "Fabaceae", "CB": "Cassia hirsuta", "CA": "L.", "CN": "Woolly Cassia", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, "COLIMAGE": [{"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Canopy.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Leaf.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Flower.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Fruit.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Bark.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "empty.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}]}]}, "pageinfo": {"N": "Page", "PM": "M", "links": [{"PC": "F", "PH": "herbs_india_family_page_F.html?page=F"}, {"PC": "M", "PH": "herbs_india_family_page_M.html?page=M"}]}};
+      var data = {"cardinfo": {"N": "F", "ROW": [{"COLF": {"CC": 1, "CF": "Fabaceae", "CB": "Cassia hirsuta", "CA": "L.", "CN": "Woolly Cassia", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, "COLIMAGE": [{"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Canopy.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Leaf.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Flower.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Fruit.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "Cassia - Woolly Cassia/Thumbnails/Woolly Cassia - Bark.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}, {"CI": "empty.thumbnail", "CH": "Cassia - Woolly Cassia/Woolly Cassia.html"}]}]}, "pageinfo": {"N": "Page", "PM": "M", "links": [{"PL": "F", "PC": 1, "PH": "herbs_india_family_page_F.html?page=1&max=2"}, {"PL": "M", "PC": 2, "PH": "herbs_india_family_page_M.html?page=2&max=2"}]}};
       tree_grid_init(data);
   </script>
 
