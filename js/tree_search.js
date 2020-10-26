@@ -22,6 +22,7 @@ function tree_search_init() {
     var query = window.location.search;
     var word_list = query.split('=');
     var search_word = word_list[1];
+    search_word = search_word.replace(/\+/g, ' ');
     const s_search_word = search_word.replace(/\s/g, '');
     var item_list = [];
     var id_list = new Set();

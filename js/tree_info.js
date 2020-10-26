@@ -27,7 +27,7 @@ $(document).ready(function()
 
 function search_init() {
     window.parent.flora_fauna_search_engine = new MiniSearch({
-        fields: ['name', 'aka', 'family', 'genus', 'species' ], // fields to index for full-text search
+        fields: [ 'aka' ], // fields to index for full-text search
         storeFields: ['name', 'href', 'category', 'pop'] // fields to return with search results
     });
     window.parent.search_initialized = false;
