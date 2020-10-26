@@ -57,56 +57,7 @@
     There will be errors or incorrect information which can be attributed to my ignorance or negligence.
     </em></p>
 
-    <div class="media">
-      <div class="col-9">
-      
-    <div id="introCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-      <!-- Carousel items -->
-      <div class="carousel-inner">
-
-            <div class=" carousel-item" >
-              <div class="thumbnail">
-                <div class="carousel-caption">
-                  <h4>Tirumala septentrionis <br> <em><small><font color=brown>Butler</font></small></em> <br/> Blue Tiger</h4>
-                </div>
-                <img src="Tirumala - Blue Tiger/Blue Tiger - Adult.jpg" data_src="Tirumala - Blue Tiger/Blue Tiger - Adult.jpg" />
-              </div>
-            </div>
-
-            <div class=" carousel-item" >
-              <div class="thumbnail">
-                <div class="carousel-caption">
-                  <h4>Cepora nerissa <br> <em><small><font color=brown>Fabricius</font></small></em> <br/> Common Gull</h4>
-                </div>
-                <img src="Cepora - Common Gull/Common Gull - Adult.jpg" data_src="Cepora - Common Gull/Common Gull - Adult.jpg" />
-              </div>
-            </div>
-
-            <div class=" carousel-item" >
-              <div class="thumbnail">
-                <div class="carousel-caption">
-                  <h4>Euploea core <br> <em><small><font color=brown>Cramer</font></small></em> <br/> Common Indian Crow</h4>
-                </div>
-                <img src="Euploea - Common Indian Crow/Common Indian Crow - Adult.jpg" data_src="Euploea - Common Indian Crow/Common Indian Crow - Adult.jpg" />
-              </div>
-            </div>
-
-            <div class=" carousel-item" >
-              <div class="thumbnail">
-                <div class="carousel-caption">
-                  <h4>Papilio polytes <br> <em><small><font color=brown>Linnaeus</font></small></em> <br/> Common Mormon</h4>
-                </div>
-                <img src="Papilio - Common Mormon/Common Mormon - Adult.jpg" data_src="Papilio - Common Mormon/Common Mormon - Adult.jpg" />
-              </div>
-            </div>
-
-      </div>
-    </div>
-
-      </div>
-      <div class="col-3 media-body">
-        <ul class="list-group"><li class="list-group-item"><strong>Total</strong> <span class="badge">36</span></li><li class="list-group-item"><strong>Family</strong> <span class="badge">23</span></li><li class="list-group-item"><strong>Genus</strong> <span class="badge">34</span></li><li class="list-group-item"><strong>Species</strong> <span class="badge">35</span></li><li class="list-group-item"><strong>Images</strong> <span class="badge">13</span></li></ul>
-      </div>
+    <div id="SLIDERINFO" class="media">
     </div>
 
     
@@ -127,12 +78,49 @@ Butterflies exhibit polymorphism, mimicry and aposematism. Some, like the Monarc
 
 </div>
 
+  
+  <script type="text/html" id="carousel-template">
+    {{#sliderinfo}}
+      <div class="col-9">
+        <div id="introCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+          <div class="carousel-inner">
+            {{#items}}
+            <div class=" carousel-item" >
+              <div class="thumbnail">
+                <div class="carousel-caption">
+                  <h4>{{SB}}<br> <em><small><font color=brown>{{SA}}</font></small></em> <br/>{{SN}}</h4>
+                </div>
+                <img src="empty.thumbnail" data_src="{{SI}}" />
+              </div>
+            </div>
+            {{/items}}
+          </div>
+        </div>
+      </div>
+    {{/sliderinfo}}
+    {{#statsinfo}}
+      <div class="col-3 media-body">
+        <ul class="list-group">
+          {{#items}}
+          <li class="list-group-item">
+            <strong>{{N}}</strong> <span class="badge">{{C}}</span>
+          </li>
+          {{/items}}
+        </ul>
+      </div>
+    {{/statsinfo}}
+  </script>
+
+
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/minisearch@2.6.0/dist/umd/index.min.js" defer></script>
-  <script src="../js/tree_info.js"></script>
+  <script src="../js/trees.js"></script>
+  <script type="text/javascript">
+      var data = {"sliderinfo": {"items": [{"SB": "Tirumala septentrionis", "SA": "Butler", "SN": "Blue Tiger", "SI": "Tirumala - Blue Tiger/Blue Tiger - Adult.jpg"}, {"SB": "Cepora nerissa", "SA": "Fabricius", "SN": "Common Gull", "SI": "Cepora - Common Gull/Common Gull - Adult.jpg"}, {"SB": "Euploea core", "SA": "Cramer", "SN": "Common Indian Crow", "SI": "Euploea - Common Indian Crow/Common Indian Crow - Adult.jpg"}, {"SB": "Papilio polytes", "SA": "Linnaeus", "SN": "Common Mormon", "SI": "Papilio - Common Mormon/Common Mormon - Adult.jpg"}]}, "statsinfo": {"items": [{"N": "Total", "C": 36}, {"N": "Family", "C": 23}, {"N": "Genus", "C": 34}, {"N": "Species", "C": 35}, {"N": "Images", "C": 13}]}};
+      tree_intro_init(data);
+  </script>
 
 </body>
-
 </html>
