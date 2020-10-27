@@ -69,7 +69,7 @@ function tree_info_init() {
 function search_init() {
     window.parent.flora_fauna_search_engine = new MiniSearch({
         fields: [ 'aka' ], // fields to index for full-text search
-        storeFields: ['name', 'href', 'category', 'pop'] // fields to return with search results
+        storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop'] // fields to return with search results
     });
     window.parent.search_initialized = false;
     search_load();
@@ -227,11 +227,8 @@ function get_search_results(search_word, search_options, item_list, id_list) {
         var max_score = results[0].score;
         results.forEach(function (result_item, result_index) {
             if (!id_list.has(result_item.id)) {
-                var name = result_item.name;
-                var href = result_item.href;
-                var category = result_item.category
                 var pop = 0;
-                var item = { 'T' : category, 'H' : href, 'N' : name, 'P' : pop };
+                var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : result_item.name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : pop };
                 item_list.push(item);
                 id_list.add(result_item.id);
             }
