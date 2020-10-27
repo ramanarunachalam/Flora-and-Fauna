@@ -62,7 +62,7 @@ function tree_info_init() {
 
     $('.carousel').carousel({
           pause: "hover",
-          interval: 5000
+          interval: 3000
     });
 }
 

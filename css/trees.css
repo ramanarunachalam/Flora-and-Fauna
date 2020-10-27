@@ -129,6 +129,11 @@ a {
   z-index: 3;
 }
 
+.carousel-inner {
+  width: 640px;
+  max-height: 480px !important;
+}
+
 /*
   position: relative;
 */
