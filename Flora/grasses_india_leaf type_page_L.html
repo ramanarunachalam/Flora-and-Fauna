@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+<html lang="en">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="../css/trees.css" rel="stylesheet" type="text/css" media="all" />
+<title>Leaf Type Hierarchy Grasses Of India L</title>
+</head>
+<body>
+  <div class="container">
+    <div id="TOPPAGE">
+    </div>
+    <div class="row">
+      <div id="CARDINFO" class="col-12">
+      </div>
+    </div>
+    <div id="BOTTOMPAGE">
+    </div>
+  </div>
+
+  <script type="text/html" id="pagination-template">
+      {{#pageinfo}}
+      <nav id="{{N}}-page" class="d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" id="{{N}}-page-previous" aria-label="Prev"><a href="#">&laquo;</a></li>&nbsp;
+          {{#links}}
+          <li class="page-item" id="{{N}}_{{PC}}" class="active">
+            <a class="page-link" href="{{PH}}">{{PL}}</a>
+          </li>
+          {{/links}}
+          <li class="page-item" id="{{N}}-page-next" aria-label="Next"><a href="#">&raquo;</a></li>
+        </ul>
+      </nav>
+      {{/pageinfo}}
+  </script>
+
+  <script type="text/html" id="card-info-template">
+        {{#cardinfo}}
+        <div class="card">
+          <div class="card-header">
+            <h4 class="CARD_HEADER">{{{N}}}</h4>
+          </div>
+          <div class="card-body">
+            <p>
+              <table border="0" cellpadding="4" class="table table-condensed" >
+                <tbody>
+                  {{#ROW}}
+                  <tr>
+                    {{#COLA}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CN}}<br/>
+                        {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br>
+                        {{CF}}
+                      </a>
+                    </td>
+                    {{/COLA}}
+                    {{#COLF}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CF}}<br>
+                        {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        {{CN}}
+                      </a>
+                    </td>
+                    {{/COLF}}
+                    {{#COLG}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        {{CF}}<br>
+                        {{CN}}
+                      </a>
+                    </td>
+                    {{/COLG}}
+                    {{#COLL}}
+                    <td>
+                      <a href="{{CH}}">
+                        <font color=brown>{{CC}}</font>. {{CT}}
+                        {{CB}}<br>
+                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        {{CN}}
+                      </a>
+                    </td>
+                    {{/COLL}}
+                    {{#COLIMAGE}}
+                    <td>
+                      <a href="{{CH}}"><img class="shadow-box" src="{{CI}}" /></a></td>
+                    </td>
+                    {{/COLIMAGE}}
+                  </tr>
+                  {{/ROW}}
+                </tbody>
+              </table>
+            </p>
+          </div>
+        </div>
+        {{/cardinfo}}
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
+  <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="../js/trees.js"></script>
+  <script type="text/javascript">
+      var data = {"cardinfo": {"N": "Lance", "ROW": [{"COLL": {"CC": 1, "CF": "Poaceae", "CB": "Bambusa vulgaris", "CA": "Schrad. ex J.C.Wendl.", "CN": "Golden Bamboo", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}, "COLIMAGE": [{"CI": "Bamboo - Golden Bamboo/Thumbnails/Golden Bamboo - Canopy.thumbnail", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}, {"CI": "Bamboo - Golden Bamboo/Thumbnails/Golden Bamboo - Leaf.thumbnail", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}, {"CI": "empty.thumbnail", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}, {"CI": "empty.thumbnail", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}, {"CI": "Bamboo - Golden Bamboo/Thumbnails/Golden Bamboo - Bark.thumbnail", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}, {"CI": "empty.thumbnail", "CH": "Bamboo - Golden Bamboo/Golden Bamboo.html"}]}]}, "pageinfo": {"N": "Page", "links": [{"PL": "L", "PC": 1, "PH": "grasses_india_leaf type_page_L.html?page=1&max=1"}]}};
+      tree_grid_init(data);
+  </script>
+
+</body>
+</html>
