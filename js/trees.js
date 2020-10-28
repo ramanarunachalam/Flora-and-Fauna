@@ -211,7 +211,7 @@ function search_load() {
         for (var category in search_obj) {
             var data_list = search_obj[category];
             data_list.forEach(function (data_item, data_index) {
-                var data_doc = { "id" : data_id, "name" : data_item.N, 'aka' : data_item.A, "family" : data_item.F, "genus" : data_item.G, "species" : data_item.S, "href" : data_item.H, "category" : data_item.T, "pop" : 0 };
+                var data_doc = { "id" : data_id, "name" : data_item.N, 'aka' : data_item.A, "family" : data_item.F, "genus" : data_item.G, "species" : data_item.S, "href" : data_item.H, "category" : data_item.T, "pop" : data_item.P };
                 search_engine.add(data_doc);
                 data_id += 1;
             });
@@ -228,8 +228,7 @@ function get_search_results(search_word, search_options, item_list, id_list) {
         var max_score = results[0].score;
         results.forEach(function (result_item, result_index) {
             if (!id_list.has(result_item.id)) {
-                var pop = 0;
-                var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : result_item.name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : pop };
+                var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : result_item.name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
                 item_list.push(item);
                 id_list.add(result_item.id);
             }
