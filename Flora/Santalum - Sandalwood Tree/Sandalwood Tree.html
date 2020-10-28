@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Sandalwood Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Sandalwood Tree", "HB": "Santalum album, L.", "HC": 31, "gallery": [{"IN": "Sandalwood Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Sandalwood Tree - Flower Single.jpg", "IC": "Flower Single"}, {"IN": "Sandalwood Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Sandalwood Tree - Fruit Tender 1.jpg", "IC": "Fruit Tender 1"}, {"IN": "Sandalwood Tree - Fruit Tender 2.jpg", "IC": "Fruit Tender 2"}, {"IN": "Sandalwood Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Sandalwood Tree - Fruit Bunch.jpg", "IC": "Fruit Bunch"}, {"IN": "Sandalwood Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Sandalwood Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Sandalwood Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Sandalwood Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Sandalwood Tree - 0000.jpg", "IC": "0000"}, {"IN": "Sandalwood Tree - 0001.jpg", "IC": "0001"}, {"IN": "Sandalwood Tree - 0002.jpg", "IC": "0002"}, {"IN": "Sandalwood Tree - 0003.jpg", "IC": "0003"}, {"IN": "Sandalwood Tree - 0004.jpg", "IC": "0004"}, {"IN": "Sandalwood Tree - 0005.jpg", "IC": "0005"}, {"IN": "Sandalwood Tree - 0006.jpg", "IC": "0006"}, {"IN": "Sandalwood Tree - 0007.jpg", "IC": "0007"}, {"IN": "Sandalwood Tree - 0008.jpg", "IC": "0008"}, {"IN": "Sandalwood Tree - 0009.jpg", "IC": "0009"}, {"IN": "Sandalwood Tree - 0010.jpg", "IC": "0010"}, {"IN": "Sandalwood Tree - 0011.jpg", "IC": "0011"}, {"IN": "Sandalwood Tree - 0012.jpg", "IC": "0012"}, {"IN": "Sandalwood Tree - 0013.jpg", "IC": "0013"}, {"IN": "Sandalwood Tree - 0014.jpg", "IC": "0014"}, {"IN": "Sandalwood Tree - 0015.jpg", "IC": "0015"}, {"IN": "Sandalwood Tree - 0016.jpg", "IC": "0016"}, {"IN": "Sandalwood Tree - 0017.jpg", "IC": "0017"}, {"IN": "Sandalwood Tree - 0018.jpg", "IC": "0018"}, {"IN": "Sandalwood Tree - 0019.jpg", "IC": "0019"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Sandalwood Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Santalaceae"}, {"N": "Genus", "V": "Santalum"}, {"N": "Species", "V": "album"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Sandalwood"}, {"N": "Native", "V": "India"}, {"N": "State Tree", "V": "Karnataka"}, {"N": "Size", "V": "Small"}, {"N": "Height", "V": "4-9 m"}], "CI": "Sandalwood Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Sandalwood, Indian sandalwood, Fragrant sandalwood, White Sandalwood"}, {"N": "Language Kannada", "V": "Srigandha"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Santalum_album\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Sandalwood.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?33075\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/tro-28500042\">theplantlist</a>"}, {"N": "Description", "V": "Sandalwood is an evergreen tree, growing up to 4-9 m tall. The trees have a long life, and may live up to one hundred years of age. The tree is variable in habit, usually upright to sprawling, and may intertwine with other species. The plant parasitises the roots of other tree species, but without major detriment to its hosts. The reddish or brown bark can be almost black and is smooth in young trees, becoming cracked with a red reveal. The heartwood is pale green to white as the common name indicates. The oval leaves are thin, oppositely arranged. Smooth surface is shiny and bright green, with a glaucous pale underside. Fruit is produced after three years, viable seeds after five. These seeds are distributed by birds. Sandalwood oil was used traditionally to treat skin diseases, acne, dysentery, gonorrhea, and a number of other conditions.1 In traditional Chinese medicine, sandalwood oil is considered an excellent sedating agent."}, {"N": "Where", "V": "cambridge road, ulsoor, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "reddish brown"}], "CI": "Sandalwood Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "purplish brown"}, {"N": "Season", "V": "Jun-Jul"}], "CI": "Sandalwood Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round berry"}, {"N": "Color", "V": "green turning deep purple"}], "CI": "Sandalwood Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "oval"}, {"N": "Texture", "V": "glossy"}], "CI": "Sandalwood Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Sandalwood Tree", "HB": "Santalum album, L.", "HC": 31, "gallery": [{"IN": "Sandalwood Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Sandalwood Tree - Flower Single.jpg", "IC": "Flower Single"}, {"IN": "Sandalwood Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Sandalwood Tree - Fruit Tender 1.jpg", "IC": "Fruit Tender 1"}, {"IN": "Sandalwood Tree - Fruit Tender 2.jpg", "IC": "Fruit Tender 2"}, {"IN": "Sandalwood Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Sandalwood Tree - Fruit Bunch.jpg", "IC": "Fruit Bunch"}, {"IN": "Sandalwood Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Sandalwood Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Sandalwood Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Sandalwood Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Sandalwood Tree - 0000.jpg", "IC": "0000"}, {"IN": "Sandalwood Tree - 0001.jpg", "IC": "0001"}, {"IN": "Sandalwood Tree - 0002.jpg", "IC": "0002"}, {"IN": "Sandalwood Tree - 0003.jpg", "IC": "0003"}, {"IN": "Sandalwood Tree - 0004.jpg", "IC": "0004"}, {"IN": "Sandalwood Tree - 0005.jpg", "IC": "0005"}, {"IN": "Sandalwood Tree - 0006.jpg", "IC": "0006"}, {"IN": "Sandalwood Tree - 0007.jpg", "IC": "0007"}, {"IN": "Sandalwood Tree - 0008.jpg", "IC": "0008"}, {"IN": "Sandalwood Tree - 0009.jpg", "IC": "0009"}, {"IN": "Sandalwood Tree - 0010.jpg", "IC": "0010"}, {"IN": "Sandalwood Tree - 0011.jpg", "IC": "0011"}, {"IN": "Sandalwood Tree - 0012.jpg", "IC": "0012"}, {"IN": "Sandalwood Tree - 0013.jpg", "IC": "0013"}, {"IN": "Sandalwood Tree - 0014.jpg", "IC": "0014"}, {"IN": "Sandalwood Tree - 0015.jpg", "IC": "0015"}, {"IN": "Sandalwood Tree - 0016.jpg", "IC": "0016"}, {"IN": "Sandalwood Tree - 0017.jpg", "IC": "0017"}, {"IN": "Sandalwood Tree - 0018.jpg", "IC": "0018"}, {"IN": "Sandalwood Tree - 0019.jpg", "IC": "0019"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Sandalwood Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Santalaceae"}, {"N": "Genus", "V": "Santalum"}, {"N": "Species", "V": "album"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Sandalwood"}, {"N": "Native", "V": "India"}, {"N": "State Tree", "V": "Karnataka"}, {"N": "Size", "V": "Small"}, {"N": "Height", "V": "4-9 m"}], "CI": "Sandalwood Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Sandalwood, Indian sandalwood, Fragrant sandalwood, White Sandalwood"}, {"N": "Language Kannada", "V": "Srigandha"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Santalum_album\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Sandalwood.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?33075\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/tro-28500042\">theplantlist</a>"}, {"N": "Description", "V": "Sandalwood is an evergreen tree, growing up to 4-9 m tall. The trees have a long life, and may live up to one hundred years of age. The tree is variable in habit, usually upright to sprawling, and may intertwine with other species. The plant parasitises the roots of other tree species, but without major detriment to its hosts. The reddish or brown bark can be almost black and is smooth in young trees, becoming cracked with a red reveal. The heartwood is pale green to white as the common name indicates. The oval leaves are thin, oppositely arranged. Smooth surface is shiny and bright green, with a glaucous pale underside. Fruit is produced after three years, viable seeds after five. These seeds are distributed by birds. Sandalwood oil was used traditionally to treat skin diseases, acne, dysentery, gonorrhea, and a number of other conditions.1 In traditional Chinese medicine, sandalwood oil is considered an excellent sedating agent."}, {"N": "Where", "V": "cambridge road, ulsoor, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "reddish brown"}], "CI": "Sandalwood Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "purplish brown"}, {"N": "Season", "V": "Jun-Jul"}], "CI": "Sandalwood Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round berry"}, {"N": "Color", "V": "green turning deep purple"}], "CI": "Sandalwood Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "oval"}, {"N": "Texture", "V": "glossy"}], "CI": "Sandalwood Tree - Leaf.jpg"}], "mapinfo": []};
       tree_module_init(data);
   </script>
 </body>

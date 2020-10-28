@@ -13,6 +13,7 @@ function tree_nav_init() {
 
 function tree_module_init(data) {
     render_template_data('#card-info-template', '#CARDINFO', data);
+    window.MAP_DATA = data['mapinfo'];
 }
 
 function tree_part_init(data) {
@@ -263,3 +264,23 @@ function tree_search_init() {
     render_template_data('#search-template', '#CARDINFO', item_data);
 }
 
+function show_latlong_in_osm(name) {
+    var url = 'http://wikipedia.org';
+    var markers = window.MAP_DATA;
+    var i = 0;
+    var id_name = 'MAP_MODAL';
+    var id_name = 'PHOTO_GALLERY';
+
+    var map = L.map(id_name, { center: [markers[i].lat, markers[i].long], zoom: 15, minZoom: 4, maxZoom: 19 });
+    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: ['a', 'b', 'c']
+    }).addTo(map);
+    for (var i = 0; i < markers.length; i++) {
+        var u = '<a href="' + url + '" target="_blank">' + name + '</a>';
+        L.marker([markers[i].lat, markers[i].long]).bindPopup(u).addTo(map);
+    }
+
+    var handle_id_name = '#' + id_name;
+    /* $(handle_id_name).modal(); */
+}

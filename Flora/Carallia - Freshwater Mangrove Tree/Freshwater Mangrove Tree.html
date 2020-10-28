@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Freshwater Mangrove Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Freshwater Mangrove Tree", "HB": "Carallia brachiata, (Lour.) Merr.", "HC": 30, "gallery": [{"IN": "Freshwater Mangrove Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Freshwater Mangrove Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Freshwater Mangrove Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Freshwater Mangrove Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Freshwater Mangrove Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Freshwater Mangrove Tree - Leaf New.jpg", "IC": "Leaf New"}, {"IN": "Freshwater Mangrove Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Freshwater Mangrove Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Freshwater Mangrove Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Freshwater Mangrove Tree - 0000.jpg", "IC": "0000"}, {"IN": "Freshwater Mangrove Tree - 0001.jpg", "IC": "0001"}, {"IN": "Freshwater Mangrove Tree - 0002.jpg", "IC": "0002"}, {"IN": "Freshwater Mangrove Tree - 0003.jpg", "IC": "0003"}, {"IN": "Freshwater Mangrove Tree - 0004.jpg", "IC": "0004"}, {"IN": "Freshwater Mangrove Tree - 0005.jpg", "IC": "0005"}, {"IN": "Freshwater Mangrove Tree - 0006.jpg", "IC": "0006"}, {"IN": "Freshwater Mangrove Tree - 0007.jpg", "IC": "0007"}, {"IN": "Freshwater Mangrove Tree - 0008.jpg", "IC": "0008"}, {"IN": "Freshwater Mangrove Tree - 0009.jpg", "IC": "0009"}, {"IN": "Freshwater Mangrove Tree - 0010.jpg", "IC": "0010"}, {"IN": "Freshwater Mangrove Tree - 0011.jpg", "IC": "0011"}, {"IN": "Freshwater Mangrove Tree - 0012.jpg", "IC": "0012"}, {"IN": "Freshwater Mangrove Tree - 0013.jpg", "IC": "0013"}, {"IN": "Freshwater Mangrove Tree - 0014.jpg", "IC": "0014"}, {"IN": "Freshwater Mangrove Tree - 0015.jpg", "IC": "0015"}, {"IN": "Freshwater Mangrove Tree - 0016.jpg", "IC": "0016"}, {"IN": "Freshwater Mangrove Tree - 0017.jpg", "IC": "0017"}, {"IN": "Freshwater Mangrove Tree - 0018.jpg", "IC": "0018"}, {"IN": "Freshwater Mangrove Tree - 0019.jpg", "IC": "0019"}, {"IN": "Freshwater Mangrove Tree - 0020.jpg", "IC": "0020"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Freshwater Mangrove Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Rhizophoracea"}, {"N": "Genus", "V": "Carallia"}, {"N": "Species", "V": "brachiata"}, {"N": "Authority", "V": "(Lour.) Merr."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Mangrove"}, {"N": "Native", "V": "India"}, {"N": "Size", "V": "Medium"}, {"N": "Height", "V": "11 m"}], "CI": "Freshwater Mangrove Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Carallia brachiata\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Freshwater%20Mangrove.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?459697\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2698987\">theplantlist</a>"}, {"N": "Description", "V": "Freshwater Mangrove is a tree growing up to 10 m tall. Branches are brown, corky. Stipules are 1-2.5 cm. Leaves carried on 1 cm long stalks are elliptic-obovate, oblanceolate, or rarely circular, 5-15 x 2-10 cm, papery to thinly leathery. Leaf base is wedge-shaped, margin entire or toothed, tip pointed or shortly tapering. Inflorescences are 1-6 cm, often resinous, usually shining from secreted resin. Flowers are short-stalked or stalkless. Bracteoles are 2 or 3, partially fused into a cup. Sepals are 6 or 7, triangular, 3-4 mm. Petals are white, nearly round, 1.5 mm in diameter, notched at the tip and unevenly lacerate. Stamens are about 2 mm. Ovary is bulbous, 2 mm; style 2 mm; stigma discoid, apically 4-8-lobed. Fruit is glossy pink to red round, 5 mm in diameter. Seeds are kidney-shaped."}, {"N": "Where", "V": "Near Glass House, Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "grey"}], "CI": "Freshwater Mangrove Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Shape", "V": "cup"}, {"N": "Color", "V": "creamy"}, {"N": "Season", "V": "Nov-Dec"}], "CI": "Freshwater Mangrove Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Color", "V": "pink or red"}], "CI": "Freshwater Mangrove Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "obovate"}], "CI": "Freshwater Mangrove Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Freshwater Mangrove Tree", "HB": "Carallia brachiata, (Lour.) Merr.", "HC": 30, "gallery": [{"IN": "Freshwater Mangrove Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Freshwater Mangrove Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Freshwater Mangrove Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Freshwater Mangrove Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Freshwater Mangrove Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Freshwater Mangrove Tree - Leaf New.jpg", "IC": "Leaf New"}, {"IN": "Freshwater Mangrove Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Freshwater Mangrove Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Freshwater Mangrove Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Freshwater Mangrove Tree - 0000.jpg", "IC": "0000"}, {"IN": "Freshwater Mangrove Tree - 0001.jpg", "IC": "0001"}, {"IN": "Freshwater Mangrove Tree - 0002.jpg", "IC": "0002"}, {"IN": "Freshwater Mangrove Tree - 0003.jpg", "IC": "0003"}, {"IN": "Freshwater Mangrove Tree - 0004.jpg", "IC": "0004"}, {"IN": "Freshwater Mangrove Tree - 0005.jpg", "IC": "0005"}, {"IN": "Freshwater Mangrove Tree - 0006.jpg", "IC": "0006"}, {"IN": "Freshwater Mangrove Tree - 0007.jpg", "IC": "0007"}, {"IN": "Freshwater Mangrove Tree - 0008.jpg", "IC": "0008"}, {"IN": "Freshwater Mangrove Tree - 0009.jpg", "IC": "0009"}, {"IN": "Freshwater Mangrove Tree - 0010.jpg", "IC": "0010"}, {"IN": "Freshwater Mangrove Tree - 0011.jpg", "IC": "0011"}, {"IN": "Freshwater Mangrove Tree - 0012.jpg", "IC": "0012"}, {"IN": "Freshwater Mangrove Tree - 0013.jpg", "IC": "0013"}, {"IN": "Freshwater Mangrove Tree - 0014.jpg", "IC": "0014"}, {"IN": "Freshwater Mangrove Tree - 0015.jpg", "IC": "0015"}, {"IN": "Freshwater Mangrove Tree - 0016.jpg", "IC": "0016"}, {"IN": "Freshwater Mangrove Tree - 0017.jpg", "IC": "0017"}, {"IN": "Freshwater Mangrove Tree - 0018.jpg", "IC": "0018"}, {"IN": "Freshwater Mangrove Tree - 0019.jpg", "IC": "0019"}, {"IN": "Freshwater Mangrove Tree - 0020.jpg", "IC": "0020"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Freshwater Mangrove Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Rhizophoracea"}, {"N": "Genus", "V": "Carallia"}, {"N": "Species", "V": "brachiata"}, {"N": "Authority", "V": "(Lour.) Merr."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Mangrove"}, {"N": "Native", "V": "India"}, {"N": "Size", "V": "Medium"}, {"N": "Height", "V": "11 m"}], "CI": "Freshwater Mangrove Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Carallia brachiata\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Freshwater%20Mangrove.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?459697\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2698987\">theplantlist</a>"}, {"N": "Description", "V": "Freshwater Mangrove is a tree growing up to 10 m tall. Branches are brown, corky. Stipules are 1-2.5 cm. Leaves carried on 1 cm long stalks are elliptic-obovate, oblanceolate, or rarely circular, 5-15 x 2-10 cm, papery to thinly leathery. Leaf base is wedge-shaped, margin entire or toothed, tip pointed or shortly tapering. Inflorescences are 1-6 cm, often resinous, usually shining from secreted resin. Flowers are short-stalked or stalkless. Bracteoles are 2 or 3, partially fused into a cup. Sepals are 6 or 7, triangular, 3-4 mm. Petals are white, nearly round, 1.5 mm in diameter, notched at the tip and unevenly lacerate. Stamens are about 2 mm. Ovary is bulbous, 2 mm; style 2 mm; stigma discoid, apically 4-8-lobed. Fruit is glossy pink to red round, 5 mm in diameter. Seeds are kidney-shaped."}, {"N": "Where", "V": "Near Glass House, Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "grey"}], "CI": "Freshwater Mangrove Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Shape", "V": "cup"}, {"N": "Color", "V": "creamy"}, {"N": "Season", "V": "Nov-Dec"}], "CI": "Freshwater Mangrove Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Color", "V": "pink or red"}], "CI": "Freshwater Mangrove Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "obovate"}], "CI": "Freshwater Mangrove Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.94936533", "long": "77.58571371"}]};
       tree_module_init(data);
   </script>
 </body>

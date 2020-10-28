@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Kusum Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Kusum Tree", "HB": "Schleichera oleosa, (Lour.) Oken", "HC": 42, "gallery": [{"IN": "Kusum Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Kusum Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Kusum Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Kusum Tree - Leaf New.jpg", "IC": "Leaf New"}, {"IN": "Kusum Tree - Leaf Tender 1.jpg", "IC": "Leaf Tender 1"}, {"IN": "Kusum Tree - Leaf Tender 2.jpg", "IC": "Leaf Tender 2"}, {"IN": "Kusum Tree - Leaf Tender 3.jpg", "IC": "Leaf Tender 3"}, {"IN": "Kusum Tree - Leaf Tender 4.jpg", "IC": "Leaf Tender 4"}, {"IN": "Kusum Tree - Leaf Tender 5.jpg", "IC": "Leaf Tender 5"}, {"IN": "Kusum Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Kusum Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Kusum Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Kusum Tree - 0000.jpg", "IC": "0000"}, {"IN": "Kusum Tree - 0001.jpg", "IC": "0001"}, {"IN": "Kusum Tree - 0002.jpg", "IC": "0002"}, {"IN": "Kusum Tree - 0003.jpg", "IC": "0003"}, {"IN": "Kusum Tree - 0004.jpg", "IC": "0004"}, {"IN": "Kusum Tree - 0005.jpg", "IC": "0005"}, {"IN": "Kusum Tree - 0006.jpg", "IC": "0006"}, {"IN": "Kusum Tree - 0007.jpg", "IC": "0007"}, {"IN": "Kusum Tree - 0008.jpg", "IC": "0008"}, {"IN": "Kusum Tree - 0009.jpg", "IC": "0009"}, {"IN": "Kusum Tree - 0010.jpg", "IC": "0010"}, {"IN": "Kusum Tree - 0011.jpg", "IC": "0011"}, {"IN": "Kusum Tree - 0012.jpg", "IC": "0012"}, {"IN": "Kusum Tree - 0013.jpg", "IC": "0013"}, {"IN": "Kusum Tree - 0014.jpg", "IC": "0014"}, {"IN": "Kusum Tree - 0015.jpg", "IC": "0015"}, {"IN": "Kusum Tree - 0016.jpg", "IC": "0016"}, {"IN": "Kusum Tree - 0017.jpg", "IC": "0017"}, {"IN": "Kusum Tree - 0018.jpg", "IC": "0018"}, {"IN": "Kusum Tree - 0019.jpg", "IC": "0019"}, {"IN": "Kusum Tree - 0020.jpg", "IC": "0020"}, {"IN": "Kusum Tree - 0021.jpg", "IC": "0021"}, {"IN": "Kusum Tree - 0022.jpg", "IC": "0022"}, {"IN": "Kusum Tree - 0023.jpg", "IC": "0023"}, {"IN": "Kusum Tree - 0024.jpg", "IC": "0024"}, {"IN": "Kusum Tree - 0025.jpg", "IC": "0025"}, {"IN": "Kusum Tree - 0026.jpg", "IC": "0026"}, {"IN": "Kusum Tree - 0027.jpg", "IC": "0027"}, {"IN": "Kusum Tree - 0028.jpg", "IC": "0028"}, {"IN": "Kusum Tree - 0029.jpg", "IC": "0029"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Kusum Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Sapindaceae"}, {"N": "Genus", "V": "Schleichera"}, {"N": "Species", "V": "oleosa"}, {"N": "Authority", "V": "(Lour.) Oken"}, {"N": "Grow Type", "V": "Deciduos"}, {"N": "Common Family", "V": "soapberry"}, {"N": "Native", "V": "India"}, {"N": "Size", "V": "Large"}], "CI": "Kusum Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Ceylon oak, Lac tree, Gum lac tree"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Schleichera_oleosa\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Kusum%20Tree.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?33252\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/tro-50190963\">theplantlist</a>"}, {"N": "Description", "V": "Kusum is a beautiful tree with a broad, shady crown, found widespread in Tropical Himalayas (Punjab to Nepal), India, Ceylon, Burma, Thailand, Indo-China, Malaysia. This tree is mostly noticed because of its bright red leaves when they are new. In India this happens around March. The leaves are pinnate, with each leaf having 2-4 leaflets. Flowers are tiny, occuring in short dense yellow clusters. The flowers are hardly noticeable. The fruit is about the size of a small plum."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "pale brown"}], "CI": "Kusum Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Size", "V": "small"}, {"N": "Shape", "V": "clusters"}, {"N": "Color", "V": "Creamy"}, {"N": "Season", "V": "Mar-Apr"}], "CI": "Kusum Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Size", "V": "3cm"}, {"N": "Shape", "V": "olive like"}, {"N": "Color", "V": "green"}], "CI": "Kusum Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "paripinnate"}, {"N": "Shape", "V": "oval"}, {"N": "Leaflet Numbers", "V": "2-4 pairs"}], "CI": "Kusum Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Kusum Tree", "HB": "Schleichera oleosa, (Lour.) Oken", "HC": 42, "gallery": [{"IN": "Kusum Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Kusum Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Kusum Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Kusum Tree - Leaf New.jpg", "IC": "Leaf New"}, {"IN": "Kusum Tree - Leaf Tender 1.jpg", "IC": "Leaf Tender 1"}, {"IN": "Kusum Tree - Leaf Tender 2.jpg", "IC": "Leaf Tender 2"}, {"IN": "Kusum Tree - Leaf Tender 3.jpg", "IC": "Leaf Tender 3"}, {"IN": "Kusum Tree - Leaf Tender 4.jpg", "IC": "Leaf Tender 4"}, {"IN": "Kusum Tree - Leaf Tender 5.jpg", "IC": "Leaf Tender 5"}, {"IN": "Kusum Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Kusum Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Kusum Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Kusum Tree - 0000.jpg", "IC": "0000"}, {"IN": "Kusum Tree - 0001.jpg", "IC": "0001"}, {"IN": "Kusum Tree - 0002.jpg", "IC": "0002"}, {"IN": "Kusum Tree - 0003.jpg", "IC": "0003"}, {"IN": "Kusum Tree - 0004.jpg", "IC": "0004"}, {"IN": "Kusum Tree - 0005.jpg", "IC": "0005"}, {"IN": "Kusum Tree - 0006.jpg", "IC": "0006"}, {"IN": "Kusum Tree - 0007.jpg", "IC": "0007"}, {"IN": "Kusum Tree - 0008.jpg", "IC": "0008"}, {"IN": "Kusum Tree - 0009.jpg", "IC": "0009"}, {"IN": "Kusum Tree - 0010.jpg", "IC": "0010"}, {"IN": "Kusum Tree - 0011.jpg", "IC": "0011"}, {"IN": "Kusum Tree - 0012.jpg", "IC": "0012"}, {"IN": "Kusum Tree - 0013.jpg", "IC": "0013"}, {"IN": "Kusum Tree - 0014.jpg", "IC": "0014"}, {"IN": "Kusum Tree - 0015.jpg", "IC": "0015"}, {"IN": "Kusum Tree - 0016.jpg", "IC": "0016"}, {"IN": "Kusum Tree - 0017.jpg", "IC": "0017"}, {"IN": "Kusum Tree - 0018.jpg", "IC": "0018"}, {"IN": "Kusum Tree - 0019.jpg", "IC": "0019"}, {"IN": "Kusum Tree - 0020.jpg", "IC": "0020"}, {"IN": "Kusum Tree - 0021.jpg", "IC": "0021"}, {"IN": "Kusum Tree - 0022.jpg", "IC": "0022"}, {"IN": "Kusum Tree - 0023.jpg", "IC": "0023"}, {"IN": "Kusum Tree - 0024.jpg", "IC": "0024"}, {"IN": "Kusum Tree - 0025.jpg", "IC": "0025"}, {"IN": "Kusum Tree - 0026.jpg", "IC": "0026"}, {"IN": "Kusum Tree - 0027.jpg", "IC": "0027"}, {"IN": "Kusum Tree - 0028.jpg", "IC": "0028"}, {"IN": "Kusum Tree - 0029.jpg", "IC": "0029"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Kusum Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Sapindaceae"}, {"N": "Genus", "V": "Schleichera"}, {"N": "Species", "V": "oleosa"}, {"N": "Authority", "V": "(Lour.) Oken"}, {"N": "Grow Type", "V": "Deciduos"}, {"N": "Common Family", "V": "soapberry"}, {"N": "Native", "V": "India"}, {"N": "Size", "V": "Large"}], "CI": "Kusum Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Ceylon oak, Lac tree, Gum lac tree"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Schleichera_oleosa\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Kusum%20Tree.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?33252\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/tro-50190963\">theplantlist</a>"}, {"N": "Description", "V": "Kusum is a beautiful tree with a broad, shady crown, found widespread in Tropical Himalayas (Punjab to Nepal), India, Ceylon, Burma, Thailand, Indo-China, Malaysia. This tree is mostly noticed because of its bright red leaves when they are new. In India this happens around March. The leaves are pinnate, with each leaf having 2-4 leaflets. Flowers are tiny, occuring in short dense yellow clusters. The flowers are hardly noticeable. The fruit is about the size of a small plum."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "pale brown"}], "CI": "Kusum Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Size", "V": "small"}, {"N": "Shape", "V": "clusters"}, {"N": "Color", "V": "Creamy"}, {"N": "Season", "V": "Mar-Apr"}], "CI": "Kusum Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Size", "V": "3cm"}, {"N": "Shape", "V": "olive like"}, {"N": "Color", "V": "green"}], "CI": "Kusum Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "paripinnate"}, {"N": "Shape", "V": "oval"}, {"N": "Leaflet Numbers", "V": "2-4 pairs"}], "CI": "Kusum Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.95276073", "long": "77.58423074"}, {"lat": "12.95319571", "long": "77.58440245"}]};
       tree_module_init(data);
   </script>
 </body>

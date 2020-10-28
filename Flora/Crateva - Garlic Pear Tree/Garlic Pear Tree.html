@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Garlic Pear Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Garlic Pear Tree", "HB": "Crateva adansonii subsp. odora, DC.", "HC": 8, "gallery": [{"IN": "Garlic Pear Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Garlic Pear Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Garlic Pear Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Garlic Pear Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Garlic Pear Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Garlic Pear Tree - 0000.jpg", "IC": "0000"}, {"IN": "Garlic Pear Tree - 0001.jpg", "IC": "0001"}, {"IN": "Garlic Pear Tree - 0002.jpg", "IC": "0002"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Garlic Pear Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Stamp", "V": "<a href=\"http://indiapicks.com/stamps/Nature_Flora/NTR_Trees_Main.htm\">com</a>"}, {"N": "Family", "V": "Capparaceae"}, {"N": "Genus", "V": "Crateva"}, {"N": "Species", "V": "adansonii subsp. odora"}, {"N": "Authority", "V": "DC."}, {"N": "Grow Type", "V": "Deciduous"}, {"N": "Common Family", "V": "barna"}, {"N": "Native", "V": "India"}, {"N": "Size", "V": "Medium"}], "CI": "Garlic Pear Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Caper Tree, Three Leaf Caper, Obtuse Leaf Crateva"}, {"N": "Language Bengali", "V": "Barun"}, {"N": "Language Hindi", "V": "Barna, Barni"}, {"N": "Language Kannada", "V": "Nirvala"}, {"N": "Language Malayalam", "V": "Nir Mathalam"}, {"N": "Language Manipuri", "V": "Loiyumba Lei"}, {"N": "Language Sanskrit", "V": "Varuna"}, {"N": "Language Tamil", "V": "Maravilinga"}, {"N": "Language Telugu", "V": "Voolemara"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Crateva_adansonii\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Garlic%20Pear%20Tree.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?310633\">ars-grin</a>"}, {"N": "Description", "V": "A moderate sized deciduous tree found throughout India, especially along the river banks. Bark grey, smooth horizontally wrinkled. Leaves trifoliate. Flowers white, or cream in many flowered terminal corymbs. The bark is grey, and the wood is yellowish-white, turning light-brown when old. The leaves are clustered at the ends of branchlets, with a common petiole 5 to 10 centimeters long, at the summit of which are tree leaflets. The leaflets are ovate-lanceolate or ovate, 7.5 to 12 centimeters long, 4 to 6 centimeters wide, and pointed at the base, with a rather slender point at the tip. The flowers occur in terminal corymbs, are about 5 centimeters in diameter, greenish-yellow, and the stamens are purplish. The petals are ovate or oblong, with the claw half as long as limb. The fruit is ovoid or rounded, and 3 to 5 centimeters in diameters, with hard and rough rind. The seeds are about 10 centimeters in length, numerous, kidney-shaped, and embedded in a yellow pulp."}, {"N": "Where", "V": "Red Fort, Delhi<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "pale brown"}], "CI": "Garlic Pear Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "white"}, {"N": "Season", "V": "Apr-May"}], "CI": "Garlic Pear Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round"}, {"N": "Color", "V": "red"}], "CI": "Garlic Pear Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "trifoliate"}], "CI": "Garlic Pear Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Garlic Pear Tree", "HB": "Crateva adansonii subsp. odora, DC.", "HC": 8, "gallery": [{"IN": "Garlic Pear Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Garlic Pear Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Garlic Pear Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Garlic Pear Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Garlic Pear Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Garlic Pear Tree - 0000.jpg", "IC": "0000"}, {"IN": "Garlic Pear Tree - 0001.jpg", "IC": "0001"}, {"IN": "Garlic Pear Tree - 0002.jpg", "IC": "0002"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Garlic Pear Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Stamp", "V": "<a href=\"http://indiapicks.com/stamps/Nature_Flora/NTR_Trees_Main.htm\">com</a>"}, {"N": "Family", "V": "Capparaceae"}, {"N": "Genus", "V": "Crateva"}, {"N": "Species", "V": "adansonii subsp. odora"}, {"N": "Authority", "V": "DC."}, {"N": "Grow Type", "V": "Deciduous"}, {"N": "Common Family", "V": "barna"}, {"N": "Native", "V": "India"}, {"N": "Size", "V": "Medium"}], "CI": "Garlic Pear Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Caper Tree, Three Leaf Caper, Obtuse Leaf Crateva"}, {"N": "Language Bengali", "V": "Barun"}, {"N": "Language Hindi", "V": "Barna, Barni"}, {"N": "Language Kannada", "V": "Nirvala"}, {"N": "Language Malayalam", "V": "Nir Mathalam"}, {"N": "Language Manipuri", "V": "Loiyumba Lei"}, {"N": "Language Sanskrit", "V": "Varuna"}, {"N": "Language Tamil", "V": "Maravilinga"}, {"N": "Language Telugu", "V": "Voolemara"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Crateva_adansonii\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Garlic%20Pear%20Tree.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?310633\">ars-grin</a>"}, {"N": "Description", "V": "A moderate sized deciduous tree found throughout India, especially along the river banks. Bark grey, smooth horizontally wrinkled. Leaves trifoliate. Flowers white, or cream in many flowered terminal corymbs. The bark is grey, and the wood is yellowish-white, turning light-brown when old. The leaves are clustered at the ends of branchlets, with a common petiole 5 to 10 centimeters long, at the summit of which are tree leaflets. The leaflets are ovate-lanceolate or ovate, 7.5 to 12 centimeters long, 4 to 6 centimeters wide, and pointed at the base, with a rather slender point at the tip. The flowers occur in terminal corymbs, are about 5 centimeters in diameter, greenish-yellow, and the stamens are purplish. The petals are ovate or oblong, with the claw half as long as limb. The fruit is ovoid or rounded, and 3 to 5 centimeters in diameters, with hard and rough rind. The seeds are about 10 centimeters in length, numerous, kidney-shaped, and embedded in a yellow pulp."}, {"N": "Where", "V": "Red Fort, Delhi<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "pale brown"}], "CI": "Garlic Pear Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "white"}, {"N": "Season", "V": "Apr-May"}], "CI": "Garlic Pear Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round"}, {"N": "Color", "V": "red"}], "CI": "Garlic Pear Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "trifoliate"}], "CI": "Garlic Pear Tree - Leaf.jpg"}], "mapinfo": []};
       tree_module_init(data);
   </script>
 </body>

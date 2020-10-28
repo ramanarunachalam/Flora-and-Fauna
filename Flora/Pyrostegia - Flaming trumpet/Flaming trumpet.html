@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Flaming trumpet</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Flaming trumpet", "HB": "Pyrostegia venusta, Miers", "HC": 7, "gallery": [{"IN": "Flaming trumpet - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Flaming trumpet - Flower.jpg", "IC": "Flower"}, {"IN": "Flaming trumpet - Canopy.jpg", "IC": "Canopy"}, {"IN": "Flaming trumpet - Leaf.jpg", "IC": "Leaf"}, {"IN": "Flaming trumpet - 0000.jpg", "IC": "0000"}, {"IN": "Flaming trumpet - 0001.jpg", "IC": "0001"}, {"IN": "Flaming trumpet - 0002.jpg", "IC": "0002"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Flaming trumpet"}, {"N": "Type", "V": "Climber"}, {"N": "Family", "V": "Bignoniaceae"}, {"N": "Genus", "V": "Pyrostegia"}, {"N": "Species", "V": "venusta"}, {"N": "Authority", "V": "Miers"}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Jacaranda"}, {"N": "Native", "V": "Asia"}, {"N": "Size", "V": "Small"}], "CI": "Flaming trumpet - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Flame vine, Flaming trumpet, Golden shower trumpet, Orange Bignonia"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Pyrostegia_venusta\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Flaming%20Trumpet.html\">flowersofindia</a>"}, {"N": "Description", "V": "Flaming trumpet is a vigorous, fast-growing, evergreen woody vine that blooms in winter and spring with spectacular reddish-orange flowers. The compound leaves have two or three 2-3 in oval leaflets and are arranged in pairs opposite each other on the stem. Often, the center leaflet is modified into a coiled, three-parted tendril. Flame vine branches profusely and climbs by clinging with its tendrils. The tubular flowers are about 3 in long and borne in clusters of 15-20 at the tips of branches. The corolla has five lobes which are bent backwards, and the long orange stamens and style extend beyond the tube. The flower clusters may hang down under the weight of their own beauty. Fruits are slender dry capsules about 1 ft long. Flaming trumpet is native to southern Brazil, northern Argentina and Paraguay."}, {"N": "Where", "V": "Cambridge Road, Ulsoor, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "green"}]}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "orange"}], "CI": "Flaming trumpet - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "capsule"}]}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "ovate"}], "CI": "Flaming trumpet - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Flaming trumpet", "HB": "Pyrostegia venusta, Miers", "HC": 7, "gallery": [{"IN": "Flaming trumpet - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Flaming trumpet - Flower.jpg", "IC": "Flower"}, {"IN": "Flaming trumpet - Canopy.jpg", "IC": "Canopy"}, {"IN": "Flaming trumpet - Leaf.jpg", "IC": "Leaf"}, {"IN": "Flaming trumpet - 0000.jpg", "IC": "0000"}, {"IN": "Flaming trumpet - 0001.jpg", "IC": "0001"}, {"IN": "Flaming trumpet - 0002.jpg", "IC": "0002"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Flaming trumpet"}, {"N": "Type", "V": "Climber"}, {"N": "Family", "V": "Bignoniaceae"}, {"N": "Genus", "V": "Pyrostegia"}, {"N": "Species", "V": "venusta"}, {"N": "Authority", "V": "Miers"}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Jacaranda"}, {"N": "Native", "V": "Asia"}, {"N": "Size", "V": "Small"}], "CI": "Flaming trumpet - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Flame vine, Flaming trumpet, Golden shower trumpet, Orange Bignonia"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Pyrostegia_venusta\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Flaming%20Trumpet.html\">flowersofindia</a>"}, {"N": "Description", "V": "Flaming trumpet is a vigorous, fast-growing, evergreen woody vine that blooms in winter and spring with spectacular reddish-orange flowers. The compound leaves have two or three 2-3 in oval leaflets and are arranged in pairs opposite each other on the stem. Often, the center leaflet is modified into a coiled, three-parted tendril. Flame vine branches profusely and climbs by clinging with its tendrils. The tubular flowers are about 3 in long and borne in clusters of 15-20 at the tips of branches. The corolla has five lobes which are bent backwards, and the long orange stamens and style extend beyond the tube. The flower clusters may hang down under the weight of their own beauty. Fruits are slender dry capsules about 1 ft long. Flaming trumpet is native to southern Brazil, northern Argentina and Paraguay."}, {"N": "Where", "V": "Cambridge Road, Ulsoor, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "green"}]}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "orange"}], "CI": "Flaming trumpet - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "capsule"}]}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "ovate"}], "CI": "Flaming trumpet - Leaf.jpg"}], "mapinfo": []};
       tree_module_init(data);
   </script>
 </body>

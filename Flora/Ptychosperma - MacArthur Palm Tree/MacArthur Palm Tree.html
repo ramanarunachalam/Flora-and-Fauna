@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>MacArthur Palm Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "MacArthur Palm Tree", "HB": "Ptychosperma macarthurii, (H.Wendl. ex H.J.Veitch) H.Wendl. ex Hook.f.", "HC": 27, "gallery": [{"IN": "MacArthur Palm Tree - Flower Bud 1.jpg", "IC": "Flower Bud 1"}, {"IN": "MacArthur Palm Tree - Flower Bud 2.jpg", "IC": "Flower Bud 2"}, {"IN": "MacArthur Palm Tree - Flower.jpg", "IC": "Flower"}, {"IN": "MacArthur Palm Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "MacArthur Palm Tree - Fruit Falling.jpg", "IC": "Fruit Falling"}, {"IN": "MacArthur Palm Tree - Fruit Single.jpg", "IC": "Fruit Single"}, {"IN": "MacArthur Palm Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "MacArthur Palm Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "MacArthur Palm Tree - Bark.jpg", "IC": "Bark"}, {"IN": "MacArthur Palm Tree - 0000.jpg", "IC": "0000"}, {"IN": "MacArthur Palm Tree - 0001.jpg", "IC": "0001"}, {"IN": "MacArthur Palm Tree - 0002.jpg", "IC": "0002"}, {"IN": "MacArthur Palm Tree - 0003.jpg", "IC": "0003"}, {"IN": "MacArthur Palm Tree - 0004.jpg", "IC": "0004"}, {"IN": "MacArthur Palm Tree - 0005.jpg", "IC": "0005"}, {"IN": "MacArthur Palm Tree - 0006.jpg", "IC": "0006"}, {"IN": "MacArthur Palm Tree - 0007.jpg", "IC": "0007"}, {"IN": "MacArthur Palm Tree - 0008.jpg", "IC": "0008"}, {"IN": "MacArthur Palm Tree - 0009.jpg", "IC": "0009"}, {"IN": "MacArthur Palm Tree - 0010.jpg", "IC": "0010"}, {"IN": "MacArthur Palm Tree - 0011.jpg", "IC": "0011"}, {"IN": "MacArthur Palm Tree - 0012.jpg", "IC": "0012"}, {"IN": "MacArthur Palm Tree - 0013.jpg", "IC": "0013"}, {"IN": "MacArthur Palm Tree - 0014.jpg", "IC": "0014"}, {"IN": "MacArthur Palm Tree - 0015.jpg", "IC": "0015"}, {"IN": "MacArthur Palm Tree - 0016.jpg", "IC": "0016"}, {"IN": "MacArthur Palm Tree - 0017.jpg", "IC": "0017"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "MacArthur Palm Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Arecaceae"}, {"N": "Genus", "V": "Ptychosperma"}, {"N": "Species", "V": "macarthurii"}, {"N": "Authority", "V": "(H.Wendl. ex H.J.Veitch) H.Wendl. ex Hook.f."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Palm"}, {"N": "Native", "V": "New Guinea, Australia"}, {"N": "Size", "V": "Medium"}, {"N": "Height", "V": "7 m"}], "CI": "MacArthur Palm Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Ptychosperma_macarthurii\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/MacArthur%20Palm.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?30333\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-170862\">theplantlist</a>"}, {"N": "Description", "V": "Macarthur Palm is a palm tree from New Guinea and Australia. Stems grow in dense clumps or rarely solitary, up to 7 m tall, only 7 cm in diameter, thus appearing bamboo-like. Leaves are up to 2 m long or more, compound. Leaflets are 23-28 on each side, more or less regularly arranged, with margins nearly parallel or tapered at the tip. Inflorescence are up to 60 cm wide. Male flowers are 6-8 mm long, with 26-40 stamens. Fruit is red, ovoid, 12-16 mm long. Seeds are deeply 3-6-grooved."}, {"N": "Where", "V": "4th Main Road, 2nd Cross Road, II Stage, Domlur, Bangalore<br>Ulsoor Road, Ulsoor, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "Pale grey"}], "CI": "MacArthur Palm Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "creamy"}, {"N": "Season", "V": "Jun-Jul, oct-nov"}], "CI": "MacArthur Palm Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "olive like"}, {"N": "Color", "V": "green to red"}], "CI": "MacArthur Palm Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "paripinnate"}, {"N": "Size", "V": "3 m"}, {"N": "Leaflet Numbers", "V": "15-20"}], "CI": "MacArthur Palm Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "MacArthur Palm Tree", "HB": "Ptychosperma macarthurii, (H.Wendl. ex H.J.Veitch) H.Wendl. ex Hook.f.", "HC": 27, "gallery": [{"IN": "MacArthur Palm Tree - Flower Bud 1.jpg", "IC": "Flower Bud 1"}, {"IN": "MacArthur Palm Tree - Flower Bud 2.jpg", "IC": "Flower Bud 2"}, {"IN": "MacArthur Palm Tree - Flower.jpg", "IC": "Flower"}, {"IN": "MacArthur Palm Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "MacArthur Palm Tree - Fruit Falling.jpg", "IC": "Fruit Falling"}, {"IN": "MacArthur Palm Tree - Fruit Single.jpg", "IC": "Fruit Single"}, {"IN": "MacArthur Palm Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "MacArthur Palm Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "MacArthur Palm Tree - Bark.jpg", "IC": "Bark"}, {"IN": "MacArthur Palm Tree - 0000.jpg", "IC": "0000"}, {"IN": "MacArthur Palm Tree - 0001.jpg", "IC": "0001"}, {"IN": "MacArthur Palm Tree - 0002.jpg", "IC": "0002"}, {"IN": "MacArthur Palm Tree - 0003.jpg", "IC": "0003"}, {"IN": "MacArthur Palm Tree - 0004.jpg", "IC": "0004"}, {"IN": "MacArthur Palm Tree - 0005.jpg", "IC": "0005"}, {"IN": "MacArthur Palm Tree - 0006.jpg", "IC": "0006"}, {"IN": "MacArthur Palm Tree - 0007.jpg", "IC": "0007"}, {"IN": "MacArthur Palm Tree - 0008.jpg", "IC": "0008"}, {"IN": "MacArthur Palm Tree - 0009.jpg", "IC": "0009"}, {"IN": "MacArthur Palm Tree - 0010.jpg", "IC": "0010"}, {"IN": "MacArthur Palm Tree - 0011.jpg", "IC": "0011"}, {"IN": "MacArthur Palm Tree - 0012.jpg", "IC": "0012"}, {"IN": "MacArthur Palm Tree - 0013.jpg", "IC": "0013"}, {"IN": "MacArthur Palm Tree - 0014.jpg", "IC": "0014"}, {"IN": "MacArthur Palm Tree - 0015.jpg", "IC": "0015"}, {"IN": "MacArthur Palm Tree - 0016.jpg", "IC": "0016"}, {"IN": "MacArthur Palm Tree - 0017.jpg", "IC": "0017"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "MacArthur Palm Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Arecaceae"}, {"N": "Genus", "V": "Ptychosperma"}, {"N": "Species", "V": "macarthurii"}, {"N": "Authority", "V": "(H.Wendl. ex H.J.Veitch) H.Wendl. ex Hook.f."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Palm"}, {"N": "Native", "V": "New Guinea, Australia"}, {"N": "Size", "V": "Medium"}, {"N": "Height", "V": "7 m"}], "CI": "MacArthur Palm Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Ptychosperma_macarthurii\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/MacArthur%20Palm.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?30333\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-170862\">theplantlist</a>"}, {"N": "Description", "V": "Macarthur Palm is a palm tree from New Guinea and Australia. Stems grow in dense clumps or rarely solitary, up to 7 m tall, only 7 cm in diameter, thus appearing bamboo-like. Leaves are up to 2 m long or more, compound. Leaflets are 23-28 on each side, more or less regularly arranged, with margins nearly parallel or tapered at the tip. Inflorescence are up to 60 cm wide. Male flowers are 6-8 mm long, with 26-40 stamens. Fruit is red, ovoid, 12-16 mm long. Seeds are deeply 3-6-grooved."}, {"N": "Where", "V": "4th Main Road, 2nd Cross Road, II Stage, Domlur, Bangalore<br>Ulsoor Road, Ulsoor, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "Pale grey"}], "CI": "MacArthur Palm Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "creamy"}, {"N": "Season", "V": "Jun-Jul, oct-nov"}], "CI": "MacArthur Palm Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "olive like"}, {"N": "Color", "V": "green to red"}], "CI": "MacArthur Palm Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "paripinnate"}, {"N": "Size", "V": "3 m"}, {"N": "Leaflet Numbers", "V": "15-20"}], "CI": "MacArthur Palm Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.9489105", "long": "77.5871895"}, {"lat": "12.9488688919", "long": "77.5872234354"}, {"lat": "12.9687226313", "long": "77.5991980082"}, {"lat": "12.94996131", "long": "77.58271626"}, {"lat": "12.94996697363415", "long": "77.58273414138273"}, {"lat": "12.949947368702256", "long": "77.58272743585701"}, {"lat": "12.949931475712896", "long": "77.58273280028914"}, {"lat": "12.949951951959747", "long": "77.58274308210298"}, {"lat": "12.970513222245044", "long": "77.62790115645828"}, {"lat": "12.97046665202328", "long": "77.62782417502694"}, {"lat": "12.970565670908414", "long": "77.62796912524146"}, {"lat": "12.970589073284991", "long": "77.62800577989054"}, {"lat": "12.976666473701291", "long": "77.64504861002189"}]};
       tree_module_init(data);
   </script>
 </body>

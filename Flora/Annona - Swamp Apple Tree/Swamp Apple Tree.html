@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Swamp Apple Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Swamp Apple Tree", "HB": "Annona glabra, L.", "HC": 28, "gallery": [{"IN": "Swamp Apple Tree - Flower Bud 1.jpg", "IC": "Flower Bud 1"}, {"IN": "Swamp Apple Tree - Flower Bud 2.jpg", "IC": "Flower Bud 2"}, {"IN": "Swamp Apple Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Swamp Apple Tree - Fruit New.jpg", "IC": "Fruit New"}, {"IN": "Swamp Apple Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Swamp Apple Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Swamp Apple Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Swamp Apple Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Swamp Apple Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Swamp Apple Tree - Leaf Falling.jpg", "IC": "Leaf Falling"}, {"IN": "Swamp Apple Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Swamp Apple Tree - 0000.jpg", "IC": "0000"}, {"IN": "Swamp Apple Tree - 0001.jpg", "IC": "0001"}, {"IN": "Swamp Apple Tree - 0002.jpg", "IC": "0002"}, {"IN": "Swamp Apple Tree - 0003.jpg", "IC": "0003"}, {"IN": "Swamp Apple Tree - 0004.jpg", "IC": "0004"}, {"IN": "Swamp Apple Tree - 0005.jpg", "IC": "0005"}, {"IN": "Swamp Apple Tree - 0006.jpg", "IC": "0006"}, {"IN": "Swamp Apple Tree - 0007.jpg", "IC": "0007"}, {"IN": "Swamp Apple Tree - 0008.jpg", "IC": "0008"}, {"IN": "Swamp Apple Tree - 0009.jpg", "IC": "0009"}, {"IN": "Swamp Apple Tree - 0010.jpg", "IC": "0010"}, {"IN": "Swamp Apple Tree - 0011.jpg", "IC": "0011"}, {"IN": "Swamp Apple Tree - 0012.jpg", "IC": "0012"}, {"IN": "Swamp Apple Tree - 0013.jpg", "IC": "0013"}, {"IN": "Swamp Apple Tree - 0014.jpg", "IC": "0014"}, {"IN": "Swamp Apple Tree - 0015.jpg", "IC": "0015"}, {"IN": "Swamp Apple Tree - 0016.jpg", "IC": "0016"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Swamp Apple Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Annonaceae"}, {"N": "Genus", "V": "Annona"}, {"N": "Species", "V": "glabra"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Deciduous"}, {"N": "Common Family", "V": "sugar apple"}, {"N": "Native", "V": "Central America"}, {"N": "Size", "V": "Small"}, {"N": "Height", "V": "10-12m"}], "CI": "Swamp Apple Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Pond-apple, Alligator-apple, Swamp apple, Corkwood, Bobwood, Monkey-apple"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Annona_glabra\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?3484\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2640872\">theplantlist</a>"}, {"N": "Description", "V": "The tree is native to Florida in the United States, the Caribbean, Central and South America, and West Africa.[2] It is common in the Everglades. It grows in swamps, is tolerant of saltwater, and cannot grow in dry soil. The trees grow to a height of around 10\u201312 m. They have thin, gray trunks and sometimes grow in clumps. The leaves are ovate to oblong with an acute tip, 8\u201315 cm long and 4\u20136 cm broad. The fruit is oblong to spherical and apple-sized or larger, 7\u201315 cm long and up to 9 cm diameter, and falls when it is green or ripening yellow. It disperses by floating to new locations, and it is food for many animal species. It is edible for humans, and can be made into jam, although the taste is usually not preferable to Soursop and other related fruits. The flesh is sweet-scented and agreeable in flavor, but it has never attained general popular use."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "Greyish"}], "CI": "Swamp Apple Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "Yellow Green"}, {"N": "Info", "V": "3 petals"}, {"N": "Season", "V": "May-Jun"}], "CI": "Swamp Apple Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round"}, {"N": "Info", "V": "Edible"}], "CI": "Swamp Apple Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "oval"}, {"N": "Size", "V": "15 cm"}, {"N": "Shape", "V": "oblong"}, {"N": "Arrangement", "V": "Alternate"}], "CI": "Swamp Apple Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Swamp Apple Tree", "HB": "Annona glabra, L.", "HC": 28, "gallery": [{"IN": "Swamp Apple Tree - Flower Bud 1.jpg", "IC": "Flower Bud 1"}, {"IN": "Swamp Apple Tree - Flower Bud 2.jpg", "IC": "Flower Bud 2"}, {"IN": "Swamp Apple Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Swamp Apple Tree - Fruit New.jpg", "IC": "Fruit New"}, {"IN": "Swamp Apple Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Swamp Apple Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Swamp Apple Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Swamp Apple Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Swamp Apple Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Swamp Apple Tree - Leaf Falling.jpg", "IC": "Leaf Falling"}, {"IN": "Swamp Apple Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Swamp Apple Tree - 0000.jpg", "IC": "0000"}, {"IN": "Swamp Apple Tree - 0001.jpg", "IC": "0001"}, {"IN": "Swamp Apple Tree - 0002.jpg", "IC": "0002"}, {"IN": "Swamp Apple Tree - 0003.jpg", "IC": "0003"}, {"IN": "Swamp Apple Tree - 0004.jpg", "IC": "0004"}, {"IN": "Swamp Apple Tree - 0005.jpg", "IC": "0005"}, {"IN": "Swamp Apple Tree - 0006.jpg", "IC": "0006"}, {"IN": "Swamp Apple Tree - 0007.jpg", "IC": "0007"}, {"IN": "Swamp Apple Tree - 0008.jpg", "IC": "0008"}, {"IN": "Swamp Apple Tree - 0009.jpg", "IC": "0009"}, {"IN": "Swamp Apple Tree - 0010.jpg", "IC": "0010"}, {"IN": "Swamp Apple Tree - 0011.jpg", "IC": "0011"}, {"IN": "Swamp Apple Tree - 0012.jpg", "IC": "0012"}, {"IN": "Swamp Apple Tree - 0013.jpg", "IC": "0013"}, {"IN": "Swamp Apple Tree - 0014.jpg", "IC": "0014"}, {"IN": "Swamp Apple Tree - 0015.jpg", "IC": "0015"}, {"IN": "Swamp Apple Tree - 0016.jpg", "IC": "0016"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Swamp Apple Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Annonaceae"}, {"N": "Genus", "V": "Annona"}, {"N": "Species", "V": "glabra"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Deciduous"}, {"N": "Common Family", "V": "sugar apple"}, {"N": "Native", "V": "Central America"}, {"N": "Size", "V": "Small"}, {"N": "Height", "V": "10-12m"}], "CI": "Swamp Apple Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Pond-apple, Alligator-apple, Swamp apple, Corkwood, Bobwood, Monkey-apple"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Annona_glabra\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?3484\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2640872\">theplantlist</a>"}, {"N": "Description", "V": "The tree is native to Florida in the United States, the Caribbean, Central and South America, and West Africa.[2] It is common in the Everglades. It grows in swamps, is tolerant of saltwater, and cannot grow in dry soil. The trees grow to a height of around 10\u201312 m. They have thin, gray trunks and sometimes grow in clumps. The leaves are ovate to oblong with an acute tip, 8\u201315 cm long and 4\u20136 cm broad. The fruit is oblong to spherical and apple-sized or larger, 7\u201315 cm long and up to 9 cm diameter, and falls when it is green or ripening yellow. It disperses by floating to new locations, and it is food for many animal species. It is edible for humans, and can be made into jam, although the taste is usually not preferable to Soursop and other related fruits. The flesh is sweet-scented and agreeable in flavor, but it has never attained general popular use."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "Greyish"}], "CI": "Swamp Apple Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "Yellow Green"}, {"N": "Info", "V": "3 petals"}, {"N": "Season", "V": "May-Jun"}], "CI": "Swamp Apple Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round"}, {"N": "Info", "V": "Edible"}], "CI": "Swamp Apple Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "oval"}, {"N": "Size", "V": "15 cm"}, {"N": "Shape", "V": "oblong"}, {"N": "Arrangement", "V": "Alternate"}], "CI": "Swamp Apple Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.948877949152825", "long": "77.58133175092252"}]};
       tree_module_init(data);
   </script>
 </body>

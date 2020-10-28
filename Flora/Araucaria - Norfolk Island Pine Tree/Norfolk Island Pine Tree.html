@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Norfolk Island Pine Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Norfolk Island Pine Tree", "HB": "Araucaria heterophylla, (Salisb.) Franco", "HC": 12, "gallery": [{"IN": "Norfolk Island Pine Tree - Cone Tender.jpg", "IC": "Cone Tender"}, {"IN": "Norfolk Island Pine Tree - Cone.jpg", "IC": "Cone"}, {"IN": "Norfolk Island Pine Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Norfolk Island Pine Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Norfolk Island Pine Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Norfolk Island Pine Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Norfolk Island Pine Tree - 0000.jpg", "IC": "0000"}, {"IN": "Norfolk Island Pine Tree - 0001.jpg", "IC": "0001"}, {"IN": "Norfolk Island Pine Tree - 0002.jpg", "IC": "0002"}, {"IN": "Norfolk Island Pine Tree - 0003.jpg", "IC": "0003"}, {"IN": "Norfolk Island Pine Tree - 0004.jpg", "IC": "0004"}, {"IN": "Norfolk Island Pine Tree - 0005.jpg", "IC": "0005"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Norfolk Island Pine Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Araucariaceae"}, {"N": "Genus", "V": "Araucaria"}, {"N": "Species", "V": "heterophylla"}, {"N": "Authority", "V": "(Salisb.) Franco"}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Pine"}, {"N": "Native", "V": "Norfolk Island"}, {"N": "Size", "V": "Large"}, {"N": "Height", "V": "60m"}], "CI": "Norfolk Island Pine Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Araucaria_heterophylla\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?312563\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-14360\">theplantlist</a>"}, {"N": "Description", "V": "The trees grow to a height of 50\u201365 m, with straight vertical trunks and symmetrical branches, even in the face of incessant onshore winds that can contort most other species.  The leaves are awl-shaped, 1-1.5 cm long, about 1 mm thick at the base on young trees, and incurved, 5\u201310 mm long and variably 2\u20134 mm broad on older trees. The thickest, scale-like leaves on coning branches are in the upper crown. The cones are squat globose, 10\u201312 cm long and 12\u201314 cm diameter, and take about 18 months to mature. They disintegrate at maturity to release the nut-like edible seeds."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "brown"}], "CI": "Norfolk Island Pine Tree - Bark.jpg"}, {"CN": "Cones", "CV": [{"N": "Color", "V": "green"}, {"N": "Season", "V": "Nov-Dec"}], "CI": "Norfolk Island Pine Tree - Cone.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "needle"}], "CI": "Norfolk Island Pine Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Norfolk Island Pine Tree", "HB": "Araucaria heterophylla, (Salisb.) Franco", "HC": 12, "gallery": [{"IN": "Norfolk Island Pine Tree - Cone Tender.jpg", "IC": "Cone Tender"}, {"IN": "Norfolk Island Pine Tree - Cone.jpg", "IC": "Cone"}, {"IN": "Norfolk Island Pine Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Norfolk Island Pine Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Norfolk Island Pine Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Norfolk Island Pine Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Norfolk Island Pine Tree - 0000.jpg", "IC": "0000"}, {"IN": "Norfolk Island Pine Tree - 0001.jpg", "IC": "0001"}, {"IN": "Norfolk Island Pine Tree - 0002.jpg", "IC": "0002"}, {"IN": "Norfolk Island Pine Tree - 0003.jpg", "IC": "0003"}, {"IN": "Norfolk Island Pine Tree - 0004.jpg", "IC": "0004"}, {"IN": "Norfolk Island Pine Tree - 0005.jpg", "IC": "0005"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Norfolk Island Pine Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Araucariaceae"}, {"N": "Genus", "V": "Araucaria"}, {"N": "Species", "V": "heterophylla"}, {"N": "Authority", "V": "(Salisb.) Franco"}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Pine"}, {"N": "Native", "V": "Norfolk Island"}, {"N": "Size", "V": "Large"}, {"N": "Height", "V": "60m"}], "CI": "Norfolk Island Pine Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Araucaria_heterophylla\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?312563\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-14360\">theplantlist</a>"}, {"N": "Description", "V": "The trees grow to a height of 50\u201365 m, with straight vertical trunks and symmetrical branches, even in the face of incessant onshore winds that can contort most other species.  The leaves are awl-shaped, 1-1.5 cm long, about 1 mm thick at the base on young trees, and incurved, 5\u201310 mm long and variably 2\u20134 mm broad on older trees. The thickest, scale-like leaves on coning branches are in the upper crown. The cones are squat globose, 10\u201312 cm long and 12\u201314 cm diameter, and take about 18 months to mature. They disintegrate at maturity to release the nut-like edible seeds."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "brown"}], "CI": "Norfolk Island Pine Tree - Bark.jpg"}, {"CN": "Cones", "CV": [{"N": "Color", "V": "green"}, {"N": "Season", "V": "Nov-Dec"}], "CI": "Norfolk Island Pine Tree - Cone.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "needle"}], "CI": "Norfolk Island Pine Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.9504551159", "long": "77.5847101427"}, {"lat": "12.9505034266", "long": "77.5873109197"}, {"lat": "12.9517931335", "long": "77.5845253499"}, {"lat": "12.94489196", "long": "77.58404983"}, {"lat": "12.990724714847273", "long": "77.66123619591082"}]};
       tree_module_init(data);
   </script>
 </body>

@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Kharoub Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Kharoub Tree", "HB": "Bauhinia rufescens, Lam.", "HC": 26, "gallery": [{"IN": "Kharoub Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Kharoub Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Kharoub Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Kharoub Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Kharoub Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Kharoub Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Kharoub Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Kharoub Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Kharoub Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Kharoub Tree - 0000.jpg", "IC": "0000"}, {"IN": "Kharoub Tree - 0001.jpg", "IC": "0001"}, {"IN": "Kharoub Tree - 0002.jpg", "IC": "0002"}, {"IN": "Kharoub Tree - 0003.jpg", "IC": "0003"}, {"IN": "Kharoub Tree - 0004.jpg", "IC": "0004"}, {"IN": "Kharoub Tree - 0005.jpg", "IC": "0005"}, {"IN": "Kharoub Tree - 0006.jpg", "IC": "0006"}, {"IN": "Kharoub Tree - 0007.jpg", "IC": "0007"}, {"IN": "Kharoub Tree - 0008.jpg", "IC": "0008"}, {"IN": "Kharoub Tree - 0009.jpg", "IC": "0009"}, {"IN": "Kharoub Tree - 0010.jpg", "IC": "0010"}, {"IN": "Kharoub Tree - 0011.jpg", "IC": "0011"}, {"IN": "Kharoub Tree - 0012.jpg", "IC": "0012"}, {"IN": "Kharoub Tree - 0013.jpg", "IC": "0013"}, {"IN": "Kharoub Tree - 0014.jpg", "IC": "0014"}, {"IN": "Kharoub Tree - 0015.jpg", "IC": "0015"}, {"IN": "Kharoub Tree - 0016.jpg", "IC": "0016"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Kharoub Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Fabaceae"}, {"N": "Sub Family", "V": "Caesalpinioideae"}, {"N": "Genus", "V": "Bauhinia"}, {"N": "Species", "V": "rufescens"}, {"N": "Authority", "V": "Lam."}, {"N": "Grow Type", "V": "Nearly Evergreen"}, {"N": "Common Family", "V": "Gulmohar"}, {"N": "Native", "V": "Sudan"}, {"N": "Size", "V": "Medium"}], "CI": "Kharoub Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Bauhinia_rufescens\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?405916\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/ild-826\">theplantlist</a>"}, {"N": "Description", "V": "Bauhinia rufescens is a shrub or small tree usually 1-3 m high, sometimes reaching 8 m; bark ash-grey, smooth, very fibrous and scaly when old; slash pink; twigs arranged in 1 plane like a fishbone, with thornlike, lignified, lateral shoots, 10 cm long. Leaves very small, bilobate almost to the base, with semi-circular lobes, glabrous, with long petioles, greyish-green, less than 3 cm long. Flowers greenish-yellow to white and pale pink, in few-flowered racemes; petals 5, spathulate, 15-20 mm long; stamens 10, filaments hairy at the base. Fruits aggregated, long, narrow pods, twisted, up to 10 cm long, glabrous, obliquely constricted, shining dark red-brown, with 4-10 seeds each. Pods remain on the shrub for a long time. The generic name commemorates Swiss botanists Jean (1541-1613) and Gaspard (1560-1624) Bauhin. The 2 lobes of the leaf exemplify the 2 brothers; \u2018rufescens\u2019 means \u2018becoming reddish\u2019."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "grey"}], "CI": "Kharoub Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "white"}, {"N": "Season", "V": "May"}], "CI": "Kharoub Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "Pod"}, {"N": "Color", "V": "green to brown"}], "CI": "Kharoub Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "2 lobed"}], "CI": "Kharoub Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Kharoub Tree", "HB": "Bauhinia rufescens, Lam.", "HC": 26, "gallery": [{"IN": "Kharoub Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Kharoub Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Kharoub Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Kharoub Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Kharoub Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Kharoub Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Kharoub Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Kharoub Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Kharoub Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Kharoub Tree - 0000.jpg", "IC": "0000"}, {"IN": "Kharoub Tree - 0001.jpg", "IC": "0001"}, {"IN": "Kharoub Tree - 0002.jpg", "IC": "0002"}, {"IN": "Kharoub Tree - 0003.jpg", "IC": "0003"}, {"IN": "Kharoub Tree - 0004.jpg", "IC": "0004"}, {"IN": "Kharoub Tree - 0005.jpg", "IC": "0005"}, {"IN": "Kharoub Tree - 0006.jpg", "IC": "0006"}, {"IN": "Kharoub Tree - 0007.jpg", "IC": "0007"}, {"IN": "Kharoub Tree - 0008.jpg", "IC": "0008"}, {"IN": "Kharoub Tree - 0009.jpg", "IC": "0009"}, {"IN": "Kharoub Tree - 0010.jpg", "IC": "0010"}, {"IN": "Kharoub Tree - 0011.jpg", "IC": "0011"}, {"IN": "Kharoub Tree - 0012.jpg", "IC": "0012"}, {"IN": "Kharoub Tree - 0013.jpg", "IC": "0013"}, {"IN": "Kharoub Tree - 0014.jpg", "IC": "0014"}, {"IN": "Kharoub Tree - 0015.jpg", "IC": "0015"}, {"IN": "Kharoub Tree - 0016.jpg", "IC": "0016"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Kharoub Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Fabaceae"}, {"N": "Sub Family", "V": "Caesalpinioideae"}, {"N": "Genus", "V": "Bauhinia"}, {"N": "Species", "V": "rufescens"}, {"N": "Authority", "V": "Lam."}, {"N": "Grow Type", "V": "Nearly Evergreen"}, {"N": "Common Family", "V": "Gulmohar"}, {"N": "Native", "V": "Sudan"}, {"N": "Size", "V": "Medium"}], "CI": "Kharoub Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Bauhinia_rufescens\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?405916\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/ild-826\">theplantlist</a>"}, {"N": "Description", "V": "Bauhinia rufescens is a shrub or small tree usually 1-3 m high, sometimes reaching 8 m; bark ash-grey, smooth, very fibrous and scaly when old; slash pink; twigs arranged in 1 plane like a fishbone, with thornlike, lignified, lateral shoots, 10 cm long. Leaves very small, bilobate almost to the base, with semi-circular lobes, glabrous, with long petioles, greyish-green, less than 3 cm long. Flowers greenish-yellow to white and pale pink, in few-flowered racemes; petals 5, spathulate, 15-20 mm long; stamens 10, filaments hairy at the base. Fruits aggregated, long, narrow pods, twisted, up to 10 cm long, glabrous, obliquely constricted, shining dark red-brown, with 4-10 seeds each. Pods remain on the shrub for a long time. The generic name commemorates Swiss botanists Jean (1541-1613) and Gaspard (1560-1624) Bauhin. The 2 lobes of the leaf exemplify the 2 brothers; \u2018rufescens\u2019 means \u2018becoming reddish\u2019."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "grey"}], "CI": "Kharoub Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "white"}, {"N": "Season", "V": "May"}], "CI": "Kharoub Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "Pod"}, {"N": "Color", "V": "green to brown"}], "CI": "Kharoub Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "2 lobed"}], "CI": "Kharoub Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.95109755", "long": "77.58679835"}]};
       tree_module_init(data);
   </script>
 </body>

@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Dye Fig Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Dye Fig Tree", "HB": "Ficus tinctoria, G.Forst.", "HC": 24, "gallery": [{"IN": "Dye Fig Tree - Fig Tender.jpg", "IC": "Fig Tender"}, {"IN": "Dye Fig Tree - Fig.jpg", "IC": "Fig"}, {"IN": "Dye Fig Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Dye Fig Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Dye Fig Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Dye Fig Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Dye Fig Tree - Aerial Root.jpg", "IC": "Aerial Root"}, {"IN": "Dye Fig Tree - 0000.jpg", "IC": "0000"}, {"IN": "Dye Fig Tree - 0001.jpg", "IC": "0001"}, {"IN": "Dye Fig Tree - 0002.jpg", "IC": "0002"}, {"IN": "Dye Fig Tree - 0003.jpg", "IC": "0003"}, {"IN": "Dye Fig Tree - 0004.jpg", "IC": "0004"}, {"IN": "Dye Fig Tree - 0005.jpg", "IC": "0005"}, {"IN": "Dye Fig Tree - 0006.jpg", "IC": "0006"}, {"IN": "Dye Fig Tree - 0007.jpg", "IC": "0007"}, {"IN": "Dye Fig Tree - 0008.jpg", "IC": "0008"}, {"IN": "Dye Fig Tree - 0009.jpg", "IC": "0009"}, {"IN": "Dye Fig Tree - 0010.jpg", "IC": "0010"}, {"IN": "Dye Fig Tree - 0011.jpg", "IC": "0011"}, {"IN": "Dye Fig Tree - 0012.jpg", "IC": "0012"}, {"IN": "Dye Fig Tree - 0013.jpg", "IC": "0013"}, {"IN": "Dye Fig Tree - 0014.jpg", "IC": "0014"}, {"IN": "Dye Fig Tree - 0015.jpg", "IC": "0015"}, {"IN": "Dye Fig Tree - 0016.jpg", "IC": "0016"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Dye Fig Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Moraceae"}, {"N": "Genus", "V": "Ficus"}, {"N": "Species", "V": "tinctoria"}, {"N": "Authority", "V": "G.Forst."}, {"N": "Grow Type", "V": "Nearly Evergreen"}, {"N": "Common Family", "V": "Mulberry"}, {"N": "Common Sub Family", "V": "Fig"}, {"N": "Native", "V": "Java"}, {"N": "Size", "V": "Large"}, {"N": "Height", "V": "25 m"}, {"N": "Roots Aerial", "V": "absent or thin, not prominent"}], "CI": "Dye Fig Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Dye Fig, Humped Fig"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Ficus_tinctoria\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Dye%20Fig.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?17007\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2812573\">theplantlist</a>"}, {"N": "Description", "V": "Dye Fig is a climbing strangler, forming a tree with prop-roots, to 25m. Alternately arrange leaves, to 18x9 cm, are oval, glossy dark green above, pale green below, and have rounded tip and base. Leaves are often asymmetrial. Stalks are thick, to 1.5 cm. Fruit is a fig, appearing in leaf axils, usually paired, round, to 1.5 cm, ripening through orange to red or purple. The fruit of dye fig are the source of a red dye used in traditional fabric making in parts of Indonesia."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "Grey"}, {"N": "Texture", "V": "not rough"}, {"N": "Info", "V": "Exudes milk when cut"}], "CI": "Dye Fig Tree - Bark.jpg"}, {"CN": "Figs", "CV": [{"N": "Shape", "V": "Round"}, {"N": "Color", "V": "Red or Purple"}, {"N": "Season", "V": "Jan-Mar"}], "CI": "Dye Fig Tree - Fig.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "ovate"}, {"N": "Size", "V": "20 cm"}, {"N": "Texture", "V": "Leathery"}], "CI": "Dye Fig Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Dye Fig Tree", "HB": "Ficus tinctoria, G.Forst.", "HC": 24, "gallery": [{"IN": "Dye Fig Tree - Fig Tender.jpg", "IC": "Fig Tender"}, {"IN": "Dye Fig Tree - Fig.jpg", "IC": "Fig"}, {"IN": "Dye Fig Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Dye Fig Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Dye Fig Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Dye Fig Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Dye Fig Tree - Aerial Root.jpg", "IC": "Aerial Root"}, {"IN": "Dye Fig Tree - 0000.jpg", "IC": "0000"}, {"IN": "Dye Fig Tree - 0001.jpg", "IC": "0001"}, {"IN": "Dye Fig Tree - 0002.jpg", "IC": "0002"}, {"IN": "Dye Fig Tree - 0003.jpg", "IC": "0003"}, {"IN": "Dye Fig Tree - 0004.jpg", "IC": "0004"}, {"IN": "Dye Fig Tree - 0005.jpg", "IC": "0005"}, {"IN": "Dye Fig Tree - 0006.jpg", "IC": "0006"}, {"IN": "Dye Fig Tree - 0007.jpg", "IC": "0007"}, {"IN": "Dye Fig Tree - 0008.jpg", "IC": "0008"}, {"IN": "Dye Fig Tree - 0009.jpg", "IC": "0009"}, {"IN": "Dye Fig Tree - 0010.jpg", "IC": "0010"}, {"IN": "Dye Fig Tree - 0011.jpg", "IC": "0011"}, {"IN": "Dye Fig Tree - 0012.jpg", "IC": "0012"}, {"IN": "Dye Fig Tree - 0013.jpg", "IC": "0013"}, {"IN": "Dye Fig Tree - 0014.jpg", "IC": "0014"}, {"IN": "Dye Fig Tree - 0015.jpg", "IC": "0015"}, {"IN": "Dye Fig Tree - 0016.jpg", "IC": "0016"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Dye Fig Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Moraceae"}, {"N": "Genus", "V": "Ficus"}, {"N": "Species", "V": "tinctoria"}, {"N": "Authority", "V": "G.Forst."}, {"N": "Grow Type", "V": "Nearly Evergreen"}, {"N": "Common Family", "V": "Mulberry"}, {"N": "Common Sub Family", "V": "Fig"}, {"N": "Native", "V": "Java"}, {"N": "Size", "V": "Large"}, {"N": "Height", "V": "25 m"}, {"N": "Roots Aerial", "V": "absent or thin, not prominent"}], "CI": "Dye Fig Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Language Common", "V": "Dye Fig, Humped Fig"}, {"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Ficus_tinctoria\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Dye%20Fig.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?17007\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2812573\">theplantlist</a>"}, {"N": "Description", "V": "Dye Fig is a climbing strangler, forming a tree with prop-roots, to 25m. Alternately arrange leaves, to 18x9 cm, are oval, glossy dark green above, pale green below, and have rounded tip and base. Leaves are often asymmetrial. Stalks are thick, to 1.5 cm. Fruit is a fig, appearing in leaf axils, usually paired, round, to 1.5 cm, ripening through orange to red or purple. The fruit of dye fig are the source of a red dye used in traditional fabric making in parts of Indonesia."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "Grey"}, {"N": "Texture", "V": "not rough"}, {"N": "Info", "V": "Exudes milk when cut"}], "CI": "Dye Fig Tree - Bark.jpg"}, {"CN": "Figs", "CV": [{"N": "Shape", "V": "Round"}, {"N": "Color", "V": "Red or Purple"}, {"N": "Season", "V": "Jan-Mar"}], "CI": "Dye Fig Tree - Fig.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "ovate"}, {"N": "Size", "V": "20 cm"}, {"N": "Texture", "V": "Leathery"}], "CI": "Dye Fig Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.95122342", "long": "77.58368985"}, {"lat": "12.9530163993", "long": "77.5845756962"}, {"lat": "12.9787582386", "long": "77.5955052595"}, {"lat": "12.9731699742", "long": "77.6007959059"}, {"lat": "12.976328446", "long": "77.5908702207"}, {"lat": "12.977280276951994", "long": "77.64575625757345"}]};
       tree_module_init(data);
   </script>
 </body>

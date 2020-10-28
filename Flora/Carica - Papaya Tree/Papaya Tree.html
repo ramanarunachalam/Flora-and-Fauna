@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Papaya Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Papaya Tree", "HB": "Carica papaya, L.", "HC": 22, "gallery": [{"IN": "Papaya Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Papaya Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Papaya Tree - Flower Male.jpg", "IC": "Flower Male"}, {"IN": "Papaya Tree - Flower Falling.jpg", "IC": "Flower Falling"}, {"IN": "Papaya Tree - Fruit New.jpg", "IC": "Fruit New"}, {"IN": "Papaya Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Papaya Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Papaya Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Papaya Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Papaya Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Papaya Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Papaya Tree - 0000.jpg", "IC": "0000"}, {"IN": "Papaya Tree - 0001.jpg", "IC": "0001"}, {"IN": "Papaya Tree - 0002.jpg", "IC": "0002"}, {"IN": "Papaya Tree - 0003.jpg", "IC": "0003"}, {"IN": "Papaya Tree - 0004.jpg", "IC": "0004"}, {"IN": "Papaya Tree - 0005.jpg", "IC": "0005"}, {"IN": "Papaya Tree - 0006.jpg", "IC": "0006"}, {"IN": "Papaya Tree - 0007.jpg", "IC": "0007"}, {"IN": "Papaya Tree - 0008.jpg", "IC": "0008"}, {"IN": "Papaya Tree - 0009.jpg", "IC": "0009"}, {"IN": "Papaya Tree - 0010.jpg", "IC": "0010"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Papaya Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Caricaceae"}, {"N": "Genus", "V": "Carica"}, {"N": "Species", "V": "Papaya"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Nearly Evergreen"}, {"N": "Common Family", "V": "Fig"}, {"N": "Native", "V": "Tropical America"}, {"N": "Size", "V": "Small"}, {"N": "Height", "V": "5-10m"}], "CI": "Papaya Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Carica_papaya\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Papaya.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?9147\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2700919\">theplantlist</a>"}, {"N": "Description", "V": "The papaya plant has an erect branchless trunk 6-20 ft tall, and a palmlike head of foliage at the top. The trunk remains somewhat succulent and soft wooded, and never develops true bark. It is ringed with prominent scars from previous leaf stems and contains an acrid milky latex sap. The leaves are deeply incised and lobed, up to 24 in across and borne on 24 in petioles. The five-petal flowers are fleshy, waxy and fragrant. Some papaya bear only short stalked female flower or bisexual flowers, while others may bear only male flowers, clustered on panicles 5-6 feet long. Some papaya may have both male and female flowers. The flower of papaya are usually white and small. Pollination of papaya are done by wind and sometimes by hand when necessary to get a proper fruit. The smooth-skinned fruits are green, yellow, orange or rose colored, and typically weigh about 0.5 kg. They hang on short stalks in clusters directly from the trunk beneath the umbrella of giant leaves. Papayas flower and fruit simultaneously throughout the year."}, {"N": "Where", "V": "Everywhere, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "greenish"}, {"N": "Info", "V": "acrid milky latex"}], "CI": "Papaya Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "White"}, {"N": "Info", "V": "Fragrant, 5 petals"}, {"N": "Season", "V": "Mar-Dec"}], "CI": "Papaya Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Color", "V": "green turning yellow"}], "CI": "Papaya Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "Palmately lobed"}, {"N": "Leaflet Numbers", "V": "7"}], "CI": "Papaya Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Papaya Tree", "HB": "Carica papaya, L.", "HC": 22, "gallery": [{"IN": "Papaya Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Papaya Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Papaya Tree - Flower Male.jpg", "IC": "Flower Male"}, {"IN": "Papaya Tree - Flower Falling.jpg", "IC": "Flower Falling"}, {"IN": "Papaya Tree - Fruit New.jpg", "IC": "Fruit New"}, {"IN": "Papaya Tree - Fruit Tender.jpg", "IC": "Fruit Tender"}, {"IN": "Papaya Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Papaya Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Papaya Tree - Leaf Tender.jpg", "IC": "Leaf Tender"}, {"IN": "Papaya Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Papaya Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Papaya Tree - 0000.jpg", "IC": "0000"}, {"IN": "Papaya Tree - 0001.jpg", "IC": "0001"}, {"IN": "Papaya Tree - 0002.jpg", "IC": "0002"}, {"IN": "Papaya Tree - 0003.jpg", "IC": "0003"}, {"IN": "Papaya Tree - 0004.jpg", "IC": "0004"}, {"IN": "Papaya Tree - 0005.jpg", "IC": "0005"}, {"IN": "Papaya Tree - 0006.jpg", "IC": "0006"}, {"IN": "Papaya Tree - 0007.jpg", "IC": "0007"}, {"IN": "Papaya Tree - 0008.jpg", "IC": "0008"}, {"IN": "Papaya Tree - 0009.jpg", "IC": "0009"}, {"IN": "Papaya Tree - 0010.jpg", "IC": "0010"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Papaya Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Caricaceae"}, {"N": "Genus", "V": "Carica"}, {"N": "Species", "V": "Papaya"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Nearly Evergreen"}, {"N": "Common Family", "V": "Fig"}, {"N": "Native", "V": "Tropical America"}, {"N": "Size", "V": "Small"}, {"N": "Height", "V": "5-10m"}], "CI": "Papaya Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": "<a href=\"http://en.wikipedia.org/wiki/Carica_papaya\">wikipedia</a>"}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Papaya.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?9147\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/kew-2700919\">theplantlist</a>"}, {"N": "Description", "V": "The papaya plant has an erect branchless trunk 6-20 ft tall, and a palmlike head of foliage at the top. The trunk remains somewhat succulent and soft wooded, and never develops true bark. It is ringed with prominent scars from previous leaf stems and contains an acrid milky latex sap. The leaves are deeply incised and lobed, up to 24 in across and borne on 24 in petioles. The five-petal flowers are fleshy, waxy and fragrant. Some papaya bear only short stalked female flower or bisexual flowers, while others may bear only male flowers, clustered on panicles 5-6 feet long. Some papaya may have both male and female flowers. The flower of papaya are usually white and small. Pollination of papaya are done by wind and sometimes by hand when necessary to get a proper fruit. The smooth-skinned fruits are green, yellow, orange or rose colored, and typically weigh about 0.5 kg. They hang on short stalks in clusters directly from the trunk beneath the umbrella of giant leaves. Papayas flower and fruit simultaneously throughout the year."}, {"N": "Where", "V": "Everywhere, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "greenish"}, {"N": "Info", "V": "acrid milky latex"}], "CI": "Papaya Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "White"}, {"N": "Info", "V": "Fragrant, 5 petals"}, {"N": "Season", "V": "Mar-Dec"}], "CI": "Papaya Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Color", "V": "green turning yellow"}], "CI": "Papaya Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "Palmately lobed"}, {"N": "Leaflet Numbers", "V": "7"}], "CI": "Papaya Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.97004035", "long": "77.65041668"}, {"lat": "12.9700856748", "long": "77.6314903844"}, {"lat": "12.9697100242", "long": "77.627655108"}, {"lat": "12.9696882171", "long": "77.6276784611"}, {"lat": "12.97725003", "long": "77.59987944"}, {"lat": "12.9361170402", "long": "77.6185150876"}, {"lat": "12.9919941018", "long": "77.5721482037"}, {"lat": "12.9817277283", "long": "77.6408797419"}, {"lat": "12.9799569312", "long": "77.6412187"}, {"lat": "12.9719297546", "long": "77.6250613089"}, {"lat": "12.9713188275", "long": "77.627115703"}, {"lat": "12.969022564551794", "long": "77.62849971943285"}, {"lat": "12.969711880691426", "long": "77.62856526501145"}, {"lat": "12.968520379545007", "long": "77.64000173913138"}, {"lat": "12.971860882906382", "long": "77.6432722020956"}, {"lat": "12.97767445353479", "long": "77.63913396493547"}, {"lat": "12.966956945893488", "long": "77.63814172337828"}, {"lat": "12.972081556742852", "long": "77.63238520926222"}, {"lat": "12.980151371702494", "long": "77.6280468907355"}, {"lat": "12.981541426946706", "long": "77.62801946252046"}, {"lat": "12.964671507550865", "long": "77.63495754554816"}, {"lat": "12.965859505820326", "long": "77.6361043207259"}, {"lat": "12.96587393173327", "long": "77.6360837247721"}]};
       tree_module_init(data);
   </script>
 </body>

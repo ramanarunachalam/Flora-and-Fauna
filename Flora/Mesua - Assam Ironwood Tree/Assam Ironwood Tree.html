@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Assam Ironwood Tree</title>
 </head>
@@ -30,11 +33,32 @@
     </div>
   </div>
 
+  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 id="MAP_MODEL_LABEL">Map</h3>
+        </div>
+        <div class="modal-body">
+          <div id="MAP_MODAL_IMAGE">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
-    <h2><a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a></h2>
+    <h2>
+      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
+      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+    </h2>
     <br/>
-    <div class="card">
+    <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
         <h4 class="CARD_HEADER">Picture Gallery ({{HC}})</h4>
       </div>
@@ -85,9 +109,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" ></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Assam Ironwood Tree", "HB": "Mesua ferrea, L.", "HC": 19, "gallery": [{"IN": "Assam Ironwood Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Assam Ironwood Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Assam Ironwood Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Assam Ironwood Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Assam Ironwood Tree - Leaf Tender 1.jpg", "IC": "Leaf Tender 1"}, {"IN": "Assam Ironwood Tree - Leaf Tender 2.jpg", "IC": "Leaf Tender 2"}, {"IN": "Assam Ironwood Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Assam Ironwood Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Assam Ironwood Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Assam Ironwood Tree - 0000.jpg", "IC": "0000"}, {"IN": "Assam Ironwood Tree - 0001.jpg", "IC": "0001"}, {"IN": "Assam Ironwood Tree - 0002.jpg", "IC": "0002"}, {"IN": "Assam Ironwood Tree - 0003.jpg", "IC": "0003"}, {"IN": "Assam Ironwood Tree - 0004.jpg", "IC": "0004"}, {"IN": "Assam Ironwood Tree - 0005.jpg", "IC": "0005"}, {"IN": "Assam Ironwood Tree - 0006.jpg", "IC": "0006"}, {"IN": "Assam Ironwood Tree - 0007.jpg", "IC": "0007"}, {"IN": "Assam Ironwood Tree - 0008.jpg", "IC": "0008"}, {"IN": "Assam Ironwood Tree - 0009.jpg", "IC": "0009"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Ceylon Ironwood Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Calophyllaceae"}, {"N": "Genus", "V": "Mesua"}, {"N": "Species", "V": "ferrea"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Garcinia"}, {"N": "Native", "V": "Sri Lanka"}, {"N": "State Tree", "V": "Mizoram"}, {"N": "Size", "V": "Small"}], "CI": "Assam Ironwood Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": ""}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Nag%20Kesar.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?24194\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/tro-7801420\">theplantlist</a>"}, {"N": "Description", "V": "A handsome Indian evergreen tree often planted as an ornamental for its fragrant white flowers that yield a perfume; source of very heavy hardwood used for railroad ties. In olden time, the very hard timber was used for making lances. It is a small to medium-sized evergreen tree up to 13 m tall, often buttressed at the base with a trunk up to 90 cm in diameter. It has simple, narrow, oblong, dark green leaves 7-15 cm long, with a whitish underside; the emerging young leaves are red to yellowish pink and drooping. The flowers are 4-7.5 cm diameter, with four white petals and a centre of numerous yellow stamens. The flowers have many uses - they are used to make an incense and also used to stuff pillows in some countries. It is the National tree of Sri Lanka."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "grey"}], "CI": "Assam Ironwood Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "white"}], "CI": "Assam Ironwood Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round"}, {"N": "Color", "V": "green"}], "CI": "Assam Ironwood Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "oval"}], "CI": "Assam Ironwood Tree - Leaf.jpg"}]};
+      var data = {"galleryinfo": {"HN": "Assam Ironwood Tree", "HB": "Mesua ferrea, L.", "HC": 19, "gallery": [{"IN": "Assam Ironwood Tree - Flower Bud.jpg", "IC": "Flower Bud"}, {"IN": "Assam Ironwood Tree - Flower.jpg", "IC": "Flower"}, {"IN": "Assam Ironwood Tree - Fruit.jpg", "IC": "Fruit"}, {"IN": "Assam Ironwood Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Assam Ironwood Tree - Leaf Tender 1.jpg", "IC": "Leaf Tender 1"}, {"IN": "Assam Ironwood Tree - Leaf Tender 2.jpg", "IC": "Leaf Tender 2"}, {"IN": "Assam Ironwood Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Assam Ironwood Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Assam Ironwood Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Assam Ironwood Tree - 0000.jpg", "IC": "0000"}, {"IN": "Assam Ironwood Tree - 0001.jpg", "IC": "0001"}, {"IN": "Assam Ironwood Tree - 0002.jpg", "IC": "0002"}, {"IN": "Assam Ironwood Tree - 0003.jpg", "IC": "0003"}, {"IN": "Assam Ironwood Tree - 0004.jpg", "IC": "0004"}, {"IN": "Assam Ironwood Tree - 0005.jpg", "IC": "0005"}, {"IN": "Assam Ironwood Tree - 0006.jpg", "IC": "0006"}, {"IN": "Assam Ironwood Tree - 0007.jpg", "IC": "0007"}, {"IN": "Assam Ironwood Tree - 0008.jpg", "IC": "0008"}, {"IN": "Assam Ironwood Tree - 0009.jpg", "IC": "0009"}]}, "cardinfo": [{"CN": "Canopy", "CV": [{"N": "Name", "V": "Ceylon Ironwood Tree"}, {"N": "Type", "V": "Tree"}, {"N": "Family", "V": "Calophyllaceae"}, {"N": "Genus", "V": "Mesua"}, {"N": "Species", "V": "ferrea"}, {"N": "Authority", "V": "L."}, {"N": "Grow Type", "V": "Evergreen"}, {"N": "Common Family", "V": "Garcinia"}, {"N": "Native", "V": "Sri Lanka"}, {"N": "State Tree", "V": "Mizoram"}, {"N": "Size", "V": "Small"}], "CI": "Assam Ironwood Tree - Canopy.jpg"}, {"CN": "Reference", "CV": [{"N": "Wiki", "V": ""}, {"N": "Links", "V": "<a href=\"http://www.flowersofindia.net/catalog/slides/Nag%20Kesar.html\">flowersofindia</a><br>\n<a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?24194\">ars-grin</a><br>\n<a href=\"http://www.theplantlist.org/tpl/record/tro-7801420\">theplantlist</a>"}, {"N": "Description", "V": "A handsome Indian evergreen tree often planted as an ornamental for its fragrant white flowers that yield a perfume; source of very heavy hardwood used for railroad ties. In olden time, the very hard timber was used for making lances. It is a small to medium-sized evergreen tree up to 13 m tall, often buttressed at the base with a trunk up to 90 cm in diameter. It has simple, narrow, oblong, dark green leaves 7-15 cm long, with a whitish underside; the emerging young leaves are red to yellowish pink and drooping. The flowers are 4-7.5 cm diameter, with four white petals and a centre of numerous yellow stamens. The flowers have many uses - they are used to make an incense and also used to stuff pillows in some countries. It is the National tree of Sri Lanka."}, {"N": "Where", "V": "Lalbagh, Bangalore<br>"}]}, {"CN": "Bark", "CV": [{"N": "Color", "V": "grey"}], "CI": "Assam Ironwood Tree - Bark.jpg"}, {"CN": "Flowers", "CV": [{"N": "Color", "V": "white"}], "CI": "Assam Ironwood Tree - Flower.jpg"}, {"CN": "Fruits", "CV": [{"N": "Shape", "V": "round"}, {"N": "Color", "V": "green"}], "CI": "Assam Ironwood Tree - Fruit.jpg"}, {"CN": "Leaves", "CV": [{"N": "Type", "V": "oval"}], "CI": "Assam Ironwood Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.9487730736", "long": "77.5842184363"}, {"lat": "12.95021072", "long": "77.58587216"}]};
       tree_module_init(data);
   </script>
 </body>
