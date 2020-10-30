@@ -143,6 +143,10 @@ a {
   text-align: center;
 }
 
+#MAPINFO {
+    width: 680px;
+    height: 680px;
+}
 
 .modal-content {
     width: 680px;

@@ -14,6 +14,7 @@ function tree_nav_init() {
 function tree_module_init(data) {
     render_template_data('#card-info-template', '#CARDINFO', data);
     window.MAP_DATA = data['mapinfo'];
+    window.BOX_DATA = data['mapregion'];
 }
 
 function tree_part_init(data) {
@@ -249,6 +250,7 @@ function tree_search_init() {
     if (search_word != s_search_word) {
         get_search_results(s_search_word, search_options, item_list, id_list);
     }
+    /*
     if (search_word.length > 2) {
         var search_options = { prefix: true, combineWith: 'AND', fuzzy: term => term.length > 3 ? 0.3 : null };
         get_search_results(search_word, search_options, item_list, id_list);
@@ -256,6 +258,7 @@ function tree_search_init() {
             get_search_results(s_search_word, search_options, item_list, id_list);
         }
     }
+    */
     item_list.sort(function (a, b) { return b.P - a.P; });
     var new_item_list = item_list.slice(0, 25);
     var item_data = { "searchinfo" : { "results" : new_item_list } };
@@ -266,20 +269,80 @@ function tree_search_init() {
 function show_latlong_in_osm(name) {
     var url = 'http://wikipedia.org';
     var markers = window.MAP_DATA;
+    var bbox = window.BOX_DATA;
     var i = 0;
     var id_name = 'MAP_MODAL';
     var id_name = 'PHOTO_GALLERY';
+    var c_lat = (bbox[0][0] + bbox[1][0]) / 2;
+    var c_long = (bbox[0][1] + bbox[1][1]) / 2;
 
-    var map = L.map(id_name, { center: [markers[i].lat, markers[i].long], zoom: 15, minZoom: 4, maxZoom: 19 });
+    var pinIcon = L.icon({
+        iconUrl: '../../icons/marker_tree_green.png',
+        iconSize: [24, 24],
+    });
+
+    var map = L.map(id_name, { center: [c_lat, c_long] });
     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       subdomains: ['a', 'b', 'c']
     }).addTo(map);
     for (var i = 0; i < markers.length; i++) {
         var u = '<a href="' + url + '" target="_blank">' + name + '</a>';
-        L.marker([markers[i].lat, markers[i].long]).bindPopup(u).addTo(map);
+        L.marker([markers[i].lat, markers[i].long], {icon: pinIcon}).bindPopup(u).addTo(map);
     }
+    map.fitBounds(bbox);
 
     var handle_id_name = '#' + id_name;
     /* $(handle_id_name).modal(); */
+}
+
+function show_latlong_map() {
+    var grid_flora = window.GRID_FLORA;
+    var grid_mesh = window.GRID_MESH;
+    var grid_centre = window.GRID_CENTRE;
+    var id_name = 'MAPINFO';
+    var mesh_id = 'MK82TX53';
+
+    var bbox = grid_centre[mesh_id];
+    var c_lat = (bbox[0] + bbox[2]) / 2;
+    var c_long = (bbox[1] + bbox[3]) / 2;
+
+    var pinIcon = L.icon({
+        iconUrl: 'icons/marker_tree_green.png',
+        iconSize: [24, 24],
+    });
+
+    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 4, maxZoom: 21 });
+    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: ['a', 'b', 'c']
+    }).addTo(map);
+
+    var mesh_latlong_dict = grid_flora[mesh_id];
+    for (var key in mesh_latlong_dict) {
+        if (!mesh_latlong_dict.hasOwnProperty(key)) {
+            continue;
+        }
+        var latlong_list = mesh_latlong_dict[key];
+        for (var i = 0; i < latlong_list.length; i++) {
+            var marker = latlong_list[i];
+            var m_lat = parseFloat(marker[0]);
+            var m_long = parseFloat(marker[1]);
+            L.marker([m_lat, m_long], {icon: pinIcon}).addTo(map);
+        }
+    }
+    /*
+    map.fitBounds([ [bbox[0], bbox[1]], [bbox[2], bbox[3]] ]);
+    */
+    map.invalidateSize();
+}
+
+function tree_map_init() {
+    var url = 'grid.json';
+    $.getJSON(url, function(grid_obj) {
+        window.GRID_FLORA = grid_obj['grid flora'];
+        window.GRID_MESH = grid_obj['grid mesh'];
+        window.GRID_CENTRE = grid_obj['grid centre'];
+        show_latlong_map();
+    });
 }
