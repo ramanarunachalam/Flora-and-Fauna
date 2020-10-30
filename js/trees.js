@@ -1,4 +1,8 @@
 
+function set_language(obj) {
+    window.parent.LANG_OPT = obj.value;
+}
+
 function render_template_data(template_name, id_name, data) {
     var ul_template = $(template_name).html();
     var template_html = Mustache.to_html(ul_template, data);
@@ -12,9 +16,28 @@ function tree_nav_init() {
 }
 
 function tree_module_init(data) {
-    render_template_data('#card-info-template', '#CARDINFO', data);
+    window.CARD_DATA = data;
     window.MAP_DATA = data['mapinfo'];
     window.BOX_DATA = data['mapregion'];
+    var url = '../../language.json';
+    $.getJSON(url, function(lang_obj) {
+        var lang = window.parent.LANG_OPT;
+        var lang_map = lang_obj[lang];
+        var key_group = lang_map['Key Group'];
+        var key_part = lang_map['Key Part'];
+        var card_data = window.CARD_DATA;
+        var info_list = card_data['cardinfo']
+        for (var i = 0; i < info_list.length; i++) {
+            var cv_info = info_list[i];
+            cv_info['CN'] = key_group[cv_info['CN']];
+            var cv_list = cv_info['CV'];
+            for (var j = 0; j < cv_list.length; j++) {
+                var cv = cv_list[j];
+                cv['N'] = key_part[cv['N']]; 
+            } 
+        }
+        render_template_data('#card-info-template', '#CARDINFO', card_data);
+    });
 }
 
 function tree_part_init(data) {
@@ -28,6 +51,10 @@ function tree_simple_init(data) {
 var start_tree = 0;
 
 function tree_intro_init(data) {
+    window.parent.LANG_OPT = 'English';
+    window.parent.search_initialized = false;
+    window.onload = tree_info_init;
+
     render_template_data('#carousel-template', '#SLIDERINFO', data);
 
     start_tree = Math.floor((Math.random() * $('.carousel-item').length));
@@ -36,10 +63,7 @@ function tree_intro_init(data) {
     $next = $('img', this).next();
     $next.attr('src', $next.attr('data_src'));
 
-    window.parent.search_initialized = false;
     search_init();
-
-    window.onload = tree_info_init;
 }
 
 function tree_info_init() {
