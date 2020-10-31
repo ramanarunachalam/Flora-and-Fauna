@@ -19,12 +19,23 @@ function tree_nav_init() {
     });
 }
 
-function key_map(d_obj, d_map, d_key) {
+function set_key_map(d_obj, d_map, d_key) {
     var d = d_obj[d_key];
     if (d[0] == 1) {
         d_obj[d_key] = d_map[d[1]];
     } else {
         d_obj[d_key] = d[1];
+    }
+}
+
+function set_key_value_map(d_obj, d_map, lang_map, d_key) {
+    var d = d_obj[d_key];
+    if (d[0] == 1) {
+        var l_name = d_map[d[1]];
+        var l_map = lang_map[l_name];
+        d_obj[d_key] = l_map[d[2]];
+    } else {
+        d_obj[d_key] = d[2];
     }
 }
 
@@ -36,16 +47,18 @@ function tree_module_init(data) {
     $.getJSON(url, function(lang_obj) {
         var lang = window.parent.LANG_OPT;
         var lang_map = lang_obj[lang];
+        var english_lang_map = lang_obj['English'];
+        var english_key_info = english_lang_map['Key Name'];
         var key_group = lang_map['Key Group'];
         var key_part = lang_map['Key Part'];
         var key_image = lang_map['Image'];
         var key_name = lang_map['Name'];
         var card_data = window.CARD_DATA;
         var gallery_info = card_data['galleryinfo']
-        key_map(gallery_info, key_name, 'HN');
+        set_key_map(gallery_info, key_name, 'HN');
         var gallery_list = gallery_info['gallery']
         for (var i = 0; i < gallery_list.length; i++) {
-            key_map(gallery_list[i], key_image, 'IC');
+            set_key_map(gallery_list[i], key_image, 'IC');
         }
         var info_list = card_data['cardinfo']
         for (var i = 0; i < info_list.length; i++) {
@@ -55,6 +68,7 @@ function tree_module_init(data) {
             for (var j = 0; j < cv_list.length; j++) {
                 var cv = cv_list[j];
                 cv['N'] = key_part[cv['N']]; 
+                set_key_value_map(cv, english_key_info, lang_map, 'V');
             } 
         }
         render_template_data('#card-info-template', '#CARDINFO', card_data);
