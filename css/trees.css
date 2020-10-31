@@ -99,6 +99,10 @@ a {
 #introCarousel {
 }
 
+#statsCarousel {
+  z-index: 100;
+}
+
 /*
     Carousel fading Effect
 */
