@@ -54,8 +54,8 @@
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
-      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
-      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+        <mark>{{HN}}</mark> : <em><small>{{HB}}</small></em>
+        <a href="javascript:show_latlong_in_osm('{{HN}}');" ><img class="ICON" src="../../icons/geo-alt.svg"></a>
     </h2>
     <br/>
     <div id="PHOTO_GALLERY" class="card">
@@ -114,7 +114,7 @@
       crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Podocarp Tree", "HB": "Podocarpus taxifolia, H.B. & K.", "HC": 5, "gallery": [{"IN": "Podocarp Tree - Canopy.jpg", "IC": "Canopy"}, {"IN": "Podocarp Tree - Leaf.jpg", "IC": "Leaf"}, {"IN": "Podocarp Tree - Bark.jpg", "IC": "Bark"}, {"IN": "Podocarp Tree - Branch.jpg", "IC": "Branch"}, {"IN": "Podocarp Tree - 0000.jpg", "IC": "0000"}]}, "cardinfo": [{"CN": 0, "CV": [{"N": 23, "V": "Podocarp Tree"}, {"N": 39, "V": "Tree"}, {"N": 9, "V": "Podocarpaceae"}, {"N": 13, "V": "Podocarpus"}, {"N": 31, "V": "taxifolia"}, {"N": 2, "V": "H.B. & K."}, {"N": 14, "V": "Evergreen"}, {"N": 6, "V": "podocarp"}, {"N": 30, "V": "Medium"}], "CI": "Podocarp Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 22, "V": "<a href=\"http://en.wikipedia.org/wiki/Podocarpus_taxifolia\" target=\"_blank\">wikipedia</a>"}, {"N": 41, "V": "Unknown"}, {"N": 43, "V": ["bangalore"]}, {"N": 24, "V": ["India"]}]}, {"CN": 6, "CV": [{"N": 5, "V": "grey"}], "CI": "Podocarp Tree - Bark.jpg"}, {"CN": 4, "CV": [{"N": 5, "V": "unknown"}]}, {"CN": 5, "CV": [{"N": 39, "V": "lance"}], "CI": "Podocarp Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.94935476", "long": "77.58506707"}, {"lat": "12.9493697", "long": "77.58513672"}], "mapregion": [["12.94935476", "77.58506707"], ["12.9493697", "77.58513672"]]};
+      var data = {"galleryinfo": {"HN": [1, 269], "HB": "Podocarpus taxifolia, H.B. & K.", "HC": 5, "gallery": [{"IN": "Podocarp Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Podocarp Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Podocarp Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Podocarp Tree - Branch.jpg", "IC": [1, 4]}, {"IN": "Podocarp Tree - 0000.jpg", "IC": [0, "0000"]}]}, "cardinfo": [{"CN": 0, "CV": [{"N": 23, "V": "Podocarp Tree"}, {"N": 39, "V": "Tree"}, {"N": 9, "V": "Podocarpaceae"}, {"N": 13, "V": "Podocarpus"}, {"N": 31, "V": "taxifolia"}, {"N": 2, "V": "H.B. & K."}, {"N": 14, "V": "Evergreen"}, {"N": 6, "V": "podocarp"}, {"N": 30, "V": "Medium"}], "CI": "Podocarp Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 22, "V": "<a href=\"http://en.wikipedia.org/wiki/Podocarpus_taxifolia\" target=\"_blank\">wikipedia</a>"}, {"N": 41, "V": "Unknown"}, {"N": 43, "V": ["bangalore"]}, {"N": 24, "V": ["India"]}]}, {"CN": 6, "CV": [{"N": 5, "V": "grey"}], "CI": "Podocarp Tree - Bark.jpg"}, {"CN": 4, "CV": [{"N": 5, "V": "unknown"}]}, {"CN": 5, "CV": [{"N": 39, "V": "lance"}], "CI": "Podocarp Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.94935476", "long": "77.58506707"}, {"lat": "12.9493697", "long": "77.58513672"}], "mapregion": [["12.94935476", "77.58506707"], ["12.9493697", "77.58513672"]]};
       tree_module_init(data);
   </script>
 </body>

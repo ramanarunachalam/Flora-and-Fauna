@@ -54,8 +54,8 @@
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
-      <a name="{{HN}} Section">{{HN}}<font color=brown><=></font><i>{{HB}}</i></a>
-      <a href="javascript:show_latlong_in_osm('{{HN}}');" >&nbsp; <img class="ICON" src="../../icons/geo-alt.svg"> </a>
+        <mark>{{HN}}</mark> : <em><small>{{HB}}</small></em>
+        <a href="javascript:show_latlong_in_osm('{{HN}}');" ><img class="ICON" src="../../icons/geo-alt.svg"></a>
     </h2>
     <br/>
     <div id="PHOTO_GALLERY" class="card">
@@ -114,7 +114,7 @@
       crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HN": "Blue Tiger", "HB": "Tirumala septentrionis, Butler", "HC": 4, "gallery": [{"IN": "Blue Tiger - Adult.jpg", "IC": "Adult"}, {"IN": "Blue Tiger - 0000.jpg", "IC": "0000"}, {"IN": "Blue Tiger - 0001.jpg", "IC": "0001"}, {"IN": "Blue Tiger - 0002.jpg", "IC": "0002"}]}, "cardinfo": [{"CN": 0, "CV": [{"N": 23, "V": "Blue Tiger"}, {"N": 39, "V": "Butterfly"}, {"N": 9, "V": "Nymphalidae"}, {"N": 13, "V": "Tirumala"}, {"N": 31, "V": "septentrionis"}, {"N": 2, "V": "Butler"}], "CI": "Blue Tiger - 0000.jpg"}, {"CN": 8, "CV": [{"N": 41, "V": "Closely resembles Tirumala limniace, Cramer, but is always sufficiently distinct to be easily recognized, even on the wing. From T. limniace it differs on the upperside in the ground-colour being darker and the semihyaline markings narrower, more distinct, and of a bluer tint, In the fore wing, in interspace 1 the two streaks are narrower, never coalescent, the upper one forming an oval detached spot; the short streaks above vein 5 are outwardly never truncate, always acute. In the hind wing the two streaks if the discoidal cell united at base are wide apart at their apices, the lower one never formed into a hook. On the underside this species is generally darker, the apex of the fore wing and the whole of the ground-colour of the hind wing not being of the conspicuous golden brown that they are in Tirumala limniace."}, {"N": 22, "V": "<a href=\"http://en.wikipedia.org/wiki/Tirumala_septentrionis\" target=\"_blank\">wikipedia</a>"}, {"N": 24, "V": ["India"]}]}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HN": [0, "Blue Tiger"], "HB": "Tirumala septentrionis, Butler", "HC": 4, "gallery": [{"IN": "Blue Tiger - Adult.jpg", "IC": [0, "Adult"]}, {"IN": "Blue Tiger - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Blue Tiger - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Blue Tiger - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 0, "CV": [{"N": 23, "V": "Blue Tiger"}, {"N": 39, "V": "Butterfly"}, {"N": 9, "V": "Nymphalidae"}, {"N": 13, "V": "Tirumala"}, {"N": 31, "V": "septentrionis"}, {"N": 2, "V": "Butler"}], "CI": "Blue Tiger - 0000.jpg"}, {"CN": 8, "CV": [{"N": 41, "V": "Closely resembles Tirumala limniace, Cramer, but is always sufficiently distinct to be easily recognized, even on the wing. From T. limniace it differs on the upperside in the ground-colour being darker and the semihyaline markings narrower, more distinct, and of a bluer tint, In the fore wing, in interspace 1 the two streaks are narrower, never coalescent, the upper one forming an oval detached spot; the short streaks above vein 5 are outwardly never truncate, always acute. In the hind wing the two streaks if the discoidal cell united at base are wide apart at their apices, the lower one never formed into a hook. On the underside this species is generally darker, the apex of the fore wing and the whole of the ground-colour of the hind wing not being of the conspicuous golden brown that they are in Tirumala limniace."}, {"N": 22, "V": "<a href=\"http://en.wikipedia.org/wiki/Tirumala_septentrionis\" target=\"_blank\">wikipedia</a>"}, {"N": 24, "V": ["India"]}]}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>
