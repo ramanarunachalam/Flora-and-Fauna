@@ -53,8 +53,12 @@ function tree_module_init(data) {
         var key_part = lang_map['Key Part'];
         var key_image = lang_map['Image'];
         var key_name = lang_map['Name'];
+        if (key_name === undefined) {
+            key_name = english_lang_map['Name']; 
+        }
         var card_data = window.CARD_DATA;
         var gallery_info = card_data['galleryinfo']
+        set_key_map(gallery_info, key_group, 'HH');
         set_key_map(gallery_info, key_name, 'HN');
         var gallery_list = gallery_info['gallery']
         for (var i = 0; i < gallery_list.length; i++) {
