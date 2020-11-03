@@ -43,40 +43,39 @@ function tree_module_init(data) {
     window.CARD_DATA = data;
     window.MAP_DATA = data['mapinfo'];
     window.BOX_DATA = data['mapregion'];
-    var url = '../../language.json';
-    $.getJSON(url, function(lang_obj) {
-        var lang = window.parent.LANG_OPT;
-        var lang_map = lang_obj[lang];
-        var english_lang_map = lang_obj['English'];
-        var english_key_info = english_lang_map['Key Name'];
-        var key_group = lang_map['Key Group'];
-        var key_part = lang_map['Key Part'];
-        var key_image = lang_map['Image'];
-        var key_name = lang_map['Name'];
-        if (key_name === undefined) {
-            key_name = english_lang_map['Name']; 
-        }
-        var card_data = window.CARD_DATA;
-        var gallery_info = card_data['galleryinfo']
-        set_key_map(gallery_info, key_group, 'HH');
-        set_key_map(gallery_info, key_name, 'HN');
-        var gallery_list = gallery_info['gallery']
-        for (var i = 0; i < gallery_list.length; i++) {
-            set_key_map(gallery_list[i], key_image, 'IC');
-        }
-        var info_list = card_data['cardinfo']
-        for (var i = 0; i < info_list.length; i++) {
-            var cv_info = info_list[i];
-            cv_info['CN'] = key_group[cv_info['CN']];
-            var cv_list = cv_info['CV'];
-            for (var j = 0; j < cv_list.length; j++) {
-                var cv = cv_list[j];
-                cv['N'] = key_part[cv['N']]; 
-                set_key_value_map(cv, english_key_info, lang_map, 'V');
-            } 
-        }
-        render_template_data('#card-info-template', '#CARDINFO', card_data);
-    });
+
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var english_lang_map = lang_obj['English'];
+    var english_key_info = english_lang_map['Key Name'];
+    var key_group = lang_map['Key Group'];
+    var key_part = lang_map['Key Part'];
+    var key_image = lang_map['Image'];
+    var key_name = lang_map['Name'];
+    if (key_name === undefined) {
+        key_name = english_lang_map['Name']; 
+    }
+    var card_data = window.CARD_DATA;
+    var gallery_info = card_data['galleryinfo']
+    set_key_map(gallery_info, key_group, 'HH');
+    set_key_map(gallery_info, key_name, 'HN');
+    var gallery_list = gallery_info['gallery']
+    for (var i = 0; i < gallery_list.length; i++) {
+        set_key_map(gallery_list[i], key_image, 'IC');
+    }
+    var info_list = card_data['cardinfo']
+    for (var i = 0; i < info_list.length; i++) {
+        var cv_info = info_list[i];
+        cv_info['CN'] = key_group[cv_info['CN']];
+        var cv_list = cv_info['CV'];
+        for (var j = 0; j < cv_list.length; j++) {
+            var cv = cv_list[j];
+            cv['N'] = key_part[cv['N']]; 
+            set_key_value_map(cv, english_key_info, lang_map, 'V');
+        } 
+    }
+    render_template_data('#card-info-template', '#CARDINFO', card_data);
 }
 
 function tree_part_init(data) {
@@ -106,11 +105,11 @@ function tree_intro_init(data) {
 }
 
 function tree_info_init() {
-    /*
-    $('.carousel-item').eq(Math.floor((Math.random() * $('.carousel-item').length))).addClass("active");
-    var $img = $('.active img', this);
-    $img.attr('src', $img.attr('data_src'));
-    */
+    var url = '../language.json';
+    $.getJSON(url, function(lang_obj) {
+        window.parent.LANG_DATA = lang_obj;
+    });
+
     var $img = $('.carousel-item').eq(start_tree);
     $img.addClass("active");
 
@@ -313,15 +312,6 @@ function tree_search_init() {
     if (search_word != s_search_word) {
         get_search_results(s_search_word, search_options, item_list, id_list);
     }
-    /*
-    if (search_word.length > 2) {
-        var search_options = { prefix: true, combineWith: 'AND', fuzzy: term => term.length > 3 ? 0.3 : null };
-        get_search_results(search_word, search_options, item_list, id_list);
-        if (search_word != s_search_word) {
-            get_search_results(s_search_word, search_options, item_list, id_list);
-        }
-    }
-    */
     item_list.sort(function (a, b) { return b.P - a.P; });
     var new_item_list = item_list.slice(0, 25);
     var item_data = { "searchinfo" : { "results" : new_item_list } };
@@ -329,7 +319,28 @@ function tree_search_init() {
     render_template_data('#search-template', '#CARDINFO', item_data);
 }
 
-function show_latlong_in_osm(name) {
+function geo_distance(lat1, lon1, lat2, lon2, unit) {
+    if ((lat1 == lat2) && (lon1 == lon2)) {
+        return 0;
+    }
+    else {
+        var radlat1 = Math.PI * lat1/180;
+        var radlat2 = Math.PI * lat2/180;
+        var theta = lon1-lon2;
+        var radtheta = Math.PI * theta/180;
+        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+        if (dist > 1) {
+            dist = 1;
+        }
+        dist = Math.acos(dist);
+        dist = dist * 180/Math.PI;
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344
+        return dist;
+    }
+}
+
+function show_module_latlong_in_osm(name) {
     var url = 'http://wikipedia.org';
     var markers = window.MAP_DATA;
     var bbox = window.BOX_DATA;
@@ -359,45 +370,56 @@ function show_latlong_in_osm(name) {
     /* $(handle_id_name).modal(); */
 }
 
-function show_latlong_map() {
-    var grid_flora = window.GRID_FLORA;
-    var grid_mesh = window.GRID_MESH;
-    var grid_centre = window.GRID_CENTRE;
+function show_area_latlong_in_osm(c_lat, c_long) {
     var id_name = 'MAPINFO';
-    var mesh_id = 'MK82TX53';
-
-    var bbox = grid_centre[mesh_id];
-    var c_lat = (bbox[0] + bbox[2]) / 2;
-    var c_long = (bbox[1] + bbox[3]) / 2;
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var key_name = lang_obj['ID'];
 
     var pinIcon = L.icon({
         iconUrl: 'icons/marker_tree_green.png',
         iconSize: [24, 24],
     });
 
-    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 4, maxZoom: 21 });
-    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      subdomains: ['a', 'b', 'c']
-    }).addTo(map);
+    if ( window.parent.map_initialized ) {
+        var map = window.parent.MAP;
+        map.setView([c_lat, c_long]);
+    } else {
+        var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 4, maxZoom: 21 });
+        window.parent.MAP = map;
+        L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          subdomains: ['a', 'b', 'c']
+        }).addTo(map);
+    }
+    window.parent.map_initialized = true;
 
-    var mesh_latlong_dict = grid_flora[mesh_id];
-    for (var key in mesh_latlong_dict) {
-        if (!mesh_latlong_dict.hasOwnProperty(key)) {
+    var PARK_DISTANCE_THRESHOLD = 0.3
+    var grid_flora = window.GRID_FLORA;
+    for (var mesh_id in grid_flora) {
+        if (!grid_flora.hasOwnProperty(mesh_id)) {
             continue;
         }
-        var latlong_list = mesh_latlong_dict[key];
-        for (var i = 0; i < latlong_list.length; i++) {
-            var marker = latlong_list[i];
-            var m_lat = parseFloat(marker[0]);
-            var m_long = parseFloat(marker[1]);
-            L.marker([m_lat, m_long], {icon: pinIcon}).addTo(map);
+        var mesh_latlong_dict = grid_flora[mesh_id];
+        for (var tree_id in mesh_latlong_dict) {
+            if (!mesh_latlong_dict.hasOwnProperty(tree_id)) {
+                continue;
+            }
+            var latlong_list = mesh_latlong_dict[tree_id];
+            for (var i = 0; i < latlong_list.length; i++) {
+                var marker = latlong_list[i];
+                var m_lat = parseFloat(marker[0]);
+                var m_long = parseFloat(marker[1]);
+                var distance = geo_distance(c_lat, c_long, m_lat, m_long)
+                if (distance <= PARK_DISTANCE_THRESHOLD) {
+                    var name = key_name[tree_id];
+                    var url = key_name[tree_id];
+                    var u = '<a href="' + url + '" target="_blank">' + name + '</a>';
+                    L.marker([m_lat, m_long], {icon: pinIcon}).bindPopup(u).addTo(map);
+                }
+            }
         }
     }
-    /*
-    map.fitBounds([ [bbox[0], bbox[1]], [bbox[2], bbox[3]] ]);
-    */
-    map.invalidateSize();
 }
 
 function tree_map_init() {
@@ -406,6 +428,18 @@ function tree_map_init() {
         window.GRID_FLORA = grid_obj['grid flora'];
         window.GRID_MESH = grid_obj['grid mesh'];
         window.GRID_CENTRE = grid_obj['grid centre'];
-        show_latlong_map();
+    });
+}
+
+function tree_area_init(item_data) {
+    render_template_data('#sidenav-template', '#NAVINFO', item_data);
+
+    window.parent.map_initialized = false;
+
+    var url = 'grid.json';
+    $.getJSON(url, function(grid_obj) {
+        window.GRID_FLORA = grid_obj['grid flora'];
+        window.GRID_MESH = grid_obj['grid mesh'];
+        window.GRID_CENTRE = grid_obj['grid centre'];
     });
 }

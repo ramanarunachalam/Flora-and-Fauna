@@ -16,8 +16,8 @@
                 </a>
             </div>
 
-            <div class="navbar-nav col-6">
-                <div class="navbar-item">
+            <div class="navbar-nav col-4">
+                <div class="nav-item">
                     <select class="form-control" id="LANG_DATA" onchange="set_language(this)">
                       <option>English</option>
                       <option>Tamil</option>
@@ -38,13 +38,18 @@
                         <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="Search" type="text">
                     </div>
                 </form>
-
-                <a class="nav-item"href="tree_map.html" target="FRAME_CONTENT">
-                  <img class="ICON" src="icons/geo.svg">Maps
-                </a>
             </div>
-    
-            <ul class="navbar-nav col-5">
+
+            <div class="navbar-nav col-7">
+                <div class="nav-item dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Maps<b class="caret"></b></a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="tree_area.html?area=parks" target="FRAME_CONTENT">Parks</a>
+                    <a class="dropdown-item" href="tree_area.html?area=wards" target="FRAME_CONTENT">Wards</a>
+                    <a class="dropdown-item" href="tree_area.html?area=grid" target="FRAME_CONTENT">Grids</a>
+                  </div>
+                </div>
+
                 <div class="nav-item dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Grids<b class="caret"></b></a>
                   <div class="dropdown-menu">
@@ -88,7 +93,7 @@
                     <a class="dropdown-item" href="butterflies_india.html">Butterflies of India</a>
                   </div>
                 </div>
-            </ul>
+            </div>
         </div>  
     
     <section id="CONTENT">  
