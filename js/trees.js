@@ -354,6 +354,8 @@ function show_module_latlong_in_osm(name) {
         iconSize: [24, 24],
     });
 
+    var handle_id_name = '#' + id_name;
+    /* $(handle_id_name).html(''); */
     var map = L.map(id_name, { center: [c_lat, c_long] });
     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -364,8 +366,8 @@ function show_module_latlong_in_osm(name) {
         L.marker([markers[i].lat, markers[i].long], {icon: pinIcon}).bindPopup(u).addTo(map);
     }
     map.fitBounds(bbox);
+    map.invalidateSize();
 
-    var handle_id_name = '#' + id_name;
     /* $(handle_id_name).modal(); */
 }
 
@@ -406,6 +408,17 @@ function show_area_latlong_in_osm(c_lat, c_long) {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           subdomains: ['a', 'b', 'c']
         }).addTo(map);
+
+        if (window.AREA_TYPE == 'grids') {
+            /*
+            map.addEventListener('mousemove', function(ev) {
+               console.log("Coordinates: " + ev.latlng.toString());
+            });
+            */
+            map.on("contextmenu", function (ev) {
+               show_area_latlong_in_osm(ev.latlng.lat, ev.latlng.lng);
+            });
+        }
     }
     window.parent.map_initialized = true;
 
@@ -444,15 +457,6 @@ function show_area_latlong_in_osm(c_lat, c_long) {
     }
 }
 
-function tree_map_init() {
-    var url = 'grid.json';
-    $.getJSON(url, function(grid_obj) {
-        window.GRID_FLORA = grid_obj['grid flora'];
-        window.GRID_MESH = grid_obj['grid mesh'];
-        window.GRID_CENTRE = grid_obj['grid centre'];
-    });
-}
-
 function tree_area_init(item_data) {
     var params = new UrlParameters(window.location.search);
     var area = params.getValue('area');
@@ -466,16 +470,19 @@ function tree_area_init(item_data) {
         var data = item_data['wards'];
         render_template_data('#sidenav-template', '#NAVINFO', data);
         render_template_data('#stats-template', '#STATINFO', data);
-    } else {
-        return;
     }
 
     window.parent.map_initialized = false;
+    DEFAULT_LAT_LONG = [ 12.97729, 77.59973];
 
     var url = 'grid.json';
     $.getJSON(url, function(grid_obj) {
         window.GRID_FLORA = grid_obj['grid flora'];
         window.GRID_MESH = grid_obj['grid mesh'];
         window.GRID_CENTRE = grid_obj['grid centre'];
+
+        if (area == 'grids') {
+            show_area_latlong_in_osm(DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
+        }
     });
 }

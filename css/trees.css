@@ -134,8 +134,8 @@ a {
 }
 
 .carousel-inner {
-  width: 640px;
-  max-height: 480px !important;
+  width: 480px;
+  height: 480px;
 }
 
 /*
