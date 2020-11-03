@@ -371,27 +371,14 @@ function show_module_latlong_in_osm(name) {
     /* $(handle_id_name).modal(); */
 }
 
-function show_area_latlong_in_osm(c_lat, c_long) {
+function show_area_latlong_in_osm(a_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
     var lang_obj = window.parent.LANG_DATA;
     var lang = window.parent.LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
-    var english_lang_map = lang_obj['English'];
-    var english_key_info = english_lang_map['Key Name'];
-    var english_key_part = english_lang_map['Key Part'];
-    var english_key_name = english_lang_map['Name'];
-
-    var genus_key_id = 0; 
-    for (var key_id in english_key_part) {
-        if (!english_key_part.hasOwnProperty(key_id)) {
-            continue;
-        }
-        var name = english_key_part[key_id];
-        if (name == 'Genus' ) {
-            genus_key_id = parseInt(key_id);
-        }
-    }
+    var handle_map = lang_obj['Handle'];
+    var area = window.AREA_TYPE;
 
     var pinIcon = L.icon({
         iconUrl: 'icons/marker_tree_green.png',
@@ -402,29 +389,29 @@ function show_area_latlong_in_osm(c_lat, c_long) {
         var map = window.parent.MAP;
         map.setView([c_lat, c_long]);
     } else {
-        var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 4, maxZoom: 21 });
+        var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 2, maxZoom: 25 });
         window.parent.MAP = map;
         L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           subdomains: ['a', 'b', 'c']
         }).addTo(map);
 
-        if (window.AREA_TYPE == 'grids') {
+        if (area == 'grids') {
             /*
             map.addEventListener('mousemove', function(ev) {
                console.log("Coordinates: " + ev.latlng.toString());
             });
             */
-            map.on("contextmenu", function (ev) {
-               show_area_latlong_in_osm(ev.latlng.lat, ev.latlng.lng);
-            });
         }
+            map.on("contextmenu", function (ev) {
+               show_area_latlong_in_osm(a_id, ev.latlng.lat, ev.latlng.lng);
+            });
     }
     window.parent.map_initialized = true;
 
-    if (window.AREA_TYPE == 'parks') {
+    if (area == 'parks') {
         var DISTANCE_THRESHOLD = 0.3;
-    } else if (window.AREA_TYPE == 'wards') {
+    } else if (area == 'wards') {
         var DISTANCE_THRESHOLD = 1.0;
     } else {
         var DISTANCE_THRESHOLD = 0.2;
@@ -448,12 +435,29 @@ function show_area_latlong_in_osm(c_lat, c_long) {
                 var distance = geo_distance(c_lat, c_long, m_lat, m_long)
                 if (distance <= DISTANCE_THRESHOLD) {
                     var name = key_name[tree_id];
-                    var url = english_key_name[tree_id];
-                    var u = '<a href="' + url + '" target="_blank">' + name + '</a>';
+                    var url = handle_map[tree_id];
+                    var u = '<a href="' + url + '" >' + name + '</a>';
                     L.marker([m_lat, m_long], {icon: pinIcon}).bindPopup(u).addTo(map);
                 }
             }
         }
+    }
+
+    var item_data = window.AREA_DATA;
+    if (area == 'parks') {
+        var tree_list = item_data['parks']['parktrees'][a_id.toString()];
+    } else if (area == 'wards') {
+        var tree_list = item_data['wards']['wardtrees'][a_id.toString()];
+    } else {
+        var tree_list = [];
+    }
+    if (tree_list.length > 0) {
+        for (var i = 0; i < tree_list.length; i++) {
+            var tn = tree_list[i];
+            tn['TN'] = key_name[tn['TN']];
+        }
+        var data = { 'trees' : tree_list };
+        render_template_data('#tree-stats-template', '#STATINFO', data);
     }
 }
 
@@ -461,6 +465,7 @@ function tree_area_init(item_data) {
     var params = new UrlParameters(window.location.search);
     var area = params.getValue('area');
     window.AREA_TYPE = area;
+    window.AREA_DATA = item_data;
 
     if (area == 'parks') {
         var data = item_data['parks'];
@@ -482,7 +487,7 @@ function tree_area_init(item_data) {
         window.GRID_CENTRE = grid_obj['grid centre'];
 
         if (area == 'grids') {
-            show_area_latlong_in_osm(DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
+            show_area_latlong_in_osm(0, DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
         }
     });
 }
