@@ -134,8 +134,8 @@ a {
 }
 
 .carousel-inner {
-  width: 600px;
-  height: 400px;
+  width: 80%;
+  height: 100%;
 }
 
 /*
@@ -148,8 +148,8 @@ a {
 }
 
 #MAPINFO {
-    width: 680px;
-    height: 680px;
+    width: 800px;
+    height: 640px;
 }
 
 .modal-content {

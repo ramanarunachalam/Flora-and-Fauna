@@ -378,7 +378,7 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
-    var area = window.AREA_TYPE;
+    var area = window.parent.AREA_TYPE;
 
     var pinIcon = L.icon({
         iconUrl: 'icons/marker_tree_green.png',
@@ -389,23 +389,19 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
         var map = window.parent.MAP;
         map.setView([c_lat, c_long]);
     } else {
-        var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 2, maxZoom: 25 });
+        var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 2, maxZoom: 21 });
         window.parent.MAP = map;
+
         L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          subdomains: ['a', 'b', 'c']
+          subdomains: ['a', 'b', 'c'],
+          maxNativeZoom: 18,
+          maxZoom: 21 
         }).addTo(map);
 
-        if (area == 'grids') {
-            /*
-            map.addEventListener('mousemove', function(ev) {
-               console.log("Coordinates: " + ev.latlng.toString());
-            });
-            */
-        }
-            map.on("contextmenu", function (ev) {
-               show_area_latlong_in_osm(a_id, ev.latlng.lat, ev.latlng.lng);
-            });
+        map.on("contextmenu", function (ev) {
+           show_area_latlong_in_osm(a_id, ev.latlng.lat, ev.latlng.lng);
+        });
     }
     window.parent.map_initialized = true;
 
@@ -443,7 +439,7 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
         }
     }
 
-    var item_data = window.AREA_DATA;
+    var item_data = window.parent.AREA_DATA;
     if (area == 'parks') {
         var tree_list = item_data['parks']['parktrees'][a_id.toString()];
     } else if (area == 'wards') {
@@ -464,8 +460,14 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
 function tree_area_init(item_data) {
     var params = new UrlParameters(window.location.search);
     var area = params.getValue('area');
-    window.AREA_TYPE = area;
-    window.AREA_DATA = item_data;
+    window.parent.AREA_TYPE = area;
+    window.parent.AREA_DATA = item_data;
+
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var handle_map = lang_obj['Handle'];
 
     if (area == 'parks') {
         var data = item_data['parks'];
@@ -475,6 +477,16 @@ function tree_area_init(item_data) {
         var data = item_data['wards'];
         render_template_data('#sidenav-template', '#NAVINFO', data);
         render_template_data('#stats-template', '#STATINFO', data);
+    } else if (area == 'grids') {
+        var data = item_data['maps'];
+        var tree_list = data['mapinfo'];
+        for (var i = 0; i < tree_list.length; i++) {
+            var an = tree_list[i];
+            an['AN'] = key_name[an['AN']];
+        }
+        render_template_data('#sidenav-template', '#NAVINFO', data);
+    } else {
+        return;
     }
 
     window.parent.map_initialized = false;
