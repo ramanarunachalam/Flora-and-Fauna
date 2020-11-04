@@ -355,7 +355,6 @@ function show_module_latlong_in_osm(name) {
     });
 
     var handle_id_name = '#' + id_name;
-    /* $(handle_id_name).html(''); */
     var map = L.map(id_name, { center: [c_lat, c_long] });
     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -367,9 +366,27 @@ function show_module_latlong_in_osm(name) {
     }
     map.fitBounds(bbox);
     map.invalidateSize();
-
-    /* $(handle_id_name).modal(); */
 }
+
+var green_tree_icon = L.icon({
+    iconUrl: 'icons/marker_tree_green.png',
+    iconSize: [24, 24],
+});
+
+var green_bloom_icon = L.icon({
+    iconUrl: 'icons/marker_bloom_green.png',
+    iconSize: [24, 24],
+});
+
+var red_tree_icon = L.icon({
+    iconUrl: 'icons/marker_tree_red.png',
+    iconSize: [24, 24],
+});
+
+var red_bloom_icon = L.icon({
+    iconUrl: 'icons/marker_bloom_red.png',
+    iconSize: [24, 24],
+});
 
 function show_area_latlong_in_osm(a_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
@@ -379,11 +396,6 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
     var area = window.parent.AREA_TYPE;
-
-    var pinIcon = L.icon({
-        iconUrl: 'icons/marker_tree_green.png',
-        iconSize: [24, 24],
-    });
 
     if ( window.parent.map_initialized ) {
         var map = window.parent.MAP;
@@ -413,7 +425,7 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
         var DISTANCE_THRESHOLD = 0.2;
     }
 
-    var grid_flora = window.GRID_FLORA;
+    var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
             continue;
@@ -423,6 +435,22 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
             if (!mesh_latlong_dict.hasOwnProperty(tree_id)) {
                 continue;
             }
+            var name = key_name[tree_id];
+            var url = handle_map[tree_id][0];
+            var href = '<a href="' + url + '" >' + name + '</a>';
+            var blooming = handle_map[tree_id][1];
+            var icon = green_tree_icon;
+            if (tree_id == a_id) {
+                if (blooming) {
+                    icon = red_bloom_icon;
+                } else {
+                    icon = red_tree_icon;
+                }
+            } else {
+                if (blooming) {
+                    icon = green_bloom_icon;
+                }
+            }
             var latlong_list = mesh_latlong_dict[tree_id];
             for (var i = 0; i < latlong_list.length; i++) {
                 var marker = latlong_list[i];
@@ -430,10 +458,7 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
                 var m_long = parseFloat(marker[1]);
                 var distance = geo_distance(c_lat, c_long, m_lat, m_long)
                 if (distance <= DISTANCE_THRESHOLD) {
-                    var name = key_name[tree_id];
-                    var url = handle_map[tree_id];
-                    var u = '<a href="' + url + '" >' + name + '</a>';
-                    L.marker([m_lat, m_long], {icon: pinIcon}).bindPopup(u).addTo(map);
+                    L.marker([m_lat, m_long], {icon: icon}).bindPopup(href).addTo(map);
                 }
             }
         }
@@ -467,7 +492,6 @@ function tree_area_init(item_data) {
     var lang = window.parent.LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
-    var handle_map = lang_obj['Handle'];
 
     if (area == 'parks') {
         var data = item_data['parks'];
@@ -494,9 +518,9 @@ function tree_area_init(item_data) {
 
     var url = 'grid.json';
     $.getJSON(url, function(grid_obj) {
-        window.GRID_FLORA = grid_obj['grid flora'];
-        window.GRID_MESH = grid_obj['grid mesh'];
-        window.GRID_CENTRE = grid_obj['grid centre'];
+        window.parent.GRID_FLORA = grid_obj['grid flora'];
+        window.parent.GRID_MESH = grid_obj['grid mesh'];
+        window.parent.GRID_CENTRE = grid_obj['grid centre'];
 
         if (area == 'grids') {
             show_area_latlong_in_osm(0, DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
