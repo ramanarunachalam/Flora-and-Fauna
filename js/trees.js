@@ -339,54 +339,93 @@ function geo_distance(lat1, lon1, lat2, lon2, unit) {
     }
 }
 
-function show_module_latlong_in_osm(name) {
-    var url = 'http://wikipedia.org';
+function create_osm_map(id_name, c_lat, c_long) {
+    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 2, maxZoom: 21 });
+
+    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: ['a', 'b', 'c'],
+      maxNativeZoom: 18,
+      maxZoom: 21 
+    }).addTo(map);
+
+    return map;
+}
+
+function show_module_latlong_in_osm(tree_id, name) {
     var markers = window.MAP_DATA;
     var bbox = window.BOX_DATA;
     var i = 0;
     var id_name = 'MAP_MODAL';
     var id_name = 'PHOTO_GALLERY';
-    var c_lat = (bbox[0][0] + bbox[1][0]) / 2;
-    var c_long = (bbox[0][1] + bbox[1][1]) / 2;
+    var handle_id_name = '#' + id_name;
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var handle_map = lang_obj['Handle'];
+    var c_lat = (parseFloat(bbox[0][0]) + parseFloat(bbox[1][0])) / 2;
+    var c_long = (parseFloat(bbox[0][1]) + parseFloat(bbox[1][1])) / 2;
 
     var pinIcon = L.icon({
         iconUrl: '../../icons/marker_tree_green.png',
         iconSize: [24, 24],
     });
 
-    var handle_id_name = '#' + id_name;
-    var map = L.map(id_name, { center: [c_lat, c_long] });
-    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      subdomains: ['a', 'b', 'c']
-    }).addTo(map);
+    var name = key_name[tree_id];
+    var url = handle_map[tree_id][0];
+    var url = '<a href="' + url + '" target="_blank">' + name + '</a>';
+    var map = create_osm_map(id_name, c_lat, c_long);
     for (var i = 0; i < markers.length; i++) {
-        var u = '<a href="' + url + '" target="_blank">' + name + '</a>';
-        L.marker([markers[i].lat, markers[i].long], {icon: pinIcon}).bindPopup(u).addTo(map);
+        L.marker([markers[i].lat, markers[i].long], {icon: pinIcon}).bindPopup(url).addTo(map);
     }
     map.fitBounds(bbox);
     map.invalidateSize();
 }
 
-var green_tree_icon = L.icon({
-    iconUrl: 'icons/marker_tree_green.png',
-    iconSize: [24, 24],
-});
+function create_icons() {
+    window.parent.green_tree_icon = L.icon({
+        iconUrl: 'icons/marker_tree_green.png',
+        iconSize: [24, 24],
+    });
+    window.parent.green_bloom_icon = L.icon({
+        iconUrl: 'icons/marker_bloom_green.png',
+        iconSize: [24, 24],
+    });
+    window.parent.red_tree_icon = L.icon({
+        iconUrl: 'icons/marker_tree_red.png',
+        iconSize: [24, 24],
+    });
+    window.parent.red_bloom_icon = L.icon({
+        iconUrl: 'icons/marker_bloom_red.png',
+        iconSize: [24, 24],
+    });
+}
 
-var green_bloom_icon = L.icon({
-    iconUrl: 'icons/marker_bloom_green.png',
-    iconSize: [24, 24],
-});
+function get_needed_icon(a_id, tree_id, blooming) {
+    var icon = window.parent.green_tree_icon;
+    var area = window.parent.AREA_TYPE;
+    if (area != 'trees') {
+        return icon;
+    }
 
-var red_tree_icon = L.icon({
-    iconUrl: 'icons/marker_tree_red.png',
-    iconSize: [24, 24],
-});
+    if (tree_id == a_id) {
+        if (blooming) {
+            icon = window.parent.red_bloom_icon;
+        } else {
+            icon = window.parent.red_tree_icon;
+        }
+    } else {
+        if (blooming) {
+            icon = window.parent.green_bloom_icon;
+        }
+    }
+    return icon;
+}
 
-var red_bloom_icon = L.icon({
-    iconUrl: 'icons/marker_bloom_red.png',
-    iconSize: [24, 24],
-});
+function marker_on_click(e) {
+    console.log(e.latlng);
+}
 
 function show_area_latlong_in_osm(a_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
@@ -401,18 +440,15 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
         var map = window.parent.MAP;
         map.setView([c_lat, c_long]);
     } else {
-        var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 2, maxZoom: 21 });
+        var map = create_osm_map(id_name, c_lat, c_long);
         window.parent.MAP = map;
 
-        L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          subdomains: ['a', 'b', 'c'],
-          maxNativeZoom: 18,
-          maxZoom: 21 
-        }).addTo(map);
-
         map.on("contextmenu", function (ev) {
-           show_area_latlong_in_osm(a_id, ev.latlng.lat, ev.latlng.lng);
+           var tree_id = 0;
+           if (area == 'trees') {
+               tree_id = a_id;
+           }
+           show_area_latlong_in_osm(tree_id, ev.latlng.lat, ev.latlng.lng);
         });
     }
     window.parent.map_initialized = true;
@@ -439,18 +475,7 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
             var url = handle_map[tree_id][0];
             var href = '<a href="' + url + '" >' + name + '</a>';
             var blooming = handle_map[tree_id][1];
-            var icon = green_tree_icon;
-            if (tree_id == a_id) {
-                if (blooming) {
-                    icon = red_bloom_icon;
-                } else {
-                    icon = red_tree_icon;
-                }
-            } else {
-                if (blooming) {
-                    icon = green_bloom_icon;
-                }
-            }
+            var icon = get_needed_icon(a_id, tree_id, blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
             for (var i = 0; i < latlong_list.length; i++) {
                 var marker = latlong_list[i];
@@ -465,14 +490,13 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
     }
 
     var item_data = window.parent.AREA_DATA;
+    var tree_list = [];
     if (area == 'parks') {
         var tree_list = item_data['parks']['parktrees'][a_id.toString()];
     } else if (area == 'wards') {
         var tree_list = item_data['wards']['wardtrees'][a_id.toString()];
-    } else {
-        var tree_list = [];
     }
-    if (tree_list.length > 0) {
+    if (tree_list != undefined && tree_list.length > 0) {
         for (var i = 0; i < tree_list.length; i++) {
             var tn = tree_list[i];
             tn['TN'] = key_name[tn['TN']];
@@ -501,7 +525,7 @@ function tree_area_init(item_data) {
         var data = item_data['wards'];
         render_template_data('#sidenav-template', '#NAVINFO', data);
         render_template_data('#stats-template', '#STATINFO', data);
-    } else if (area == 'grids') {
+    } else if (area == 'trees') {
         var data = item_data['maps'];
         var tree_list = data['mapinfo'];
         for (var i = 0; i < tree_list.length; i++) {
@@ -515,6 +539,7 @@ function tree_area_init(item_data) {
 
     window.parent.map_initialized = false;
     DEFAULT_LAT_LONG = [ 12.97729, 77.59973];
+    create_icons();
 
     var url = 'grid.json';
     $.getJSON(url, function(grid_obj) {
@@ -522,7 +547,7 @@ function tree_area_init(item_data) {
         window.parent.GRID_MESH = grid_obj['grid mesh'];
         window.parent.GRID_CENTRE = grid_obj['grid centre'];
 
-        if (area == 'grids') {
+        if (area == 'trees') {
             show_area_latlong_in_osm(0, DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
         }
     });

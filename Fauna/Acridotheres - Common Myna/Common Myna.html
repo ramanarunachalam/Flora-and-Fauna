@@ -55,7 +55,7 @@
     {{#galleryinfo}}
     <h2>
         <mark>{{HN}}</mark> : <em><small>{{HB}}</small></em>
-        <a href="javascript:show_module_latlong_in_osm('{{HN}}');" ><img class="ICON" src="../../icons/geo-alt.svg"></a>
+        <a href="javascript:show_module_latlong_in_osm('{{HID}}', '{{HN}}');" ><img class="ICON" src="../../icons/geo-alt.svg"></a>
     </h2>
     <br/>
     <div id="PHOTO_GALLERY" class="card">
@@ -114,7 +114,7 @@
       crossorigin="" ></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HH": [1, 0], "HN": [0, "Common Myna"], "HB": "Acridotheres tristis, L.", "HC": 3, "gallery": [{"IN": "Common Myna - Male.jpg", "IC": [1, 2]}, {"IN": "Common Myna - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Common Myna - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 1, "CV": [{"N": 5, "V": [0, "", "Common Myna"]}, {"N": 8, "V": [0, "", "Bird"]}, {"N": 2, "V": [0, "", "Sturnidae"]}, {"N": 3, "V": [0, "", "Acridotheres"]}, {"N": 7, "V": [0, "", "tristis"]}, {"N": 0, "V": [0, "", "L."]}], "CI": "Common Myna - 0000.jpg"}, {"CN": 2, "CV": [{"N": 1, "V": [0, "", "The Common Myna is readily identified by the brown body, black hooded head and the bare yellow patch behind the eye. The bill and legs are bright yellow. There is a white patch on the outer primaries and the wing lining on the underside is white. The sexes are similar and birds are usually seen in pairs.["]}, {"N": 4, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Common_Myna\" target=\"_blank\">wikipedia</a>"]}, {"N": 6, "V": [0, "", ["Asia"]]}]}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HH": [1, 0], "HID": 0, "HN": [0, "Common Myna"], "HB": "Acridotheres tristis, L.", "HC": 3, "gallery": [{"IN": "Common Myna - Male.jpg", "IC": [1, 2]}, {"IN": "Common Myna - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Common Myna - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 1, "CV": [{"N": 5, "V": [0, "", "Common Myna"]}, {"N": 8, "V": [0, "", "Bird"]}, {"N": 2, "V": [0, "", "Sturnidae"]}, {"N": 3, "V": [0, "", "Acridotheres"]}, {"N": 7, "V": [0, "", "tristis"]}, {"N": 0, "V": [0, "", "L."]}], "CI": "Common Myna - 0000.jpg"}, {"CN": 2, "CV": [{"N": 1, "V": [0, "", "The Common Myna is readily identified by the brown body, black hooded head and the bare yellow patch behind the eye. The bill and legs are bright yellow. There is a white patch on the outer primaries and the wing lining on the underside is white. The sexes are similar and birds are usually seen in pairs.["]}, {"N": 4, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Common_Myna\" target=\"_blank\">wikipedia</a>"]}, {"N": 6, "V": [0, "", ["Asia"]]}]}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>

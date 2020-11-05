@@ -19,6 +19,9 @@
 <head>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" type="text/css" />
 <link media="all" href="../css/trees.css" type="text/css" rel="stylesheet" />
+<link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
 <title>Shrubs Of India</title>
 </head>
 
@@ -77,6 +80,17 @@ A <a href="http://en.wikipedia.org/wiki/Shrub" target="_blank">shrub</a> is dist
 
   
   <script type="text/html" id="carousel-template">
+      {{#statsinfo}}
+      <div class="col-3 media-body">
+        <ul id="statsCarousel" class="list-group">
+          {{#items}}
+          <li class="list-group-item">
+            <strong>{{N}}</strong> <span class="badge">{{C}}</span>
+          </li>
+          {{/items}}
+        </ul>
+      </div>
+      {{/statsinfo}}
       {{#sliderinfo}}
       <div class="col-9">
         <div id="introCarousel" class="carousel slide carousel-fade" data-ride="carousel">
@@ -95,17 +109,6 @@ A <a href="http://en.wikipedia.org/wiki/Shrub" target="_blank">shrub</a> is dist
         </div>
       </div>
       {{/sliderinfo}}
-      {{#statsinfo}}
-      <div class="col-3 media-body">
-        <ul id="statsCarousel" class="list-group">
-          {{#items}}
-          <li class="list-group-item">
-            <strong>{{N}}</strong> <span class="badge">{{C}}</span>
-          </li>
-          {{/items}}
-        </ul>
-      </div>
-      {{/statsinfo}}
   </script>
 
 
@@ -113,6 +116,10 @@ A <a href="http://en.wikipedia.org/wiki/Shrub" target="_blank">shrub</a> is dist
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/minisearch@2.6.0/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin="" >
+  </script>
   <script src="../js/trees.js"></script>
   <script type="text/javascript">
       var data = {"sliderinfo": {"items": [{"SB": "Jasminum sambac", "SA": "(L.) Aiton", "SN": "Arabian Jasmine", "SI": "Jasminum - Arabian Jasmine/Arabian Jasmine - Flower.jpg"}, {"SB": "Petrea volubilis", "SA": "L.", "SN": "Blue Jasmine", "SI": "Petrea - Blue Jasmine/Blue Jasmine - Flower.jpg"}, {"SB": "Dracaena fragrans massangeana", "SA": "(L.) Ker Gawl.", "SN": "Cornstalk Flower", "SI": "Dracaena - Cornstalk Flower/Cornstalk Flower - Flower.jpg"}, {"SB": "Mimosa hamata", "SA": "Willd.", "SN": "Hooked Mimosa", "SI": "Mimosa - Hooked Mimosa/Hooked Mimosa - Flower.jpg"}, {"SB": "Thunbergia erecta", "SA": "(Benth.) T.Anderson", "SN": "Kings mantle", "SI": "Thunbergia - Kings mantle/Kings mantle - Flower.jpg"}, {"SB": "Heliconia rostrata", "SA": "Ruiz & Pavon", "SN": "Lobster Claw", "SI": "Heliconia - Lobster Claw/Lobster Claw - Flower.jpg"}, {"SB": "Passiflora foetida", "SA": "L.", "SN": "Love In A Mist", "SI": "Passiflora - Love In A Mist/Love In A Mist - Flower.jpg"}, {"SB": "Mussaenda erythrophylla", "SA": "Schumach.", "SN": "Mussaenda", "SI": "Mussaenda - Mussaenda/Mussaenda - Flower.jpg"}, {"SB": "Plumbago auriculata", "SA": "Lam.", "SN": "Nila Chitrak", "SI": "Plumbago - Nila Chitrak/Nila Chitrak - Flower.jpg"}, {"SB": "Mussaenda cv. marmalade", "SA": "Schumach.", "SN": "Orange Mussaenda", "SI": "Mussaenda - Orange Mussaenda/Orange Mussaenda - Flower.jpg"}, {"SB": "Euphorbia milii var. splendens", "SA": "Des Moul.", "SN": "Orchid Crown of Thorns", "SI": "Euphorbia - Orchid Crown of Thorns/Orchid Crown of Thorns - Flower.jpg"}, {"SB": "Cajanus cajan", "SA": "(L.) Huth", "SN": "Pigeon Pea", "SI": "Cajanus - Pigeon Pea/Pigeon Pea - Flower.jpg"}, {"SB": "Nerium oleander", "SA": "L.", "SN": "Pink Oleander", "SI": "Nerium - Pink Oleander/Pink Oleander - Flower.jpg"}, {"SB": "Euphorbia pulcherrima", "SA": "Willd. ex Klotzsch", "SN": "Poinsettia", "SI": "Euphorbia - Poinsettia/Poinsettia - Flower.jpg"}, {"SB": "Cycas circinalis", "SA": "L.", "SN": "Queen Sago", "SI": "Cycas - Queen Sago/Queen Sago - Flower.jpg"}, {"SB": "Hibiscus rosa-sinensis", "SA": "L.", "SN": "Red China Rose", "SI": "Hibiscus - Red China Rose/Red China Rose - Flower.jpg"}, {"SB": "Ixora coccinea", "SA": "L.", "SN": "Red Ixora", "SI": "Ixora - Red Ixora/Red Ixora - Flower.jpg"}, {"SB": "Cycas revoluta", "SA": "Thunb.", "SN": "Sago Cycad", "SI": "Cycas - Sago Cycad/Sago Cycad - Flower.jpg"}, {"SB": "Kopsia fruticosa", "SA": "(Ker Gawl.) A.DC.", "SN": "Shrub Vinca", "SI": "Kopsia - Shrub Vinca/Shrub Vinca - Flower.jpg"}, {"SB": "Duranta erecta", "SA": "L.", "SN": "Sky Flower", "SI": "Duranta - Sky Flower/Sky Flower - Flower.jpg"}, {"SB": "Dracaena loureiri", "SA": "Gagnep.", "SN": "Thai Cornstalk Flower", "SI": "Dracaena - Thai Cornstalk Flower/Thai Cornstalk Flower - Flower.jpg"}, {"SB": "Brugmansia arborea", "SA": "(L.) Lagerh.", "SN": "Tree Datura", "SI": "Brugmansia - Tree Datura/Tree Datura - Flower.jpg"}, {"SB": "Hibiscus rosa-sinensis", "SA": "L.", "SN": "White China Rose", "SI": "Hibiscus - White China Rose/White China Rose - Flower.jpg"}, {"SB": "Psychotria nervosa", "SA": "Sw.", "SN": "Wild Coffee", "SI": "Psychotria - Wild Coffee/Wild Coffee - Flower.jpg"}, {"SB": "Holmskioildea sanguinea f. citrina", "SA": "Moldenke.", "SN": "Yellow Chinese Hat Plant", "SI": "Holmskioildea - Yellow Chinese Hat Plant/Yellow Chinese Hat Plant - Flower.jpg"}]}, "statsinfo": {"items": [{"N": "Total", "C": 26}, {"N": "Family", "C": 17}, {"N": "Genus", "C": 21}, {"N": "Species", "C": 25}, {"N": "Images", "C": 255}]}};
