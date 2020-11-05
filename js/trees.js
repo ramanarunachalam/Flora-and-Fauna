@@ -483,7 +483,10 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
                 var m_long = parseFloat(marker[1]);
                 var distance = geo_distance(c_lat, c_long, m_lat, m_long)
                 if (distance <= DISTANCE_THRESHOLD) {
-                    L.marker([m_lat, m_long], {icon: icon}).bindPopup(href).addTo(map);
+                    var marker = L.marker([m_lat, m_long], {icon: icon});
+                    marker.bindPopup(href).addTo(map);
+                    /* marker.on('click', marker_on_click); */
+                    marker.bindTooltip(name);
                 }
             }
         }
