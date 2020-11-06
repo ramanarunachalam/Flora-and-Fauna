@@ -340,7 +340,7 @@ function geo_distance(lat1, lon1, lat2, lon2, unit) {
 }
 
 function create_osm_map(id_name, c_lat, c_long) {
-    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 17, minZoom: 2, maxZoom: 21 });
+    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 2, maxZoom: 21 });
 
     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -427,7 +427,7 @@ function marker_on_click(e) {
     console.log(e.latlng);
 }
 
-function show_area_latlong_in_osm(a_id, c_lat, c_long) {
+function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
     var lang_obj = window.parent.LANG_DATA;
     var lang = window.parent.LANG_OPT;
@@ -448,10 +448,12 @@ function show_area_latlong_in_osm(a_id, c_lat, c_long) {
            if (area == 'trees') {
                tree_id = a_id;
            }
-           show_area_latlong_in_osm(tree_id, ev.latlng.lat, ev.latlng.lng);
+           show_area_latlong_in_osm(a_name, tree_id, ev.latlng.lat, ev.latlng.lng);
         });
     }
     window.parent.map_initialized = true;
+
+    $('#TITLE_HEADER').html(a_name);
 
     if (area == 'parks') {
         var DISTANCE_THRESHOLD = 0.3;
@@ -550,8 +552,7 @@ function tree_area_init(item_data) {
         window.parent.GRID_MESH = grid_obj['grid mesh'];
         window.parent.GRID_CENTRE = grid_obj['grid centre'];
 
-        if (area == 'trees') {
-            show_area_latlong_in_osm(0, DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
-        }
+        var name = area[0].toUpperCase() + area.slice(1);
+        show_area_latlong_in_osm(name, 0, DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
     });
 }
