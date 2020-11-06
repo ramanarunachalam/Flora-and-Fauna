@@ -117,21 +117,12 @@ function tree_simple_init(data) {
     render_template_data('#card-info-template', '#CARDINFO', data);
 }
 
-var start_tree = 0;
-
 function tree_intro_init(data) {
     window.parent.LANG_OPT = 'English';
     window.parent.search_initialized = false;
     window.onload = tree_info_init;
 
     render_template_data('#carousel-template', '#SLIDERINFO', data);
-
-    start_tree = Math.floor((Math.random() * $('.carousel-item').length));
-    var $img = $('.carousel-item').eq(start_tree);
-    $img.attr('src', $img.attr('data_src'));
-    $next = $('img', this).next();
-    $next.attr('src', $next.attr('data_src'));
-
     search_init();
 }
 
@@ -141,13 +132,12 @@ function tree_info_init() {
         window.parent.LANG_DATA = lang_obj;
     });
 
-    var $img = $('.carousel-item').eq(start_tree);
-    $img.addClass("active");
+    $('.carousel').carousel({
+          pause: "hover",
+          interval: 3000
+    });
 
     $('.carousel').on('slide.bs.carousel', function(){
-        var $img = $('.active img', this);
-        $img.attr('src', $img.attr('data_src'));
-
         var $next = $('.active', this).next();
         if ($next != undefined) {
             $next = $('img', $next);
@@ -155,10 +145,11 @@ function tree_info_init() {
         }
     });
 
-    $('.carousel').carousel({
-          pause: "hover",
-          interval: 3000
-    });
+    var start_tree_id = Math.floor((Math.random() * $('.carousel-item').length));
+    var $img = $('.carousel-item').eq(start_tree_id);
+    $img.addClass('active');
+    $img = $('img', $img);
+    $img.attr('src', $img.attr('data_src'));
 }
 
 function search_init() {
