@@ -95,7 +95,7 @@ function tree_module_init(data) {
     for (var i = 0; i < gallery_list.length; i++) {
         set_key_map(gallery_list[i], key_image, 'IC');
     }
-    var info_list = card_data['cardinfo']
+    var info_list = card_data['cardinfo'];
     for (var i = 0; i < info_list.length; i++) {
         var cv_info = info_list[i];
         cv_info['CN'] = key_group[cv_info['CN']];
@@ -110,6 +110,23 @@ function tree_module_init(data) {
 }
 
 function tree_part_init(data) {
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var english_lang_map = lang_obj['English'];
+    var english_key_info = english_lang_map['Key Name'];
+    var card_list = data['cardinfo'];
+    for (var i = 0; i < card_list.length; i++) {
+        set_key_value_map(card_list[i], english_key_info, lang_map, 'N');
+        var row_list = card_list[i]['ROW'];
+        for (var j = 0; j < row_list.length; j++) {
+            var col_list = row_list[j]['COL'];
+            for (var k = 0; k < col_list.length; k++) {
+                set_key_map(col_list[k], key_name, 'CN');
+            }
+        }
+    }
     render_template_data('#card-info-template', '#CARDINFO', data);
 }
 
@@ -234,6 +251,22 @@ function tree_grid_init(data) {
     render_template_data('#pagination-template', '#TOPPAGE', data);
     data['pageinfo']['N'] = 'bottom';
     render_template_data('#pagination-template', '#BOTTOMPAGE', data);
+
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var row_list = data['cardinfo']['ROW'];
+    for (var i = 0; i < row_list.length; i++) {
+        var row = row_list[i];
+        if ('COLA' in row) { 
+            set_key_map(row['COLA'], key_name, 'CN');
+        } else if ('COLG' in row) { 
+            set_key_map(row['COLG'], key_name, 'CN');
+        } else if ('COLF' in row) { 
+            set_key_map(row['COLF'], key_name, 'CN');
+        }
+    }
     render_template_data('#card-info-template', '#CARDINFO', data);
 
     $("#top-page-next").click(show_top_next_page);
