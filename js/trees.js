@@ -538,6 +538,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
 function tree_area_init(item_data) {
     var params = new UrlParameters(window.location.search);
     var area = params.getValue('area');
+    var aid = params.getValue('aid');
     window.parent.AREA_TYPE = area;
     window.parent.AREA_DATA = item_data;
 
@@ -546,12 +547,35 @@ function tree_area_init(item_data) {
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
 
+    var lat_long = [ 12.97729, 77.59973];
+
     if (area == 'parks') {
         var data = item_data['parks'];
+        if (aid != '') {
+            var area_list = data['parkinfo'];
+            for (var i = 0; i < area_list.length; i++) {
+                var park_list = area_list[i]['parks'];
+                for (var j = 0; j < park_list.length; j++) {
+                    var park = park_list[j];
+                    if (park['PID'] == aid) {
+                        lat_long = [ parseFloat(park['PLAT']), parseFloat(park['PLONG']) ];
+                    }
+                }
+            }
+        }
         render_template_data('#sidenav-template', '#NAVINFO', data);
         render_template_data('#stats-template', '#STATINFO', data);
     } else if (area == 'wards') {
         var data = item_data['wards'];
+        if (aid != '') {
+            var ward_list = data['wardinfo'];
+            for (var i = 0; i < ward_list.length; i++) {
+                var ward = ward_list[i];
+                if (ward['AID'] == aid) {
+                    lat_long = [ parseFloat(ward['ALAT']), parseFloat(ward['ALONG']) ];
+                }
+            }
+        }
         render_template_data('#sidenav-template', '#NAVINFO', data);
         render_template_data('#stats-template', '#STATINFO', data);
     } else if (area == 'trees') {
@@ -567,7 +591,6 @@ function tree_area_init(item_data) {
     }
 
     window.parent.map_initialized = false;
-    DEFAULT_LAT_LONG = [ 12.97729, 77.59973];
     create_icons();
 
     var url = 'grid.json';
@@ -577,6 +600,6 @@ function tree_area_init(item_data) {
         window.parent.GRID_CENTRE = grid_obj['grid centre'];
 
         var name = area[0].toUpperCase() + area.slice(1);
-        show_area_latlong_in_osm(name, 0, DEFAULT_LAT_LONG[0], DEFAULT_LAT_LONG[1]);
+        show_area_latlong_in_osm(name, 0, lat_long[0], lat_long[1]);
     });
 }
