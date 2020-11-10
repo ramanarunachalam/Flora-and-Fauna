@@ -373,6 +373,7 @@ function create_osm_map(id_name, c_lat, c_long) {
       maxZoom: 21 
     }).addTo(map);
 
+    L.Control.geocoder().addTo(map);
     return map;
 }
 
