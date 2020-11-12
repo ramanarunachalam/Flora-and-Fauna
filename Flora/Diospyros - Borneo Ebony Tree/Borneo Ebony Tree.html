@@ -5,6 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Borneo Ebony Tree</title>
 </head>
@@ -111,7 +112,9 @@
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-      crossorigin="" ></script>
+      crossorigin="" >
+  </script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
       var data = {"galleryinfo": {"HID": 426, "HH": [1, 5], "HN": [1, 426], "HB": "Diospyros chloroxylon, Roxb.", "HC": 18, "gallery": [{"IN": "Borneo Ebony Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "Borneo Ebony Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Borneo Ebony Tree - Leaf Tender.jpg", "IC": [1, 88]}, {"IN": "Borneo Ebony Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Borneo Ebony Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Borneo Ebony Tree - Branch.jpg", "IC": [1, 4]}, {"IN": "Borneo Ebony Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Borneo Ebony Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Borneo Ebony Tree - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Borneo Ebony Tree - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Borneo Ebony Tree - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Borneo Ebony Tree - 0005.jpg", "IC": [0, "0005"]}, {"IN": "Borneo Ebony Tree - 0006.jpg", "IC": [0, "0006"]}, {"IN": "Borneo Ebony Tree - 0007.jpg", "IC": [0, "0007"]}, {"IN": "Borneo Ebony Tree - 0008.jpg", "IC": [0, "0008"]}, {"IN": "Borneo Ebony Tree - 0009.jpg", "IC": [0, "0009"]}, {"IN": "Borneo Ebony Tree - 0010.jpg", "IC": [0, "0010"]}, {"IN": "Borneo Ebony Tree - 0011.jpg", "IC": [0, "0011"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 426]}, {"N": 31, "V": [1, 3, 4]}, {"N": 7, "V": [0, "", "Ebenaceae"]}, {"N": 8, "V": [0, "", "Diospyros"]}, {"N": 25, "V": [0, "", "chloroxylon"]}, {"N": 2, "V": [0, "", "Roxb."]}, {"N": 4, "V": [0, "", "Ebony"]}, {"N": 24, "V": [1, 2, 1]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Borneo Ebony Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Diospyros_macrophylla\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-2769533\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Mid-canopy tree up to 38 m tall and 90 cm dbh. Stipules absent. Leaves alternate, simple, penni-veined, hairy below. Flowers ca. 3 mm in diameter, yellow-cream, with corolla tube, placed in small bundles in leaf axils. Fruits ca. 37 mm long, yellow-orange-brown, fleshy berry."]}, {"N": 19, "V": [0, "", ["Indonesia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 2]}], "CI": "Borneo Ebony Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 24, "V": [0, "", "small"]}, {"N": 3, "V": [1, 0, 3]}, {"N": 20, "V": [0, "", "Feb-Mar"]}, {"N": 11, "V": [0, "", "Color: creamy"]}], "CI": "Borneo Ebony Tree - Flower.jpg"}, {"CN": 4, "CV": [{"N": 22, "V": [0, "", "yellow or brown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 11]}, {"N": 15, "V": [0, "", "odd"]}], "CI": "Borneo Ebony Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.9493189847", "long": "77.5852026169"}], "mapregion": [["12.9493189847", "77.5852026169"], ["12.9493189847", "77.5852026169"]]};

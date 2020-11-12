@@ -5,6 +5,7 @@
 <link href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" rel="stylesheet" type="text/css" media="all"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Chirimuya Tree</title>
 </head>
@@ -111,7 +112,9 @@
   <script src="https://cdn.jsdelivr.net/npm/mustache@3.1.0/mustache.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-      crossorigin="" ></script>
+      crossorigin="" >
+  </script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
       var data = {"galleryinfo": {"HID": 456, "HH": [1, 5], "HN": [1, 456], "HB": "Annona cherimola, Mill.", "HC": 18, "gallery": [{"IN": "Chirimuya Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "Chirimuya Tree - Fruit Tender.jpg", "IC": [1, 71]}, {"IN": "Chirimuya Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Chirimuya Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Chirimuya Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Chirimuya Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Chirimuya Tree - Branch.jpg", "IC": [1, 4]}, {"IN": "Chirimuya Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Chirimuya Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Chirimuya Tree - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Chirimuya Tree - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Chirimuya Tree - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Chirimuya Tree - 0005.jpg", "IC": [0, "0005"]}, {"IN": "Chirimuya Tree - 0006.jpg", "IC": [0, "0006"]}, {"IN": "Chirimuya Tree - 0007.jpg", "IC": [0, "0007"]}, {"IN": "Chirimuya Tree - 0008.jpg", "IC": [0, "0008"]}, {"IN": "Chirimuya Tree - 0009.jpg", "IC": [0, "0009"]}, {"IN": "Chirimuya Tree - 0010.jpg", "IC": [0, "0010"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 456]}, {"N": 31, "V": [1, 3, 4]}, {"N": 7, "V": [0, "", "Annonaceae"]}, {"N": 8, "V": [0, "", "Annona"]}, {"N": 25, "V": [0, "", "cherimola"]}, {"N": 2, "V": [0, "", "Mill."]}, {"N": 4, "V": [0, "", "sugar apple"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 10, "V": [0, "", "10-12m"]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Chirimuya Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Soursop\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?3479\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-2640812\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Annona cherimola is a fairly dense, fast-growing, woody,[4] briefly deciduous[5] but mostly evergreen low branched, spreading tree[4] or shrub[5] 5 metres (16 ft) to 9 metres (30 ft) tall."]}, {"N": 19, "V": [0, "", ["South America"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}, {"N": 11, "V": [0, "", "Color: Greyish"]}], "CI": "Chirimuya Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 11]}, {"N": 20, "V": [0, "", "Apr-Jun"]}, {"N": 11, "V": [0, "", "Color: Yellow Green; 3 petals"]}], "CI": "Chirimuya Tree - Flower.jpg"}, {"CN": 4, "CV": [{"N": 22, "V": [0, "", "round"]}, {"N": 11, "V": [0, "", "Edible"]}], "CI": "Chirimuya Tree - Fruit.jpg"}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 12]}, {"N": 24, "V": [0, "", "15 cm"]}, {"N": 22, "V": [0, "", "oblong"]}, {"N": 1, "V": [0, "", "Alternate"]}], "CI": "Chirimuya Tree - Leaf.jpg"}], "mapinfo": [], "mapregion": []};

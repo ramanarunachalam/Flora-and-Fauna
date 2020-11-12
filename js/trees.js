@@ -402,7 +402,8 @@ function show_module_latlong_in_osm(tree_id, name) {
     var url = '<a href="' + url + '" target="_blank">' + name + '</a>';
     var map = create_osm_map(id_name, c_lat, c_long);
     for (var i = 0; i < markers.length; i++) {
-        L.marker([markers[i].lat, markers[i].long], {icon: pinIcon}).bindPopup(url).addTo(map);
+        var marker = L.marker([markers[i].lat, markers[i].long], {icon: pinIcon});
+        marker.bindTooltip(name).addTo(map);
     }
     map.fitBounds(bbox);
     map.invalidateSize();
@@ -511,9 +512,8 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                 var distance = geo_distance(c_lat, c_long, m_lat, m_long)
                 if (distance <= DISTANCE_THRESHOLD) {
                     var marker = L.marker([m_lat, m_long], {icon: icon});
-                    marker.bindPopup(href).addTo(map);
+                    marker.bindPopup(href).bindTooltip(name).addTo(map);
                     /* marker.on('click', marker_on_click); */
-                    marker.bindTooltip(name);
                 }
             }
         }
