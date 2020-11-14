@@ -6,6 +6,7 @@
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin="" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="../../css/trees.css" rel="stylesheet" type="text/css" media="all" />
 <title>Shrub Vinca</title>
 </head>
@@ -15,6 +16,8 @@
       <div id="CARDINFO" class="col-12">
       </div>
     </div>
+  </div>
+  <div id="VTINFO" class="col-12">
   </div>
 
   <div id="IMAGE_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="IMAGE_MODEL_LABEL" aria-hidden="true">
@@ -115,9 +118,10 @@
       crossorigin="" >
   </script>
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [1, 429], "HB": "Kopsia fruticosa, (Ker Gawl.) A.DC.", "HC": 7, "gallery": [{"IN": "Shrub Vinca - Flower Bud.jpg", "IC": [1, 35]}, {"IN": "Shrub Vinca - Flower.jpg", "IC": [1, 34]}, {"IN": "Shrub Vinca - Canopy.jpg", "IC": [1, 6]}, {"IN": "Shrub Vinca - Leaf.jpg", "IC": [1, 76]}, {"IN": "Shrub Vinca - Bark.jpg", "IC": [1, 1]}, {"IN": "Shrub Vinca - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Shrub Vinca - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 429]}, {"N": 31, "V": [1, 3, 3]}, {"N": 7, "V": [0, "", "Apocynaceae"]}, {"N": 8, "V": [0, "", "Kopsia"]}, {"N": 25, "V": [0, "", "fruticosa"]}, {"N": 2, "V": [0, "", "(Ker Gawl.) A.DC."]}, {"N": 4, "V": [0, "", "oleander"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Shrub Vinca - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Kopsia_fruticosa\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Shrub%20Vinca.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Shrub Vinca is a tall bush with simple leaves. It has an interesting resemblance to Frangipani. It is an evergreen shrub growing up to 4 m tall. The plant is hairless except for inflorescences. Leaf stalk is 1 cm. Leaf blade narrowly elliptic or narrowly oblong, 10-23 X 2.5-9 cm, tip sharp or blunt. Flowers occur in bunches of a few. Beautiful light pink flowers, which may also be almost white, have 5 petals that are oblong, 1.5-2.5 cm. The plant is distributed in India, Indonesia, Malaysia, Philippines, Thailand. It is cultivated as an ornamental as well as for its medicinal properties."]}, {"N": 19, "V": [0, "", ["S. Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 2]}, {"N": 11, "V": [0, "", "Color: grey brown"]}], "CI": "Shrub Vinca - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 7]}], "CI": "Shrub Vinca - Flower.jpg"}, {"CN": 4, "CV": [{"N": 30, "V": [0, "", "unknown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 13]}], "CI": "Shrub Vinca - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Shrub Vinca"], "HB": "Kopsia fruticosa, (Ker Gawl.) A.DC.", "HC": 7, "gallery": [{"IN": "Shrub Vinca - Flower Bud.jpg", "IC": [1, 35]}, {"IN": "Shrub Vinca - Flower.jpg", "IC": [1, 34]}, {"IN": "Shrub Vinca - Canopy.jpg", "IC": [1, 6]}, {"IN": "Shrub Vinca - Leaf.jpg", "IC": [1, 76]}, {"IN": "Shrub Vinca - Bark.jpg", "IC": [1, 1]}, {"IN": "Shrub Vinca - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Shrub Vinca - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [0, "", "Shrub Vinca"]}, {"N": 31, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Apocynaceae"]}, {"N": 8, "V": [0, "", "Kopsia"]}, {"N": 25, "V": [0, "", "fruticosa"]}, {"N": 2, "V": [0, "", "(Ker Gawl.) A.DC."]}, {"N": 4, "V": [0, "", "oleander"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Shrub Vinca - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Kopsia_fruticosa\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Shrub%20Vinca.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Shrub Vinca is a tall bush with simple leaves. It has an interesting resemblance to Frangipani. It is an evergreen shrub growing up to 4 m tall. The plant is hairless except for inflorescences. Leaf stalk is 1 cm. Leaf blade narrowly elliptic or narrowly oblong, 10-23 X 2.5-9 cm, tip sharp or blunt. Flowers occur in bunches of a few. Beautiful light pink flowers, which may also be almost white, have 5 petals that are oblong, 1.5-2.5 cm. The plant is distributed in India, Indonesia, Malaysia, Philippines, Thailand. It is cultivated as an ornamental as well as for its medicinal properties."]}, {"N": 19, "V": [0, "", ["S. Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 2]}, {"N": 11, "V": [0, "", "Color: grey brown"]}], "CI": "Shrub Vinca - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 7]}], "CI": "Shrub Vinca - Flower.jpg"}, {"CN": 4, "CV": [{"N": 30, "V": [0, "", "unknown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 12]}], "CI": "Shrub Vinca - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>
