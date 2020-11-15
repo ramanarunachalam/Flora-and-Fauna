@@ -107,11 +107,6 @@ function tree_module_init(data) {
         } 
     }
     render_template_data('#card-info-template', '#CARDINFO', card_data);
-
-    pannellum.viewer('VTINFO', {
-        "type": "equirectangular",
-        "panorama": "Elephant%20Apple%20Tree%20-%20Flower.jpg"
-    });
 }
 
 function tree_part_init(data) {
