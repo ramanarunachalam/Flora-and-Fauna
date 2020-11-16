@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 448, "HH": [1, 5], "HN": [1, 448], "HB": "Malus domestica, Borkh.", "HC": 7, "gallery": [{"IN": "Apple Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "Apple Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Apple Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Apple Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Apple Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Apple Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Apple Tree - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 448]}, {"N": 31, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Rosaceae"]}, {"N": 8, "V": [0, "", "Malus"]}, {"N": 25, "V": [0, "", "domestica"]}, {"N": 2, "V": [0, "", "Borkh."]}, {"N": 4, "V": [0, "", "Rose"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 0]}], "CI": "Apple Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Malus_domestica\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Apple.html\" target=\"_blank\">flowersofindia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?104681\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/tro-27804420\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Apple Tree is a small to medium sized tree with spreading canopy, to 30 ft in wild, generally 6-15 ft in cultivation. Dark green leaves are elliptical with serrate margins, and velvety hairs on the underside. Petals are white when open, but have red-pink undersides when opening. The inflorescence is a cyme of 4-6 flowers, with the center flower opening first. The central flower is often called the \"King bloom\", and has the potential to produce a larger fruit than other flowers. Flowers are produced terminally from mixed buds on spurs, or to a lesser extent on long shoots. Spurs form on 2-yr-old and older wood, and generally grow only a fraction of an inch each year. A special fruit type is given to apple and related fruits - the pome. The bulk of the fleshy edible portion derives from the flower cup, and not the ovary. Seeds are relatively small and black, and mildly poisonous."]}, {"N": 19, "V": [0, "", ["China", "India", "Europe"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}]}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 10]}, {"N": 20, "V": [0, "", "Apr-May"]}], "CI": "Apple Tree - Flower.jpg"}, {"CN": 4, "CV": [{"N": 3, "V": [1, 0, 9]}, {"N": 11, "V": [0, "", "Color: green, red"]}], "CI": "Apple Tree - Fruit.jpg"}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 11]}], "CI": "Apple Tree - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 448, "HH": [1, 5], "HN": [1, 448], "HB": "Malus domestica, Borkh.", "HC": 7, "gallery": [{"IN": "Apple Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "Apple Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Apple Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Apple Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Apple Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Apple Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Apple Tree - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [1, 5, 448]}, {"N": 32, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Rosaceae"]}, {"N": 8, "V": [0, "", "Malus"]}, {"N": 26, "V": [0, "", "domestica"]}, {"N": 2, "V": [0, "", "Borkh."]}, {"N": 4, "V": [0, "", "Rose"]}, {"N": 25, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 0]}], "CI": "Apple Tree - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Malus_domestica\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Apple.html\" target=\"_blank\">flowersofindia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?104681\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/tro-27804420\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Apple Tree is a small to medium sized tree with spreading canopy, to 30 ft in wild, generally 6-15 ft in cultivation. Dark green leaves are elliptical with serrate margins, and velvety hairs on the underside. Petals are white when open, but have red-pink undersides when opening. The inflorescence is a cyme of 4-6 flowers, with the center flower opening first. The central flower is often called the \"King bloom\", and has the potential to produce a larger fruit than other flowers. Flowers are produced terminally from mixed buds on spurs, or to a lesser extent on long shoots. Spurs form on 2-yr-old and older wood, and generally grow only a fraction of an inch each year. A special fruit type is given to apple and related fruits - the pome. The bulk of the fleshy edible portion derives from the flower cup, and not the ovary. Seeds are relatively small and black, and mildly poisonous."]}, {"N": 20, "V": [0, "", ["China", "India", "Europe"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}]}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 10]}, {"N": 21, "V": [0, "", "Apr-May"]}], "CI": "Apple Tree - Flower.jpg"}, {"CN": 4, "CV": [{"N": 3, "V": [1, 0, 9]}, {"N": 11, "V": [0, "", "Color: green, red"]}], "CI": "Apple Tree - Fruit.jpg"}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 11]}], "CI": "Apple Tree - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>

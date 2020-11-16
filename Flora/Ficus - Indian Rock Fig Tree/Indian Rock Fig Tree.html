@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 467, "HH": [1, 5], "HN": [1, 467], "HB": "Ficus arnottiana, (Miq.) Miq.", "HC": 7, "gallery": [{"IN": "Indian Rock Fig Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Indian Rock Fig Tree - Leaf New.jpg", "IC": [1, 85]}, {"IN": "Indian Rock Fig Tree - Leaf Tender.jpg", "IC": [1, 88]}, {"IN": "Indian Rock Fig Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Indian Rock Fig Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Indian Rock Fig Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Indian Rock Fig Tree - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 467]}, {"N": 31, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Moraceae"]}, {"N": 8, "V": [0, "", "Ficus"]}, {"N": 25, "V": [0, "", "arnottiana"]}, {"N": 2, "V": [0, "", "(Miq.) Miq."]}, {"N": 4, "V": [0, "", "Mulberry"]}, {"N": 5, "V": [0, "", "Fig"]}, {"N": 24, "V": [1, 2, 0]}, {"N": 9, "V": [1, 1, 3]}], "CI": "Indian Rock Fig Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Ficus_arnottiana\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Indian%20Rock%20Fig.html\" target=\"_blank\">flowersofindia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?423413\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-2809534\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Indian Rock Fig is a tree which is commonly mistaken for Peepal (Ficus religiosa). Leaves are typical peepal like, but with wavy margins. One of the common ways of recognizing Ficus arrnottiana from Ficus religiosa is to examine the color of the leaf-stalk and the veins which are bright Pink to red in colour. The Leaf tips of F. religiosa are tapering, acuminate and long as against the leaf tips of F. arnottiana which are pointed and acuminate but not long."]}, {"N": 19, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}, {"N": 30, "V": [0, "", "not rough"]}, {"N": 11, "V": [0, "", "Exudes milk when cut"]}], "CI": "Indian Rock Fig Tree - Bark.jpg"}, {"CN": 2, "CV": [{"N": 22, "V": [0, "", "Round"]}, {"N": 3, "V": [1, 0, 11]}, {"N": 20, "V": [0, "", "Mar-Apr"]}, {"N": 11, "V": [0, "", "Color: yellowish green"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 12]}, {"N": 24, "V": [0, "", "20 cm"]}, {"N": 30, "V": [0, "", "Leathery"]}, {"N": 22, "V": [0, "", "heart"]}], "CI": "Indian Rock Fig Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.968287521250954", "long": "77.61414220964093"}], "mapregion": [["12.968287521250954", "77.61414220964093"], ["12.968287521250954", "77.61414220964093"]]};
+      var data = {"galleryinfo": {"HID": 467, "HH": [1, 5], "HN": [1, 467], "HB": "Ficus arnottiana, (Miq.) Miq.", "HC": 7, "gallery": [{"IN": "Indian Rock Fig Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Indian Rock Fig Tree - Leaf New.jpg", "IC": [1, 85]}, {"IN": "Indian Rock Fig Tree - Leaf Tender.jpg", "IC": [1, 88]}, {"IN": "Indian Rock Fig Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Indian Rock Fig Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Indian Rock Fig Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Indian Rock Fig Tree - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [1, 5, 467]}, {"N": 32, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Moraceae"]}, {"N": 8, "V": [0, "", "Ficus"]}, {"N": 26, "V": [0, "", "arnottiana"]}, {"N": 2, "V": [0, "", "(Miq.) Miq."]}, {"N": 4, "V": [0, "", "Mulberry"]}, {"N": 5, "V": [0, "", "Fig"]}, {"N": 25, "V": [1, 2, 0]}, {"N": 9, "V": [1, 1, 3]}], "CI": "Indian Rock Fig Tree - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Ficus_arnottiana\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Indian%20Rock%20Fig.html\" target=\"_blank\">flowersofindia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?423413\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-2809534\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Indian Rock Fig is a tree which is commonly mistaken for Peepal (Ficus religiosa). Leaves are typical peepal like, but with wavy margins. One of the common ways of recognizing Ficus arrnottiana from Ficus religiosa is to examine the color of the leaf-stalk and the veins which are bright Pink to red in colour. The Leaf tips of F. religiosa are tapering, acuminate and long as against the leaf tips of F. arnottiana which are pointed and acuminate but not long."]}, {"N": 20, "V": [0, "", ["India"]]}]}, {"CN": 7, "CV": [{"N": 12, "V": [0, "", "<b>Common</b>: </i>Brown woolly fig</i>"]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}, {"N": 31, "V": [0, "", "not rough"]}, {"N": 11, "V": [0, "", "Exudes milk when cut"]}], "CI": "Indian Rock Fig Tree - Bark.jpg"}, {"CN": 2, "CV": [{"N": 23, "V": [0, "", "Round"]}, {"N": 3, "V": [1, 0, 11]}, {"N": 21, "V": [0, "", "Mar-Apr"]}, {"N": 11, "V": [0, "", "Color: yellowish green"]}]}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 12]}, {"N": 25, "V": [0, "", "20 cm"]}, {"N": 31, "V": [0, "", "Leathery"]}, {"N": 23, "V": [0, "", "heart"]}], "CI": "Indian Rock Fig Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.968287521250954", "long": "77.61414220964093"}], "mapregion": [["12.968287521250954", "77.61414220964093"], ["12.968287521250954", "77.61414220964093"]]};
       tree_module_init(data);
   </script>
 </body>

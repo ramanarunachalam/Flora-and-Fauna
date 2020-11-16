@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 366, "HH": [1, 5], "HN": [1, 366], "HB": "Byrsonima crassifolia, (L.) Kunth", "HC": 18, "gallery": [{"IN": "Nancy Tree - Flower Bud.jpg", "IC": [1, 35]}, {"IN": "Nancy Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "Nancy Tree - Fruit Tender.jpg", "IC": [1, 71]}, {"IN": "Nancy Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Nancy Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Nancy Tree - Leaf Tender.jpg", "IC": [1, 88]}, {"IN": "Nancy Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Nancy Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Nancy Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Nancy Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Nancy Tree - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Nancy Tree - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Nancy Tree - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Nancy Tree - 0005.jpg", "IC": [0, "0005"]}, {"IN": "Nancy Tree - 0006.jpg", "IC": [0, "0006"]}, {"IN": "Nancy Tree - 0007.jpg", "IC": [0, "0007"]}, {"IN": "Nancy Tree - 0008.jpg", "IC": [0, "0008"]}, {"IN": "Nancy Tree - 0009.jpg", "IC": [0, "0009"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 366]}, {"N": 31, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Malpighiaceae"]}, {"N": 8, "V": [0, "", "Byrsonima"]}, {"N": 25, "V": [0, "", "crassifolia"]}, {"N": 2, "V": [0, "", "(L.) Kunth"]}, {"N": 4, "V": [0, "", "nance"]}, {"N": 24, "V": [1, 2, 1]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Nancy Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Byrsonima_crassifolia\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Nance.html\" target=\"_blank\">flowersofindia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?8222\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-2688434\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Unknown"]}, {"N": 19, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}], "CI": "Nancy Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 24, "V": [0, "", "small"]}, {"N": 3, "V": [1, 0, 6]}, {"N": 20, "V": [0, "", "May-Jun,Oct-Nov"]}], "CI": "Nancy Tree - Flower.jpg"}, {"CN": 4, "CV": [{"N": 22, "V": [0, "", "olive like"]}, {"N": 3, "V": [1, 0, 4]}], "CI": "Nancy Tree - Fruit.jpg"}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 12]}], "CI": "Nancy Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.9494975", "long": "77.59130133"}], "mapregion": [["12.9494975", "77.59130133"], ["12.9494975", "77.59130133"]]};
+      var data = {"galleryinfo": {"HID": 366, "HH": [1, 5], "HN": [1, 366], "HB": "Byrsonima crassifolia, (L.) Kunth", "HC": 18, "gallery": [{"IN": "Nancy Tree - Flower Bud.jpg", "IC": [1, 35]}, {"IN": "Nancy Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "Nancy Tree - Fruit Tender.jpg", "IC": [1, 71]}, {"IN": "Nancy Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Nancy Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Nancy Tree - Leaf Tender.jpg", "IC": [1, 88]}, {"IN": "Nancy Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Nancy Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Nancy Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Nancy Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Nancy Tree - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Nancy Tree - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Nancy Tree - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Nancy Tree - 0005.jpg", "IC": [0, "0005"]}, {"IN": "Nancy Tree - 0006.jpg", "IC": [0, "0006"]}, {"IN": "Nancy Tree - 0007.jpg", "IC": [0, "0007"]}, {"IN": "Nancy Tree - 0008.jpg", "IC": [0, "0008"]}, {"IN": "Nancy Tree - 0009.jpg", "IC": [0, "0009"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [1, 5, 366]}, {"N": 32, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Malpighiaceae"]}, {"N": 8, "V": [0, "", "Byrsonima"]}, {"N": 26, "V": [0, "", "crassifolia"]}, {"N": 2, "V": [0, "", "(L.) Kunth"]}, {"N": 4, "V": [0, "", "nance"]}, {"N": 25, "V": [1, 2, 1]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Nancy Tree - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Byrsonima_crassifolia\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Nance.html\" target=\"_blank\">flowersofindia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?8222\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-2688434\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Unknown"]}, {"N": 20, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}], "CI": "Nancy Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 25, "V": [0, "", "small"]}, {"N": 3, "V": [1, 0, 6]}, {"N": 21, "V": [0, "", "May-Jun,Oct-Nov"]}], "CI": "Nancy Tree - Flower.jpg"}, {"CN": 4, "CV": [{"N": 23, "V": [0, "", "olive like"]}, {"N": 3, "V": [1, 0, 4]}], "CI": "Nancy Tree - Fruit.jpg"}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 12]}], "CI": "Nancy Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.9494975", "long": "77.59130133"}], "mapregion": [["12.9494975", "77.59130133"], ["12.9494975", "77.59130133"]]};
       tree_module_init(data);
   </script>
 </body>

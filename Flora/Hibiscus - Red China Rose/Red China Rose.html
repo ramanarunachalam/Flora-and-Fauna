@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Red China Rose"], "HB": "Hibiscus rosa-sinensis, L.", "HC": 5, "gallery": [{"IN": "Red China Rose - Flower.jpg", "IC": [1, 34]}, {"IN": "Red China Rose - Canopy.jpg", "IC": [1, 6]}, {"IN": "Red China Rose - Leaf.jpg", "IC": [1, 76]}, {"IN": "Red China Rose - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Red China Rose - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [0, "", "Red China Rose"]}, {"N": 31, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Malvaceae"]}, {"N": 8, "V": [0, "", "Hibiscus"]}, {"N": 25, "V": [0, "", "rosa-sinensis"]}, {"N": 2, "V": [0, "", "L."]}, {"N": 4, "V": [0, "", "mallow"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 2]}], "CI": "Red China Rose - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Hibiscus_rosa-sinensis\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/China%20Rose.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Nobody knows whether the hibiscus really is a native of China as its latin name, Hibiscus rosa-sinensis, (rosa-sinensis = Chinese Rose) suggests or not. Many believe, it comes from India. This large shrub or small tree grows to 15 feet high. The toothed leaves are arranged alternately and vary a lot, but tend to be large, dark green, and shiny. This plant has a coarse texture and may be upright or broad and spreading. It is often many-stemmed. Flowers are glorious and huge at their best -- up to 6\" in diameter -- and occur in many colors. Most are flared and have a bell shape and may be single or double, smooth or scalloped. They have a long central tube with stamens and pistils at the tip."]}, {"N": 19, "V": [0, "", ["Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 4]}]}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 9]}], "CI": "Red China Rose - Flower.jpg"}, {"CN": 4, "CV": [{"N": 30, "V": [0, "", "unknown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 11]}], "CI": "Red China Rose - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Red China Rose"], "HB": "Hibiscus rosa-sinensis, L.", "HC": 5, "gallery": [{"IN": "Red China Rose - Flower.jpg", "IC": [1, 34]}, {"IN": "Red China Rose - Canopy.jpg", "IC": [1, 6]}, {"IN": "Red China Rose - Leaf.jpg", "IC": [1, 76]}, {"IN": "Red China Rose - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Red China Rose - 0001.jpg", "IC": [0, "0001"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [0, "", "Red China Rose"]}, {"N": 32, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Malvaceae"]}, {"N": 8, "V": [0, "", "Hibiscus"]}, {"N": 26, "V": [0, "", "rosa-sinensis"]}, {"N": 2, "V": [0, "", "L."]}, {"N": 4, "V": [0, "", "mallow"]}, {"N": 25, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 2]}], "CI": "Red China Rose - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Hibiscus_rosa-sinensis\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/China%20Rose.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Nobody knows whether the hibiscus really is a native of China as its latin name, Hibiscus rosa-sinensis, (rosa-sinensis = Chinese Rose) suggests or not. Many believe, it comes from India. This large shrub or small tree grows to 15 feet high. The toothed leaves are arranged alternately and vary a lot, but tend to be large, dark green, and shiny. This plant has a coarse texture and may be upright or broad and spreading. It is often many-stemmed. Flowers are glorious and huge at their best -- up to 6\" in diameter -- and occur in many colors. Most are flared and have a bell shape and may be single or double, smooth or scalloped. They have a long central tube with stamens and pistils at the tip."]}, {"N": 20, "V": [0, "", ["Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 4]}]}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 9]}], "CI": "Red China Rose - Flower.jpg"}, {"CN": 4, "CV": [{"N": 31, "V": [0, "", "unknown"]}]}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 11]}], "CI": "Red China Rose - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>

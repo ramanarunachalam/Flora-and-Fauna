@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Golden Bamboo"], "HB": "Bambusa vulgaris, Schrad. ex J.C.Wendl.", "HC": 3, "gallery": [{"IN": "Golden Bamboo - Canopy.jpg", "IC": [1, 6]}, {"IN": "Golden Bamboo - Leaf.jpg", "IC": [1, 76]}, {"IN": "Golden Bamboo - Bark.jpg", "IC": [1, 1]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [0, "", "Golden Bamboo"]}, {"N": 31, "V": [0, "", "Grass"]}, {"N": 7, "V": [0, "", "Poaceae"]}, {"N": 8, "V": [0, "", "Bambusa"]}, {"N": 25, "V": [0, "", "vulgaris"]}, {"N": 2, "V": [0, "", "Schrad. ex J.C.Wendl."]}, {"N": 4, "V": [0, "", "Grass"]}, {"N": 24, "V": [1, 2, 0]}, {"N": 10, "V": [0, "", "23-80 feet"]}, {"N": 9, "V": [1, 1, 0]}], "CI": "Golden Bamboo - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Bambusa_vulgaris\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Golden%20Bamboo.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Golden Bamboo is a of mutations of Common Bamboo (Bambusa vulgaris), and has golden colored stems. There are narrow green stripes on the stems. Leaves are narrowly lanceshaped, 10-30 cm long, 1.3-2.5 cm broad, both surfaces hairless. It is a typical bamboo for ornamental plantation in the world at present."]}, {"N": 19, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 11]}, {"N": 11, "V": [0, "", "Color: Golden"]}], "CI": "Golden Bamboo - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 10]}]}, {"CN": 4, "CV": [{"N": 3, "V": [1, 0, 4]}, {"N": 11, "V": [0, "", "Color: unknown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 5]}, {"N": 24, "V": [0, "", "10 - 30 cm"]}], "CI": "Golden Bamboo - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Golden Bamboo"], "HB": "Bambusa vulgaris, Schrad. ex J.C.Wendl.", "HC": 3, "gallery": [{"IN": "Golden Bamboo - Canopy.jpg", "IC": [1, 6]}, {"IN": "Golden Bamboo - Leaf.jpg", "IC": [1, 76]}, {"IN": "Golden Bamboo - Bark.jpg", "IC": [1, 1]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [0, "", "Golden Bamboo"]}, {"N": 32, "V": [0, "", "Grass"]}, {"N": 7, "V": [0, "", "Poaceae"]}, {"N": 8, "V": [0, "", "Bambusa"]}, {"N": 26, "V": [0, "", "vulgaris"]}, {"N": 2, "V": [0, "", "Schrad. ex J.C.Wendl."]}, {"N": 4, "V": [0, "", "Grass"]}, {"N": 25, "V": [1, 2, 0]}, {"N": 10, "V": [0, "", "23-80 feet"]}, {"N": 9, "V": [1, 1, 0]}], "CI": "Golden Bamboo - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Bambusa_vulgaris\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Golden%20Bamboo.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Golden Bamboo is a of mutations of Common Bamboo (Bambusa vulgaris), and has golden colored stems. There are narrow green stripes on the stems. Leaves are narrowly lanceshaped, 10-30 cm long, 1.3-2.5 cm broad, both surfaces hairless. It is a typical bamboo for ornamental plantation in the world at present."]}, {"N": 20, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 11]}, {"N": 11, "V": [0, "", "Color: Golden"]}], "CI": "Golden Bamboo - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 10]}]}, {"CN": 4, "CV": [{"N": 3, "V": [1, 0, 4]}, {"N": 11, "V": [0, "", "Color: unknown"]}]}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 5]}, {"N": 25, "V": [0, "", "10 - 30 cm"]}], "CI": "Golden Bamboo - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>

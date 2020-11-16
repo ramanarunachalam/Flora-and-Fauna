@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 446, "HH": [1, 5], "HN": [1, 446], "HB": "Euphorbia umbellata, (Pax) Bruyns", "HC": 11, "gallery": [{"IN": "African Milk Bush Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "African Milk Bush Tree - Flower Bunch.jpg", "IC": [1, 40]}, {"IN": "African Milk Bush Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "African Milk Bush Tree - Canopy Leaf.jpg", "IC": [1, 12]}, {"IN": "African Milk Bush Tree - Leaf New.jpg", "IC": [1, 85]}, {"IN": "African Milk Bush Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "African Milk Bush Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "African Milk Bush Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "African Milk Bush Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "African Milk Bush Tree - 0002.jpg", "IC": [0, "0002"]}, {"IN": "African Milk Bush Tree - 0003.jpg", "IC": [0, "0003"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 446]}, {"N": 31, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Euphorbiaceae"]}, {"N": 8, "V": [0, "", "Euphorbia"]}, {"N": 25, "V": [0, "", "umbellata"]}, {"N": 2, "V": [0, "", "(Pax) Bruyns"]}, {"N": 4, "V": [0, "", "amla"]}, {"N": 5, "V": [0, "", "castor"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "African Milk Bush Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Euphorbia_umbellata\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?465141\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-345129\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Euphorbia grantii is a species of succulent plant in the Euphorbiaceae family. The specific epithet is in honor of explorer James Augustus Grant. It was originally described by Daniel Oliver in 1875. The plant has the common name of African milk bush. In 1952 during the Mau Mau Uprising, the poisonous latex of the plant was used to kill cattle in incidents of biological warfare."]}, {"N": 19, "V": [0, "", ["AFrica"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}], "CI": "African Milk Bush Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 9]}, {"N": 20, "V": [0, "", "Jan-Feb"]}], "CI": "African Milk Bush Tree - Flower.jpg"}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 9]}, {"N": 30, "V": [0, "", "Leathery"]}], "CI": "African Milk Bush Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.979079062408088", "long": "77.64473071237393"}], "mapregion": [["12.979079062408088", "77.64473071237393"], ["12.979079062408088", "77.64473071237393"]]};
+      var data = {"galleryinfo": {"HID": 446, "HH": [1, 5], "HN": [1, 446], "HB": "Euphorbia umbellata, (Pax) Bruyns", "HC": 11, "gallery": [{"IN": "African Milk Bush Tree - Flower.jpg", "IC": [1, 34]}, {"IN": "African Milk Bush Tree - Flower Bunch.jpg", "IC": [1, 40]}, {"IN": "African Milk Bush Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "African Milk Bush Tree - Canopy Leaf.jpg", "IC": [1, 12]}, {"IN": "African Milk Bush Tree - Leaf New.jpg", "IC": [1, 85]}, {"IN": "African Milk Bush Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "African Milk Bush Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "African Milk Bush Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "African Milk Bush Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "African Milk Bush Tree - 0002.jpg", "IC": [0, "0002"]}, {"IN": "African Milk Bush Tree - 0003.jpg", "IC": [0, "0003"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [1, 5, 446]}, {"N": 32, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Euphorbiaceae"]}, {"N": 8, "V": [0, "", "Euphorbia"]}, {"N": 26, "V": [0, "", "umbellata"]}, {"N": 2, "V": [0, "", "(Pax) Bruyns"]}, {"N": 4, "V": [0, "", "amla"]}, {"N": 5, "V": [0, "", "castor"]}, {"N": 25, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "African Milk Bush Tree - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Euphorbia_umbellata\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.ars-grin.gov/cgi-bin/npgs/html/taxon.pl?465141\" target=\"_blank\">ars-grin</a><br /><a href=\"http://www.theplantlist.org/tpl/record/kew-345129\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Euphorbia grantii is a species of succulent plant in the Euphorbiaceae family. The specific epithet is in honor of explorer James Augustus Grant. It was originally described by Daniel Oliver in 1875. The plant has the common name of African milk bush. In 1952 during the Mau Mau Uprising, the poisonous latex of the plant was used to kill cattle in incidents of biological warfare."]}, {"N": 20, "V": [0, "", ["AFrica"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}], "CI": "African Milk Bush Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 9]}, {"N": 21, "V": [0, "", "Jan-Feb"]}], "CI": "African Milk Bush Tree - Flower.jpg"}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 9]}, {"N": 31, "V": [0, "", "Leathery"]}], "CI": "African Milk Bush Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.979079062408088", "long": "77.64473071237393"}], "mapregion": [["12.979079062408088", "77.64473071237393"], ["12.979079062408088", "77.64473071237393"]]};
       tree_module_init(data);
   </script>
 </body>

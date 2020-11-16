@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 289, "HH": [1, 5], "HN": [1, 289], "HB": "Gleditsia ferox, Desf.", "HC": 10, "gallery": [{"IN": "Honey Locust Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Honey Locust Tree - Fruit Falling.jpg", "IC": [1, 62]}, {"IN": "Honey Locust Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Honey Locust Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Honey Locust Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Honey Locust Tree - Branch.jpg", "IC": [1, 4]}, {"IN": "Honey Locust Tree - Buttress.jpg", "IC": [1, 5]}, {"IN": "Honey Locust Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Honey Locust Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Honey Locust Tree - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [1, 5, 289]}, {"N": 31, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Fabaceae"]}, {"N": 29, "V": [0, "", "Caesalpinioideae"]}, {"N": 8, "V": [0, "", "Gleditsia"]}, {"N": 25, "V": [0, "", "ferox"]}, {"N": 2, "V": [0, "", "Desf."]}, {"N": 4, "V": [0, "", "Gulmohar"]}, {"N": 24, "V": [1, 2, 1]}, {"N": 9, "V": [1, 1, 0]}], "CI": "Honey Locust Tree - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Gleditsia_ferox\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.theplantlist.org/tpl/record/ild-32961\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Unknown"]}, {"N": 19, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}], "CI": "Honey Locust Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 4]}, {"N": 11, "V": [0, "", "Color: unknown"]}]}, {"CN": 4, "CV": [{"N": 22, "V": [0, "", "unknown"]}], "CI": "Honey Locust Tree - Fruit.jpg"}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 3]}], "CI": "Honey Locust Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.94898785", "long": "77.58191607"}, {"lat": "12.94907023", "long": "77.58200054"}], "mapregion": [["12.94898785", "77.58191607"], ["12.94907023", "77.58200054"]]};
+      var data = {"galleryinfo": {"HID": 289, "HH": [1, 5], "HN": [1, 289], "HB": "Gleditsia ferox, Desf.", "HC": 10, "gallery": [{"IN": "Honey Locust Tree - Fruit.jpg", "IC": [1, 59]}, {"IN": "Honey Locust Tree - Fruit Falling.jpg", "IC": [1, 62]}, {"IN": "Honey Locust Tree - Canopy.jpg", "IC": [1, 6]}, {"IN": "Honey Locust Tree - Leaf.jpg", "IC": [1, 76]}, {"IN": "Honey Locust Tree - Bark.jpg", "IC": [1, 1]}, {"IN": "Honey Locust Tree - Branch.jpg", "IC": [1, 4]}, {"IN": "Honey Locust Tree - Buttress.jpg", "IC": [1, 5]}, {"IN": "Honey Locust Tree - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Honey Locust Tree - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Honey Locust Tree - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [1, 5, 289]}, {"N": 32, "V": [1, 3, 0]}, {"N": 7, "V": [0, "", "Fabaceae"]}, {"N": 30, "V": [0, "", "Caesalpinioideae"]}, {"N": 8, "V": [0, "", "Gleditsia"]}, {"N": 26, "V": [0, "", "ferox"]}, {"N": 2, "V": [0, "", "Desf."]}, {"N": 4, "V": [0, "", "Gulmohar"]}, {"N": 25, "V": [1, 2, 1]}, {"N": 9, "V": [1, 1, 0]}], "CI": "Honey Locust Tree - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Gleditsia_ferox\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.theplantlist.org/tpl/record/ild-32961\" target=\"_blank\">theplantlist</a>"]}, {"N": 6, "V": [0, "", "Unknown"]}, {"N": 20, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}], "CI": "Honey Locust Tree - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 4]}, {"N": 11, "V": [0, "", "Color: unknown"]}]}, {"CN": 4, "CV": [{"N": 23, "V": [0, "", "unknown"]}], "CI": "Honey Locust Tree - Fruit.jpg"}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 3]}], "CI": "Honey Locust Tree - Leaf.jpg"}], "mapinfo": [{"lat": "12.94898785", "long": "77.58191607"}, {"lat": "12.94907023", "long": "77.58200054"}], "mapregion": [["12.94898785", "77.58191607"], ["12.94907023", "77.58200054"]]};
       tree_module_init(data);
   </script>
 </body>

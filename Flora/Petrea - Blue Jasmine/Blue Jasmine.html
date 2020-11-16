@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Blue Jasmine"], "HB": "Petrea volubilis, L.", "HC": 12, "gallery": [{"IN": "Blue Jasmine - Flower.jpg", "IC": [1, 34]}, {"IN": "Blue Jasmine - Canopy.jpg", "IC": [1, 6]}, {"IN": "Blue Jasmine - Leaf New.jpg", "IC": [1, 85]}, {"IN": "Blue Jasmine - Leaf.jpg", "IC": [1, 76]}, {"IN": "Blue Jasmine - Leaf Falling.jpg", "IC": [1, 78]}, {"IN": "Blue Jasmine - Bark.jpg", "IC": [1, 1]}, {"IN": "Blue Jasmine - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Blue Jasmine - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Blue Jasmine - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Blue Jasmine - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Blue Jasmine - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Blue Jasmine - 0005.jpg", "IC": [0, "0005"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [0, "", "Blue Jasmine"]}, {"N": 31, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Verbenaceae"]}, {"N": 8, "V": [0, "", "Petrea"]}, {"N": 25, "V": [0, "", "volubilis"]}, {"N": 2, "V": [0, "", "L."]}, {"N": 4, "V": [0, "", "Verbena"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 2]}], "CI": "Blue Jasmine - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Petrea_volubilis\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Purple%20Wreath.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Native to Central America, Purple Wreath is a very lovely small climber with drooping long racemes of delicate violet-purple star-like flowers. It is a semi-shrub and semi-climber and the small wooden trunk develops artistic curves over the years. It looks as if an Ikebana expert has shaped it for his floral arrangement. It grows best in sunshine. It flowers in spring and in some areas also in November. The flowers come in raceme reaching over 1 foot long. The true flower, which is purple, lasts a couple of days but the blue bracts remain much longer, slowly turning gray."]}, {"N": 19, "V": [0, "", ["Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}, {"N": 11, "V": [0, "", "Color: gray"]}], "CI": "Blue Jasmine - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 1]}], "CI": "Blue Jasmine - Flower.jpg"}, {"CN": 4, "CV": [{"N": 22, "V": [0, "", "unknown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 12]}], "CI": "Blue Jasmine - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Blue Jasmine"], "HB": "Petrea volubilis, L.", "HC": 12, "gallery": [{"IN": "Blue Jasmine - Flower.jpg", "IC": [1, 34]}, {"IN": "Blue Jasmine - Canopy.jpg", "IC": [1, 6]}, {"IN": "Blue Jasmine - Leaf New.jpg", "IC": [1, 85]}, {"IN": "Blue Jasmine - Leaf.jpg", "IC": [1, 76]}, {"IN": "Blue Jasmine - Leaf Falling.jpg", "IC": [1, 78]}, {"IN": "Blue Jasmine - Bark.jpg", "IC": [1, 1]}, {"IN": "Blue Jasmine - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Blue Jasmine - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Blue Jasmine - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Blue Jasmine - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Blue Jasmine - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Blue Jasmine - 0005.jpg", "IC": [0, "0005"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [0, "", "Blue Jasmine"]}, {"N": 32, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Verbenaceae"]}, {"N": 8, "V": [0, "", "Petrea"]}, {"N": 26, "V": [0, "", "volubilis"]}, {"N": 2, "V": [0, "", "L."]}, {"N": 4, "V": [0, "", "Verbena"]}, {"N": 25, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 2]}], "CI": "Blue Jasmine - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Petrea_volubilis\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Purple%20Wreath.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "Native to Central America, Purple Wreath is a very lovely small climber with drooping long racemes of delicate violet-purple star-like flowers. It is a semi-shrub and semi-climber and the small wooden trunk develops artistic curves over the years. It looks as if an Ikebana expert has shaped it for his floral arrangement. It grows best in sunshine. It flowers in spring and in some areas also in November. The flowers come in raceme reaching over 1 foot long. The true flower, which is purple, lasts a couple of days but the blue bracts remain much longer, slowly turning gray."]}, {"N": 20, "V": [0, "", ["Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 5]}, {"N": 11, "V": [0, "", "Color: gray"]}], "CI": "Blue Jasmine - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 1]}], "CI": "Blue Jasmine - Flower.jpg"}, {"CN": 4, "CV": [{"N": 23, "V": [0, "", "unknown"]}]}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 12]}], "CI": "Blue Jasmine - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>

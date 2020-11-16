@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Poinsettia"], "HB": "Euphorbia pulcherrima, Willd. ex Klotzsch", "HC": 7, "gallery": [{"IN": "Poinsettia - Flower.jpg", "IC": [1, 34]}, {"IN": "Poinsettia - Canopy.jpg", "IC": [1, 6]}, {"IN": "Poinsettia - Leaf.jpg", "IC": [1, 76]}, {"IN": "Poinsettia - Bark.jpg", "IC": [1, 1]}, {"IN": "Poinsettia - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Poinsettia - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Poinsettia - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [0, "", "Poinsettia"]}, {"N": 31, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Euphorbiaceae"]}, {"N": 8, "V": [0, "", "Euphorbia"]}, {"N": 25, "V": [0, "", "pulcherrima"]}, {"N": 2, "V": [0, "", "Willd. ex Klotzsch"]}, {"N": 4, "V": [0, "", "castor"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Poinsettia - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Euphorbia_pulcherrima\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Poinsettia.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "The poinsettia's species name pulcherrima means \"most beautiful\" and that it is! Euphorbia pulcherrima is named after Dr. J.R. Poinsett, and was introduced to gardeners in the early 19th century. The species is a tall, rangy shrub that grows to a height of 10 ft. It has large, dark green, oval leaves that are \"toothed\" on the sides and pointed at the tips. They emerge from smooth green erect stems. Flowers are borne at the stem tips in winter. The actual flowers are quite small (they are the yellow structures at the center of the brilliantly colored \"bracts\") The bracts are actually modified leaves - in the species there usually are 8 to 10 bracts that are 4-7 in long."]}, {"N": 19, "V": [0, "", ["Asia"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 2]}, {"N": 11, "V": [0, "", "Color: grey brown"]}], "CI": "Poinsettia - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 11]}, {"N": 20, "V": [0, "", "Mar-Apr"]}, {"N": 11, "V": [0, "", "Color: white and yellow"]}], "CI": "Poinsettia - Flower.jpg"}, {"CN": 4, "CV": [{"N": 30, "V": [0, "", "unknown"]}]}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 12]}], "CI": "Poinsettia - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Poinsettia"], "HB": "Euphorbia pulcherrima, Willd. ex Klotzsch", "HC": 7, "gallery": [{"IN": "Poinsettia - Flower.jpg", "IC": [1, 34]}, {"IN": "Poinsettia - Canopy.jpg", "IC": [1, 6]}, {"IN": "Poinsettia - Leaf.jpg", "IC": [1, 76]}, {"IN": "Poinsettia - Bark.jpg", "IC": [1, 1]}, {"IN": "Poinsettia - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Poinsettia - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Poinsettia - 0002.jpg", "IC": [0, "0002"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [0, "", "Poinsettia"]}, {"N": 32, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Euphorbiaceae"]}, {"N": 8, "V": [0, "", "Euphorbia"]}, {"N": 26, "V": [0, "", "pulcherrima"]}, {"N": 2, "V": [0, "", "Willd. ex Klotzsch"]}, {"N": 4, "V": [0, "", "castor"]}, {"N": 25, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Poinsettia - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", "<a href=\"http://en.wikipedia.org/wiki/Euphorbia_pulcherrima\" target=\"_blank\">wikipedia</a><br /><a href=\"http://www.flowersofindia.net/catalog/slides/Poinsettia.html\" target=\"_blank\">flowersofindia</a>"]}, {"N": 6, "V": [0, "", "The poinsettia's species name pulcherrima means \"most beautiful\" and that it is! Euphorbia pulcherrima is named after Dr. J.R. Poinsett, and was introduced to gardeners in the early 19th century. The species is a tall, rangy shrub that grows to a height of 10 ft. It has large, dark green, oval leaves that are \"toothed\" on the sides and pointed at the tips. They emerge from smooth green erect stems. Flowers are borne at the stem tips in winter. The actual flowers are quite small (they are the yellow structures at the center of the brilliantly colored \"bracts\") The bracts are actually modified leaves - in the species there usually are 8 to 10 bracts that are 4-7 in long."]}, {"N": 20, "V": [0, "", ["Asia"]]}]}, {"CN": 7, "CV": [{"N": 12, "V": [0, "", "<b>Common</b>: </i>Poinsettia, Mana angangbi</i>"]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 2]}, {"N": 11, "V": [0, "", "Color: grey brown"]}], "CI": "Poinsettia - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 11]}, {"N": 21, "V": [0, "", "Mar-Apr"]}, {"N": 11, "V": [0, "", "Color: white and yellow"]}], "CI": "Poinsettia - Flower.jpg"}, {"CN": 4, "CV": [{"N": 31, "V": [0, "", "unknown"]}]}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 12]}], "CI": "Poinsettia - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>

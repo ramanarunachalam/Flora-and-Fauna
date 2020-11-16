@@ -36,24 +36,6 @@
     </div>
   </div>
 
-  <div id="MAP_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MAP_MODEL_LABEL" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 id="MAP_MODEL_LABEL">Map</h3>
-        </div>
-        <div class="modal-body">
-          <div id="MAP_MODAL_IMAGE">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="text/html" id="card-info-template">
     {{#galleryinfo}}
     <h2>
@@ -119,7 +101,7 @@
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="../../js/trees.js"></script>
   <script type="text/javascript">
-      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Yellow Magnolia"], "HB": "Magnolia mutabilis, Regel", "HC": 13, "gallery": [{"IN": "Yellow Magnolia - Flower Bud.jpg", "IC": [1, 35]}, {"IN": "Yellow Magnolia - Fruit.jpg", "IC": [1, 59]}, {"IN": "Yellow Magnolia - Canopy.jpg", "IC": [1, 6]}, {"IN": "Yellow Magnolia - Leaf.jpg", "IC": [1, 76]}, {"IN": "Yellow Magnolia - Bark.jpg", "IC": [1, 1]}, {"IN": "Yellow Magnolia - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Yellow Magnolia - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Yellow Magnolia - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Yellow Magnolia - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Yellow Magnolia - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Yellow Magnolia - 0005.jpg", "IC": [0, "0005"]}, {"IN": "Yellow Magnolia - 0006.jpg", "IC": [0, "0006"]}, {"IN": "Yellow Magnolia - 0007.jpg", "IC": [0, "0007"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 18, "V": [0, "", "Yellow Magnolia"]}, {"N": 31, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Magnoliaceae"]}, {"N": 8, "V": [0, "", "Magnolia"]}, {"N": 25, "V": [0, "", "mutabilis"]}, {"N": 2, "V": [0, "", "Regel"]}, {"N": 4, "V": [0, "", "magnolia"]}, {"N": 24, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Yellow Magnolia - Canopy.jpg"}, {"CN": 8, "CV": [{"N": 16, "V": [0, "", ""]}, {"N": 6, "V": [0, "", "A tall shrub with large leaves. The plant needs warm, humid regions. It is a morning blooming flower. The scent of the flower is quite strong."]}, {"N": 19, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 4]}], "CI": "Yellow Magnolia - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 11]}], "CI": "Yellow Magnolia - Flower Bud.jpg"}, {"CN": 4, "CV": [{"N": 22, "V": [0, "", "cone"]}], "CI": "Yellow Magnolia - Fruit.jpg"}, {"CN": 7, "CV": [{"N": 31, "V": [1, 4, 11]}], "CI": "Yellow Magnolia - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
+      var data = {"galleryinfo": {"HID": 0, "HH": [1, 5], "HN": [0, "Yellow Magnolia"], "HB": "Magnolia mutabilis, Regel", "HC": 13, "gallery": [{"IN": "Yellow Magnolia - Flower Bud.jpg", "IC": [1, 35]}, {"IN": "Yellow Magnolia - Fruit.jpg", "IC": [1, 59]}, {"IN": "Yellow Magnolia - Canopy.jpg", "IC": [1, 6]}, {"IN": "Yellow Magnolia - Leaf.jpg", "IC": [1, 76]}, {"IN": "Yellow Magnolia - Bark.jpg", "IC": [1, 1]}, {"IN": "Yellow Magnolia - 0000.jpg", "IC": [0, "0000"]}, {"IN": "Yellow Magnolia - 0001.jpg", "IC": [0, "0001"]}, {"IN": "Yellow Magnolia - 0002.jpg", "IC": [0, "0002"]}, {"IN": "Yellow Magnolia - 0003.jpg", "IC": [0, "0003"]}, {"IN": "Yellow Magnolia - 0004.jpg", "IC": [0, "0004"]}, {"IN": "Yellow Magnolia - 0005.jpg", "IC": [0, "0005"]}, {"IN": "Yellow Magnolia - 0006.jpg", "IC": [0, "0006"]}, {"IN": "Yellow Magnolia - 0007.jpg", "IC": [0, "0007"]}]}, "cardinfo": [{"CN": 6, "CV": [{"N": 19, "V": [0, "", "Yellow Magnolia"]}, {"N": 32, "V": [0, "", "Shrub"]}, {"N": 7, "V": [0, "", "Magnoliaceae"]}, {"N": 8, "V": [0, "", "Magnolia"]}, {"N": 26, "V": [0, "", "mutabilis"]}, {"N": 2, "V": [0, "", "Regel"]}, {"N": 4, "V": [0, "", "magnolia"]}, {"N": 25, "V": [1, 2, 2]}, {"N": 9, "V": [1, 1, 1]}], "CI": "Yellow Magnolia - Canopy.jpg"}, {"CN": 9, "CV": [{"N": 17, "V": [0, "", ""]}, {"N": 6, "V": [0, "", "A tall shrub with large leaves. The plant needs warm, humid regions. It is a morning blooming flower. The scent of the flower is quite strong."]}, {"N": 20, "V": [0, "", ["India"]]}]}, {"CN": 0, "CV": [{"N": 3, "V": [1, 0, 4]}], "CI": "Yellow Magnolia - Bark.jpg"}, {"CN": 3, "CV": [{"N": 3, "V": [1, 0, 11]}], "CI": "Yellow Magnolia - Flower Bud.jpg"}, {"CN": 4, "CV": [{"N": 23, "V": [0, "", "cone"]}], "CI": "Yellow Magnolia - Fruit.jpg"}, {"CN": 8, "CV": [{"N": 32, "V": [1, 4, 11]}], "CI": "Yellow Magnolia - Leaf.jpg"}], "mapinfo": [], "mapregion": []};
       tree_module_init(data);
   </script>
 </body>
