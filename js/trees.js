@@ -407,13 +407,20 @@ function create_icons() {
 
 function get_url_info(handle_map, tree_id, name, level) {
     var handle = handle_map[tree_id];
-    var prefix = '';
-    if (level == 'top') {
-        prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
+    if (level == 'module') {
+        var prefix = '';
+    } else {
+        var prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
+    }
+    if (level == 'popup') {
+        var image_url = prefix + handle[2] + ' - ' + handle[3] + '.jpg'
+        var image_stype = 'style="width: 240px; height: 180px;"';
+    } else {
+        var image_url = prefix + 'Thumbnails/' + handle[2] + ' - ' + handle[3] + '.thumbnail'
+        var image_stype = '';
     }
     var url = prefix + handle[2] + '.html'
-    var image_url = prefix + 'Thumbnails/' + handle[2] + ' - ' + handle[3] + '.thumbnail'
-    var html = '<a href="' + url + '" ><div class="thumbnail"><img src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
+    var html = '<a href="' + url + '" ><div class="thumbnail"><img ' + image_stype + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
     var blooming = handle[4];
     return [ html, blooming ]
 }
@@ -524,8 +531,9 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                 continue;
             }
             var name = key_name[tree_id];
-            const [ html, blooming ] = get_url_info(handle_map, tree_id, name, 'top');
-            var icon = get_needed_icon(a_id, tree_id, blooming);
+            const [ popup_html, popup_blooming ] = get_url_info(handle_map, tree_id, name, 'popup');
+            const [ tooltip_html, tooltip_blooming ] = get_url_info(handle_map, tree_id, name, 'tooltip');
+            var icon = get_needed_icon(a_id, tree_id, popup_blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
             for (var i = 0; i < latlong_list.length; i++) {
                 var marker = latlong_list[i];
@@ -534,8 +542,8 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                 var distance = geo_distance(c_lat, c_long, m_lat, m_long)
                 if (distance <= DISTANCE_THRESHOLD) {
                     var marker = L.marker([m_lat, m_long], {icon: icon});
-                    var popup = L.popup({ maxWidth: 600, maxHeight: 480 }).setContent(html);
-                    marker.bindPopup(popup).bindTooltip(html, { direction: 'top' }).addTo(map);
+                    var popup = L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
+                    marker.bindPopup(popup).bindTooltip(tooltip_html, { direction: 'top' }).addTo(map);
                     /* marker.on('click', marker_on_click); */
                 }
             }
