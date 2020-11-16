@@ -407,15 +407,13 @@ function create_icons() {
 
 function get_url_info(handle_map, tree_id, name, level) {
     var handle = handle_map[tree_id];
+    var prefix = '';
     if (level == 'top') {
-        var url = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/' + handle[2] + '.html'
-        var image_url = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/' + handle[2] + ' - ' + handle[3] + '.jpg'
-        var html = '<a href="' + url + '" ><div class="thumbnail"><img style="width: 240px; height: 180px;" src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
-    } else {
-        var url = handle[2] + '.html'
-        var image_url = handle[2] + ' - ' + handle[3] + '.jpg'
-        var html = '<a href="' + url + '" ><div class="thumbnail"><img style="width: 240px; height: 180px;" src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
+        prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
     }
+    var url = prefix + handle[2] + '.html'
+    var image_url = prefix + 'Thumbnails/' + handle[2] + ' - ' + handle[3] + '.thumbnail'
+    var html = '<a href="' + url + '" ><div class="thumbnail"><img src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
     var blooming = handle[4];
     return [ html, blooming ]
 }
@@ -447,7 +445,7 @@ function show_module_latlong_in_osm(tree_id, name) {
     for (var i = 0; i < markers.length; i++) {
         var marker = L.marker([markers[i].lat, markers[i].long], {icon: icon});
         var popup = L.popup({ maxWidth: 600, maxHeight: 480 }).setContent(html);
-        marker.bindPopup(popup).bindTooltip(name).addTo(map);
+        marker.bindPopup(popup).bindTooltip(html, { direction: 'top' }).addTo(map);
     }
     map.fitBounds(bbox);
     map.invalidateSize();
@@ -537,7 +535,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                 if (distance <= DISTANCE_THRESHOLD) {
                     var marker = L.marker([m_lat, m_long], {icon: icon});
                     var popup = L.popup({ maxWidth: 600, maxHeight: 480 }).setContent(html);
-                    marker.bindPopup(popup).bindTooltip(name).addTo(map);
+                    marker.bindPopup(popup).bindTooltip(html, { direction: 'top' }).addTo(map);
                     /* marker.on('click', marker_on_click); */
                 }
             }
