@@ -520,6 +520,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
         var DISTANCE_THRESHOLD = 0.2;
     }
 
+    var marker_count = 0;
     var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
@@ -545,6 +546,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                     var popup = L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
                     marker.bindPopup(popup).bindTooltip(tooltip_html, { direction: 'top' }).addTo(map);
                     /* marker.on('click', marker_on_click); */
+                    marker_count += 1;
                 }
             }
         }
