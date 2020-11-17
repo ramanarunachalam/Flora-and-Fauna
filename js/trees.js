@@ -137,6 +137,8 @@ function tree_simple_init(data) {
 function tree_intro_init(data) {
     window.parent.LANG_OPT = 'English';
     window.parent.search_initialized = false;
+    window.parent.area_marker_list = [];
+
     window.onload = tree_info_init;
 
     render_template_data('#carousel-template', '#SLIDERINFO', data);
@@ -458,14 +460,9 @@ function show_module_latlong_in_osm(tree_id, name) {
     map.invalidateSize();
 }
 
-function get_needed_icon(a_id, tree_id, blooming) {
+function get_needed_icon(selected, blooming) {
     var icon = window.parent.green_tree_icon;
-    var area = window.parent.AREA_TYPE;
-    if (area != 'trees') {
-        return icon;
-    }
-
-    if (tree_id == a_id) {
+    if (selected) {
         if (blooming) {
             icon = window.parent.red_bloom_icon;
         } else {
@@ -480,7 +477,13 @@ function get_needed_icon(a_id, tree_id, blooming) {
 }
 
 function marker_on_click(e) {
-    console.log(e.latlng);
+    var tree_id = e.target.tree_id;
+    var area_marker_list = window.parent.area_marker_list;
+    for (var i = 0; i < area_marker_list.length; i++) {
+        var marker = area_marker_list[i];
+        var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
+        marker.setIcon(icon);
+    }
 }
 
 function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
@@ -520,7 +523,16 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
         var DISTANCE_THRESHOLD = 0.2;
     }
 
-    var marker_count = 0;
+    var area_marker_list = window.parent.area_marker_list;
+    for (var i = 0; i < area_marker_list.length; i++) {
+        area_marker_list[i].remove();
+    }
+
+    var selected = false;
+    if (area == 'trees') {
+        selected = true;
+    }
+
     var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
@@ -534,23 +546,26 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
             var name = key_name[tree_id];
             const [ popup_html, popup_blooming ] = get_url_info(handle_map, tree_id, name, 'popup');
             const [ tooltip_html, tooltip_blooming ] = get_url_info(handle_map, tree_id, name, 'tooltip');
-            var icon = get_needed_icon(a_id, tree_id, popup_blooming);
+            var icon = get_needed_icon((selected && a_id == tree_id), popup_blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
             for (var i = 0; i < latlong_list.length; i++) {
-                var marker = latlong_list[i];
-                var m_lat = parseFloat(marker[0]);
-                var m_long = parseFloat(marker[1]);
+                var latlong = latlong_list[i];
+                var m_lat = parseFloat(latlong[0]);
+                var m_long = parseFloat(latlong[1]);
                 var distance = geo_distance(c_lat, c_long, m_lat, m_long)
                 if (distance <= DISTANCE_THRESHOLD) {
                     var marker = L.marker([m_lat, m_long], {icon: icon});
                     var popup = L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
                     marker.bindPopup(popup).bindTooltip(tooltip_html, { direction: 'top' }).addTo(map);
-                    /* marker.on('click', marker_on_click); */
-                    marker_count += 1;
+                    marker.on('click', marker_on_click);
+                    marker.tree_id = tree_id;
+                    marker.blooming = popup_blooming;
+                    area_marker_list.push(marker);
                 }
             }
         }
     }
+    window.parent.area_marker_list = area_marker_list;
 
     var item_data = window.parent.AREA_DATA;
     var tree_list = [];
