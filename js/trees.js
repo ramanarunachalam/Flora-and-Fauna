@@ -567,6 +567,16 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     }
     window.parent.area_marker_list = area_marker_list;
 
+    /*
+    var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
+    L.Routing.control({
+      waypoints: [
+        L.latLng(c_lat, c_long),
+        L.latLng(latlong.lat, latlong.lng)
+      ]
+    }).addTo(map);
+    */
+
     var item_data = window.parent.AREA_DATA;
     var tree_list = [];
     if (area == 'parks') {
