@@ -488,6 +488,14 @@ function marker_on_click(e) {
     }
 }
 
+function draw_map_on_move(ev) {
+    var map = window.parent.map_area_map;
+    var a_name = window.parent.map_area_name;
+    var a_id = window.parent.map_area_id;
+    var latlong = map.getCenter();
+    show_area_latlong_in_osm(a_name, a_id, latlong.lat, latlong.lng);
+}
+
 function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
     var lang_obj = window.parent.LANG_DATA;
@@ -498,20 +506,17 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     var english_lang_map = lang_obj['English'];
     var area = window.parent.AREA_TYPE;
 
+    window.parent.map_area_name = a_name;
+    window.parent.map_area_id = a_id;
+
     if ( window.parent.map_initialized ) {
-        var map = window.parent.MAP;
+        var map = window.parent.map_area_map;
         map.setView([c_lat, c_long]);
     } else {
         var map = create_osm_map(id_name, c_lat, c_long);
-        window.parent.MAP = map;
-
-        map.on("contextmenu", function (ev) {
-           var tree_id = 0;
-           if (area == 'trees') {
-               tree_id = a_id;
-           }
-           show_area_latlong_in_osm(a_name, tree_id, ev.latlng.lat, ev.latlng.lng);
-        });
+        window.parent.map_area_map = map;
+        map.on('zoomend', draw_map_on_move);
+        map.on('dragend', draw_map_on_move);
     }
     window.parent.map_initialized = true;
 
@@ -543,6 +548,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     var max_lat = 0;
     var min_long = 0;
     var max_long = 0;
+    var bounds = map.getBounds();
 
     var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
@@ -579,10 +585,11 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                         min_long = Math.min(m_long, min_long);
                         max_long = Math.max(m_long, min_long);
                     }
+                    var visible = true;
                 } else {
-                    var distance = geo_distance(c_lat, c_long, m_lat, m_long)
+                    var visible = bounds.contains([m_lat, m_long]);
                 }
-                if (distance <= DISTANCE_THRESHOLD) {
+                if (visible) {
                     var marker = L.marker([m_lat, m_long], {icon: icon});
                     var popup = L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
                     marker.bindPopup(popup).bindTooltip(tooltip_html, { direction: 'top' }).addTo(map);
@@ -593,18 +600,6 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
                 }
             }
         }
-    }
-    if (area == 'trees') {
-        if (min_lat == 0 && max_lat == 0) {
-            min_lat = BANGALORE_LAT;
-            max_lat = BANGALORE_LAT;
-            min_long = BANGALORE_LONG;
-            max_long = BANGALORE_LONG;
-        }
-        var bbox = [ [min_lat, min_long], [max_lat, max_long] ];
-        map.fitBounds(bbox);
-        map.panTo([(min_lat + max_lat) / 2, (min_long + max_long) / 2]);
-        /* map.invalidateSize(); */
     }
     window.parent.area_marker_list = area_marker_list;
 
