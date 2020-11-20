@@ -497,14 +497,14 @@ function draw_map_on_move(ev) {
     var a_name = window.parent.map_area_name;
     var a_id = window.parent.map_area_id;
     var latlong = map.getCenter();
-    show_area_latlong_in_osm(a_name, a_id, latlong.lat, latlong.lng);
+    show_area_latlong_in_osm(a_name, a_id, 0, latlong.lat, latlong.lng);
 }
 
 function handle_geocoder_mark() {
     draw_map_on_move();
 }
 
-function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
+function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
     var lang_obj = window.parent.LANG_DATA;
     var lang = window.parent.LANG_OPT;
@@ -547,9 +547,11 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
         area_marker_list[i].remove();
     }
 
-    var selected = false;
+    var s_id = 0;
     if (area == 'trees') {
-        selected = true;
+        s_id = a_id;
+    } else if (t_id != 0) {
+        s_id = t_id;
     }
 
     var min_lat = 0;
@@ -574,7 +576,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
             var name = key_name[tree_id];
             const [ popup_html, popup_blooming ] = get_url_info(handle_map, tree_id, name, 'popup');
             const [ tooltip_html, tooltip_blooming ] = get_url_info(handle_map, tree_id, name, 'tooltip');
-            var icon = get_needed_icon((selected && a_id == tree_id), popup_blooming);
+            var icon = get_needed_icon((s_id == tree_id), popup_blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
             for (var i = 0; i < latlong_list.length; i++) {
                 var latlong = latlong_list[i];
@@ -639,11 +641,14 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
         var tree_list = item_data['wards']['wardtrees'][a_id.toString()];
     }
     if (tree_list != undefined && tree_list.length > 0) {
+        var new_tree_list = [];
         for (var i = 0; i < tree_list.length; i++) {
             var tn = tree_list[i];
-            tn['TN'] = key_name[tn['TN']];
+            var tid = tn['TN'];
+            var t_name = key_name[tid];
+            new_tree_list.push({ 'TN' : t_name, 'TC' : tn['TC'], 'AID' : a_id, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
         }
-        var data = { 'trees' : tree_list };
+        var data = { 'trees' : new_tree_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
     }
 }
@@ -713,6 +718,6 @@ function tree_area_init(item_data) {
         window.parent.GRID_CENTRE = grid_obj['grid centre'];
 
         var name = area[0].toUpperCase() + area.slice(1);
-        show_area_latlong_in_osm(name, 0, lat_long[0], lat_long[1]);
+        show_area_latlong_in_osm(name, 0, 0, lat_long[0], lat_long[1]);
     });
 }

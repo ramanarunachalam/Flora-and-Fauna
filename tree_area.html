@@ -37,7 +37,7 @@
              <ul>
                  {{#parks}}
                  <li class="nav-item">
-                     <a href="javascript:show_area_latlong_in_osm('{{PN}}', '{{PID}}', '{{PLAT}}', '{{PLONG}}');">
+                     <a href="javascript:show_area_latlong_in_osm('{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
                         {{PID}}. {{PN}}
                      </a>
                  </li>
@@ -49,7 +49,7 @@
       {{#wardinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">
-             <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', '{{ALAT}}', '{{ALONG}}');">
+             <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
                 {{AID}}. {{AN}} ({{AC}})
              </a>
          </li>
@@ -58,7 +58,7 @@
       {{#mapinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">
-             <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', '{{ALAT}}', '{{ALONG}}');">
+             <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
                 {{AID}}. {{AN}} ({{AC}})
              </a>
          </li>
@@ -83,7 +83,16 @@
       <table border="0" cellpadding="4" class="table table-striped table-condensed" >
       <tbody>
           {{#trees}}
-           <tr><td><b><strong>{{TN}}</strong></b></td><td><em>{{{TC}}}</em></td></tr>
+           <tr>
+               <td>
+                 <a href="javascript:show_area_latlong_in_osm('{{TN}}', '{{AID}}', '{{TID}}', '{{ALAT}}', '{{ALONG}}');">
+                    <b><strong>{{TN}}</strong></b>
+                 </a>
+               </td>
+               <td>
+                 <em>{{{TC}}}</em>
+               </td>
+           </tr>
           {{/trees}}
       </tbody>
       </table>
