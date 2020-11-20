@@ -509,7 +509,8 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     window.parent.map_area_name = a_name;
     window.parent.map_area_id = a_id;
 
-    if ( window.parent.map_initialized ) {
+    var state = window.parent.map_initialized;
+    if (state) {
         var map = window.parent.map_area_map;
         map.setView([c_lat, c_long]);
     } else {
@@ -528,7 +529,6 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     } else if (area == 'wards') {
         var DISTANCE_THRESHOLD = 1.0;
     } else if (area == 'current') {
-        map.locate({setView: true, maxZoom: 16}); 
         var latlong = map.getCenter();
         c_lat = latlong.lat;
         c_long = latlong.lng;
@@ -603,15 +603,25 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     }
     window.parent.area_marker_list = area_marker_list;
 
-    /*
-    var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
-    L.Routing.control({
-      waypoints: [
-        L.latLng(c_lat, c_long),
-        L.latLng(latlong.lat, latlong.lng)
-      ]
-    }).addTo(map);
-    */
+    if (area == 'current') {
+        if (state) {
+            var routing = window.parent.map_area_routing;
+        } else {
+            var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
+            var routing = L.Routing.control({
+              waypoints: [
+                L.latLng(c_lat, c_long),
+                L.latLng(latlong.lat, latlong.lng)
+              ],
+              geocoder: L.Control.Geocoder.nominatim()
+            });
+            routing.addTo(map);
+            /*
+            routing.hide();
+            */
+        }
+        window.parent.map_area_routing = routing;
+    }
 
     var item_data = window.parent.AREA_DATA;
     var tree_list = [];
