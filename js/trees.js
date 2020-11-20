@@ -368,7 +368,7 @@ function geo_distance(lat1, lon1, lat2, lon2, unit) {
     }
 }
 
-function create_osm_map(id_name, c_lat, c_long) {
+function create_osm_map(module, id_name, c_lat, c_long) {
     var map = L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 2, maxZoom: 21 });
 
     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -378,7 +378,11 @@ function create_osm_map(id_name, c_lat, c_long) {
       maxZoom: 21 
     }).addTo(map);
 
-    L.Control.geocoder().addTo(map);
+    var geocoder = L.Control.geocoder();
+    geocoder.addTo(map);
+    if (module == 'area') {
+        geocoder.on('markgeocode', handle_geocoder_mark);
+    }
     return map;
 }
 
@@ -452,7 +456,7 @@ function show_module_latlong_in_osm(tree_id, name) {
     } else {
         var icon = window.parent.parent_green_tree_icon;
     }
-    var map = create_osm_map(id_name, c_lat, c_long);
+    var map = create_osm_map('tree', id_name, c_lat, c_long);
     for (var i = 0; i < markers.length; i++) {
         var marker = L.marker([markers[i].lat, markers[i].long], {icon: icon});
         var popup = L.popup({ maxWidth: 600, maxHeight: 480 }).setContent(html);
@@ -496,6 +500,10 @@ function draw_map_on_move(ev) {
     show_area_latlong_in_osm(a_name, a_id, latlong.lat, latlong.lng);
 }
 
+function handle_geocoder_mark() {
+    draw_map_on_move();
+}
+
 function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
     var id_name = 'MAPINFO';
     var lang_obj = window.parent.LANG_DATA;
@@ -514,7 +522,7 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
         var map = window.parent.map_area_map;
         map.setView([c_lat, c_long]);
     } else {
-        var map = create_osm_map(id_name, c_lat, c_long);
+        var map = create_osm_map('area', id_name, c_lat, c_long);
         window.parent.map_area_map = map;
         map.on('zoomend', draw_map_on_move);
         map.on('dragend', draw_map_on_move);
@@ -523,9 +531,9 @@ function show_area_latlong_in_osm(a_name, a_id, c_lat, c_long) {
 
     $('#TITLE_HEADER').html(a_name);
 
-    var DISTANCE_THRESHOLD = 0.2;
+    var DISTANCE_THRESHOLD = 0.5;
     if (area == 'parks') {
-        var DISTANCE_THRESHOLD = 0.3;
+        var DISTANCE_THRESHOLD = 0.5;
     } else if (area == 'wards') {
         var DISTANCE_THRESHOLD = 1.0;
     } else if (area == 'current') {
