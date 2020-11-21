@@ -484,6 +484,7 @@ function get_needed_icon(selected, blooming) {
 
 function marker_on_click(e) {
     var tree_id = e.target.tree_id;
+    window.parent.map_tree_id = tree_id;
     var area_marker_list = window.parent.area_marker_list;
     for (var i = 0; i < area_marker_list.length; i++) {
         var marker = area_marker_list[i];
@@ -496,8 +497,9 @@ function draw_map_on_move(ev) {
     var map = window.parent.map_area_map;
     var a_name = window.parent.map_area_name;
     var a_id = window.parent.map_area_id;
+    var t_id = window.parent.map_tree_id;
     var latlong = map.getCenter();
-    show_area_latlong_in_osm(a_name, a_id, 0, latlong.lat, latlong.lng);
+    show_area_latlong_in_osm(a_name, a_id, t_id, latlong.lat, latlong.lng);
 }
 
 function handle_geocoder_mark() {
@@ -516,6 +518,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
 
     window.parent.map_area_name = a_name;
     window.parent.map_area_id = a_id;
+    window.parent.map_tree_id = t_id;
 
     var state = window.parent.map_initialized;
     if (state) {
@@ -546,6 +549,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     for (var i = 0; i < area_marker_list.length; i++) {
         area_marker_list[i].remove();
     }
+    area_marker_list = [];
 
     var s_id = 0;
     if (area == 'trees') {
@@ -560,6 +564,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     var max_long = 0;
     var bounds = map.getBounds();
 
+    var count = 0;
     var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
@@ -607,6 +612,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                     marker.tree_id = tree_id;
                     marker.blooming = popup_blooming;
                     area_marker_list.push(marker);
+                    count += 1;
                 }
             }
         }
@@ -633,22 +639,26 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         window.parent.map_area_routing = routing;
     }
 
-    var item_data = window.parent.AREA_DATA;
-    var tree_list = [];
-    if (area == 'parks') {
-        var tree_list = item_data['parks']['parktrees'][a_id.toString()];
-    } else if (area == 'wards') {
-        var tree_list = item_data['wards']['wardtrees'][a_id.toString()];
-    }
-    if (tree_list != undefined && tree_list.length > 0) {
-        var new_tree_list = [];
-        for (var i = 0; i < tree_list.length; i++) {
-            var tn = tree_list[i];
-            var tid = tn['TN'];
-            var t_name = key_name[tid];
-            new_tree_list.push({ 'TN' : t_name, 'TC' : tn['TC'], 'AID' : a_id, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
+    var tree_dict = {};
+    for (var i = 0; i < area_marker_list.length; i++) {
+        var marker = area_marker_list[i]; 
+        var tid = marker.tree_id; 
+        if (tree_dict.hasOwnProperty(tid)) {
+            tree_dict[tid] += 1;
+        } else {
+            tree_dict[tid] = 1;
         }
-        var data = { 'trees' : new_tree_list };
+    }
+    var tree_list = [];
+    for (var tid in tree_dict) {
+        if (!tree_dict.hasOwnProperty(tid)) {
+            continue;
+        }
+        var t_name = key_name[tid];
+        tree_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'AID' : a_id, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
+    }
+    if (tree_list.length > 0) {
+        var data = { 'trees' : tree_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
     }
 }
