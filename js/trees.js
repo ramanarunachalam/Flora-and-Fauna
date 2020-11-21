@@ -658,6 +658,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         tree_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'AID' : a_id, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
     }
     if (tree_list.length > 0) {
+        tree_list.sort(function (a, b) { return b.TC - a.TC; });
         var data = { 'trees' : tree_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
     }
