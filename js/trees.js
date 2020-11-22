@@ -499,7 +499,9 @@ function draw_map_on_move(ev) {
     var a_id = window.parent.map_area_id;
     var t_id = window.parent.map_tree_id;
     var latlong = map.getCenter();
+    window.parent.map_area_move = true;
     show_area_latlong_in_osm(a_name, a_id, t_id, latlong.lat, latlong.lng);
+    window.parent.map_area_move = false;
 }
 
 function handle_geocoder_mark(ev) {
@@ -531,6 +533,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     } else {
         var map = create_osm_map('area', id_name, c_lat, c_long);
         window.parent.map_area_map = map;
+        window.parent.map_area_move = false;
         map.on('zoomend', draw_map_on_move);
         map.on('dragend', draw_map_on_move);
     }
@@ -615,6 +618,11 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         }
     }
     window.parent.area_marker_list = area_marker_list;
+
+    if (area == 'trees' && !window.parent.map_area_move && area_marker_list.length > 0) {
+        var group = new L.featureGroup(area_marker_list);
+        map.fitBounds(group.getBounds());
+    }
 
     if (area == 'current') {
         if (state) {
