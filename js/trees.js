@@ -369,7 +369,7 @@ function geo_distance(lat1, lon1, lat2, lon2, unit) {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long) {
-    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 2, maxZoom: 21 });
+    var map = L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 12, maxZoom: 21 });
 
     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -502,8 +502,8 @@ function draw_map_on_move(ev) {
     show_area_latlong_in_osm(a_name, a_id, t_id, latlong.lat, latlong.lng);
 }
 
-function handle_geocoder_mark() {
-    draw_map_on_move();
+function handle_geocoder_mark(ev) {
+    draw_map_on_move(ev);
 }
 
 function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
@@ -523,6 +523,10 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     var state = window.parent.map_initialized;
     if (state) {
         var map = window.parent.map_area_map;
+        var area_marker_list = window.parent.area_marker_list;
+        for (var i = 0; i < area_marker_list.length; i++) {
+            area_marker_list[i].remove();
+        }
         map.setView([c_lat, c_long]);
     } else {
         var map = create_osm_map('area', id_name, c_lat, c_long);
@@ -545,12 +549,6 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         c_long = latlong.lng;
     }
 
-    var area_marker_list = window.parent.area_marker_list;
-    for (var i = 0; i < area_marker_list.length; i++) {
-        area_marker_list[i].remove();
-    }
-    area_marker_list = [];
-
     var s_id = 0;
     if (area == 'trees') {
         s_id = a_id;
@@ -564,7 +562,7 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     var max_long = 0;
     var bounds = map.getBounds();
 
-    var count = 0;
+    var area_marker_list = [];
     var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
@@ -612,7 +610,6 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                     marker.tree_id = tree_id;
                     marker.blooming = popup_blooming;
                     area_marker_list.push(marker);
-                    count += 1;
                 }
             }
         }
