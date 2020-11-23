@@ -684,7 +684,6 @@ function tree_area_init(item_data) {
     var key_name = lang_map['Name'];
 
     var lat_long = [ BANGALORE_LAT, BANGALORE_LONG ];
-
     if (area == 'parks') {
         var data = item_data['parks'];
         if (aid != '') {
@@ -719,7 +718,11 @@ function tree_area_init(item_data) {
         var tree_list = data['mapinfo'];
         for (var i = 0; i < tree_list.length; i++) {
             var an = tree_list[i];
-            an['AN'] = key_name[an['AN']];
+            var tree_id = an['AN']
+            an['AN'] = key_name[tree_id];
+            if (tree_id == aid) {
+                lat_long = [ parseFloat(an['ALAT']), parseFloat(an['ALONG']) ];
+            }
         }
         render_template_data('#sidenav-template', '#NAVINFO', data);
     } else if (area == 'current') {
@@ -728,7 +731,6 @@ function tree_area_init(item_data) {
     }
 
     window.parent.map_initialized = false;
-
     var url = 'grid.json';
     $.getJSON(url, function(grid_obj) {
         window.parent.GRID_FLORA = grid_obj['grid flora'];
@@ -736,6 +738,10 @@ function tree_area_init(item_data) {
         window.parent.GRID_CENTRE = grid_obj['grid centre'];
 
         var name = area[0].toUpperCase() + area.slice(1);
-        show_area_latlong_in_osm(name, 0, 0, lat_long[0], lat_long[1]);
+        var tid = 0;
+        if (area == 'trees') {
+            tid = aid
+        }
+        show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
     });
 }
