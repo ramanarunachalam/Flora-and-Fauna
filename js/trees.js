@@ -667,6 +667,8 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         var data = { 'trees' : tree_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
     }
+
+    window.scrollTo(0, 0);
 }
 
 function tree_area_init(item_data) {
