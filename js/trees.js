@@ -559,13 +559,9 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         s_id = t_id;
     }
 
-    var min_lat = 0;
-    var max_lat = 0;
-    var min_long = 0;
-    var max_long = 0;
     var bounds = map.getBounds();
-
     var area_marker_list = [];
+    var tree_dict = {};
     var grid_flora = window.parent.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
@@ -584,23 +580,12 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             const [ tooltip_html, tooltip_blooming ] = get_url_info(handle_map, tree_id, name, 'tooltip');
             var icon = get_needed_icon((s_id == tree_id), popup_blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
+            var count = 0;
             for (var i = 0; i < latlong_list.length; i++) {
                 var latlong = latlong_list[i];
                 var m_lat = parseFloat(latlong[0]);
                 var m_long = parseFloat(latlong[1]);
                 if (area == 'trees') {
-                    var distance = 0;
-                    if (min_lat == 0 && max_lat == 0) {
-                        min_lat = m_lat;
-                        max_lat = m_lat;
-                        min_long = m_long;
-                        max_long = m_long;
-                    } else {
-                        min_lat = Math.min(m_lat, min_lat);
-                        max_lat = Math.max(m_lat, min_lat);
-                        min_long = Math.min(m_long, min_long);
-                        max_long = Math.max(m_long, min_long);
-                    }
                     var visible = true;
                 } else {
                     var visible = bounds.contains([m_lat, m_long]);
@@ -613,6 +598,14 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                     marker.tree_id = tree_id;
                     marker.blooming = popup_blooming;
                     area_marker_list.push(marker);
+                    count += 1;
+                }
+            }
+            if (count > 0) {
+                if (tree_dict.hasOwnProperty(tree_id)) {
+                    tree_dict[tree_id] += count;
+                } else {
+                    tree_dict[tree_id] = count;
                 }
             }
         }
@@ -644,16 +637,6 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         window.parent.map_area_routing = routing;
     }
 
-    var tree_dict = {};
-    for (var i = 0; i < area_marker_list.length; i++) {
-        var marker = area_marker_list[i]; 
-        var tid = marker.tree_id; 
-        if (tree_dict.hasOwnProperty(tid)) {
-            tree_dict[tid] += 1;
-        } else {
-            tree_dict[tid] = 1;
-        }
-    }
     var tree_list = [];
     for (var tid in tree_dict) {
         if (!tree_dict.hasOwnProperty(tid)) {
