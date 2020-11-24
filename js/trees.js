@@ -343,8 +343,8 @@ function tree_search_init() {
     item_list.sort(function (a, b) { return b.P - a.P; });
     var new_item_list = item_list.slice(0, 25);
     var item_data = { "searchinfo" : { "results" : new_item_list } };
-
     render_template_data('#search-template', '#CARDINFO', item_data);
+    window.scrollTo(0, 0);
 }
 
 function geo_distance(lat1, lon1, lat2, lon2, unit) {
@@ -650,7 +650,6 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         var data = { 'trees' : tree_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
     }
-
     window.scrollTo(0, 0);
 }
 
