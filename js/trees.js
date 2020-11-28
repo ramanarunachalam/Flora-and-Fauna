@@ -628,7 +628,6 @@ function tree_area_init(item_data) {
         render_template_data('#sidenav-template', '#NAVINFO', data);
         render_template_data('#stats-template', '#STATINFO', data);
     } else if (area == 'trees') {
-        window.parent.map_area_name = params.getValue('name');
         var data = item_data['maps'];
         var tree_list = data['mapinfo'];
         for (var i = 0; i < tree_list.length; i++) {
@@ -659,6 +658,10 @@ function tree_area_init(item_data) {
                 var handle_map = lang_obj['Handle'];
                 var tree_list = Object.keys(handle_map);
                 aid = tree_list[Math.floor(Math.random() * tree_list.length)];
+                name = handle_map[aid][2];
+            } else {
+                name = params.getValue('name');
+                name = name.replace(/%20/g, ' ');
             }
             tid = aid;
         }
