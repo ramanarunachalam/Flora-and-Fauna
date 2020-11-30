@@ -388,24 +388,31 @@ function create_icons() {
     });
 }
 
-function get_url_info(handle_map, tree_id, name, level) {
+function get_url_prefix(handle_map, tree_id) {
     var handle = handle_map[tree_id];
-    if (level == 'module') {
-        var prefix = '';
-    } else {
-        var prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
-    }
-    if (level == 'popup') {
-        var image_url = prefix + handle[2] + ' - ' + handle[3] + '.jpg'
-        var image_stype = 'style="width: 240px; height: 180px;"';
-    } else {
-        var image_url = prefix + 'Thumbnails/' + handle[2] + ' - ' + handle[3] + '.thumbnail'
-        var image_stype = '';
-    }
+    var prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
     var url = prefix + handle[2] + '.html'
-    var html = '<a href="' + url + '" ><div class="thumbnail"><img ' + image_stype + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
+    var image = handle[2] + ' - ' + handle[3];
+    return [prefix, image, url];
+}
+
+function get_url_info(handle_map, tree_id, name, level) {
+    const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
+    if (level == 'popup') {
+        var image_url = prefix + image + '.jpg'
+        var image_style = 'style="width: 240px; height: 180px;"';
+    } else {
+        var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
+        var image_style = '';
+    }
+    var html = '<a href="' + url + '" ><div class="thumbnail"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
+    return html;
+}
+
+function get_blooming_info(handle_map, tree_id) {
+    var handle = handle_map[tree_id];
     var blooming = handle[4];
-    return [ html, blooming ]
+    return blooming;
 }
 
 function get_needed_icon(selected, blooming) {
@@ -424,22 +431,29 @@ function get_needed_icon(selected, blooming) {
     return icon;
 }
 
+function get_tree_handle(tree_id) {
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var handle_map = lang_obj['Handle'];
+    var name = key_name[tree_id];
+    return [ name, handle_map ];
+}
+
+function set_chosen_image(tree_id) {
+    const [ name, handle_map ] = get_tree_handle(tree_id);
+    var tooltip_html = get_url_info(handle_map, tree_id, name, 'tooltip');
+    $('#IMAGEINFO').html(tooltip_html);
+}
+
 function marker_on_mouseover() {
-    var marker = this;
-    $('#IMAGEINFO').html(marker.tooltip_html);
-    /*
-    console.log('OVER: ' + this.getLatLng());
-    this.bindTooltip(this.tooltip).openTooltip();
-    */
+    set_chosen_image(this.tree_id);
+    // console.log('OVER: ' + this.getLatLng());
 }
 
 function marker_on_mouseout() {
-    // $('#IMAGEINFO').html('');
-    /*
-    console.log('OUT: ' + this.getLatLng());
-    this.closeTooltip();
-    this.unbindTooltip();
-    */
+    // console.log('OUT: ' + this.getLatLng());
 }
 
 function marker_on_click(e) {
@@ -451,6 +465,14 @@ function marker_on_click(e) {
         var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
         marker.setIcon(icon);
     }
+}
+
+function marker_on_doubleclick(e) {
+    var tree_id = e.target.tree_id;
+    const [ name, handle_map ] = get_tree_handle(tree_id);
+    const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
+    window.parent.map_tree_id = tree_id;
+    window.open(url, 'FRAME_CONTENT');
 }
 
 function draw_map_on_move(ev) {
@@ -499,12 +521,20 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         window.parent.map_initialized = true;
         // console.log('FRESH: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized);
     }
+    if (t_id != 0) {
+        set_chosen_image(t_id);
+    }
     draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long);
 }
 
 function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     var osm_map = window.parent.map_osm_map;
     var area = window.parent.AREA_TYPE;
+    var lang_obj = window.parent.LANG_DATA;
+    var lang = window.parent.LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var handle_map = lang_obj['Handle'];
 
     var s_id = 0;
     if (area == 'trees') {
@@ -512,13 +542,6 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     } else if (t_id != 0) {
         s_id = t_id;
     }
-
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var handle_map = lang_obj['Handle'];
-    var english_lang_map = lang_obj['English'];
 
     var bounds = osm_map.getBounds();
     // console.log(c_lat + ' ' + c_long + ' ' + bounds.toBBoxString() + ' ' + osm_map.getZoom());
@@ -537,10 +560,8 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             if (area == 'trees' && a_id != tree_id) {
                 continue;
             }
-            var name = key_name[tree_id];
-            const [ popup_html, popup_blooming ] = get_url_info(handle_map, tree_id, name, 'popup');
-            const [ tooltip_html, tooltip_blooming ] = get_url_info(handle_map, tree_id, name, 'tooltip');
-            var icon = get_needed_icon((s_id == tree_id), popup_blooming);
+            var blooming = get_blooming_info(handle_map, tree_id);
+            var icon = get_needed_icon((s_id == tree_id), blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
             var count = 0;
             for (var i = 0; i < latlong_list.length; i++) {
@@ -555,23 +576,12 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                 if (visible) {
                     var marker = new L.marker([m_lat, m_long], {icon: icon});
                     marker.tree_id = tree_id;
-                    marker.blooming = popup_blooming;
-                    /*
-                    var popup = new L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
-                    var tooltip = new L.tooltip({ direction: 'top' }).setContent(tooltip_html);
-                    marker.popup = popup;
-                    marker.tooltip = tooltip;
-                    */
-                    marker.popup_html = popup_html;
-                    marker.tooltip_html = tooltip_html;
+                    marker.blooming = blooming;
                     osm_map.addLayer(marker);
                     marker.on('mouseover', marker_on_mouseover);
                     marker.on('mouseout', marker_on_mouseout);
                     marker.on('click', marker_on_click);
-                    /*
-                    marker.bindPopup(popup);
-                    marker.bindTooltip(tooltip);
-                    */
+                    marker.on('dblclick', marker_on_doubleclick);
                     area_marker_list.push(marker);
                     count += 1;
                 }
