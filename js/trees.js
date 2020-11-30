@@ -140,6 +140,8 @@ function tree_intro_init(data) {
     window.parent.LANG_OPT = 'English';
     window.parent.search_initialized = false;
     window.parent.area_marker_list = [];
+    window.parent.area_popup_list = [];
+    window.parent.area_tooltip_list = [];
     window.parent.map_initialized = false;
 
     window.onload = tree_info_init;
@@ -349,16 +351,17 @@ function tree_search_init() {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long) {
-    var osm_map = L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 12, maxZoom: 21 });
+    var osm_map = new L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 12, maxZoom: 21 });
+    osm_map.on('zoomend dragend', draw_map_on_move);
 
-    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var tile_layer = new L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       subdomains: ['a', 'b', 'c'],
       maxNativeZoom: 18,
       maxZoom: 21 
-    }).addTo(osm_map);
-
-    var geocoder = L.Control.geocoder();
+    });
+    tile_layer.addTo(osm_map);
+    var geocoder = new L.Control.geocoder();
     geocoder.addTo(osm_map);
     if (module == 'area') {
         geocoder.on('markgeocode', handle_geocoder_mark);
@@ -367,19 +370,19 @@ function create_osm_map(module, id_name, c_lat, c_long) {
 }
 
 function create_icons() {
-    window.parent.green_tree_icon = L.icon({
+    window.parent.green_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_green.png',
         iconSize: [24, 24],
     });
-    window.parent.green_bloom_icon = L.icon({
+    window.parent.green_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_green.png',
         iconSize: [24, 24],
     });
-    window.parent.red_tree_icon = L.icon({
+    window.parent.red_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_red.png',
         iconSize: [24, 24],
     });
-    window.parent.red_bloom_icon = L.icon({
+    window.parent.red_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_red.png',
         iconSize: [24, 24],
     });
@@ -421,6 +424,24 @@ function get_needed_icon(selected, blooming) {
     return icon;
 }
 
+function marker_on_mouseover() {
+    var marker = this;
+    $('#IMAGEINFO').html(marker.tooltip_html);
+    /*
+    console.log('OVER: ' + this.getLatLng());
+    this.bindTooltip(this.tooltip).openTooltip();
+    */
+}
+
+function marker_on_mouseout() {
+    // $('#IMAGEINFO').html('');
+    /*
+    console.log('OUT: ' + this.getLatLng());
+    this.closeTooltip();
+    this.unbindTooltip();
+    */
+}
+
 function marker_on_click(e) {
     var tree_id = e.target.tree_id;
     window.parent.map_tree_id = tree_id;
@@ -449,6 +470,7 @@ function handle_geocoder_mark(ev) {
 }
 
 function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
+    var old_a_name = window.parent.map_area_name;
     window.parent.map_area_name = a_name;
     window.parent.map_area_id = a_id;
     window.parent.map_tree_id = t_id;
@@ -463,9 +485,10 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             layer.remove();
         }
         */
-        area_marker_list = window.parent.area_marker_list;
+        var area_marker_list = window.parent.area_marker_list;
+        // console.log('REUSE: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
         for (var i = 0; i < area_marker_list.length; i++) {
-            area_marker_list[i].remove(osm_map);
+            osm_map.removeLayer(area_marker_list[i]);
         }
         osm_map.setView([c_lat, c_long]);
     } else {
@@ -473,10 +496,10 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         var osm_map = create_osm_map('area', id_name, c_lat, c_long);
         window.parent.map_osm_map = osm_map;
         window.parent.map_area_move = false;
-        osm_map.on('zoomend dragend', draw_map_on_move);
+        window.parent.map_initialized = true;
+        // console.log('FRESH: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized);
     }
     draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long);
-    window.parent.map_initialized = true;
 }
 
 function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
@@ -498,7 +521,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     var english_lang_map = lang_obj['English'];
 
     var bounds = osm_map.getBounds();
-    // console.log(c_lat + ' ' + c_long + ' ' + bounds.toBBoxString());
+    // console.log(c_lat + ' ' + c_long + ' ' + bounds.toBBoxString() + ' ' + osm_map.getZoom());
     var area_marker_list = [];
     var tree_dict = {};
     var grid_flora = window.parent.GRID_FLORA;
@@ -517,8 +540,6 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             var name = key_name[tree_id];
             const [ popup_html, popup_blooming ] = get_url_info(handle_map, tree_id, name, 'popup');
             const [ tooltip_html, tooltip_blooming ] = get_url_info(handle_map, tree_id, name, 'tooltip');
-            var popup = L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
-            var tooltip = L.tooltip({ direction: 'top' }).setContent(tooltip_html);
             var icon = get_needed_icon((s_id == tree_id), popup_blooming);
             var latlong_list = mesh_latlong_dict[tree_id];
             var count = 0;
@@ -532,12 +553,25 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                     var visible = bounds.contains([m_lat, m_long]);
                 }
                 if (visible) {
-                    var marker = L.marker([m_lat, m_long], {icon: icon});
-                    marker.on('click', marker_on_click);
+                    var marker = new L.marker([m_lat, m_long], {icon: icon});
                     marker.tree_id = tree_id;
                     marker.blooming = popup_blooming;
-                    // marker.bindPopup(popup).bindTooltip(tooltip);
-                    marker.bindPopup(popup).bindTooltip(tooltip).addTo(osm_map);
+                    /*
+                    var popup = new L.popup({ maxWidth: 300, maxHeight: 240 }).setContent(popup_html);
+                    var tooltip = new L.tooltip({ direction: 'top' }).setContent(tooltip_html);
+                    marker.popup = popup;
+                    marker.tooltip = tooltip;
+                    */
+                    marker.popup_html = popup_html;
+                    marker.tooltip_html = tooltip_html;
+                    osm_map.addLayer(marker);
+                    marker.on('mouseover', marker_on_mouseover);
+                    marker.on('mouseout', marker_on_mouseout);
+                    marker.on('click', marker_on_click);
+                    /*
+                    marker.bindPopup(popup);
+                    marker.bindTooltip(tooltip);
+                    */
                     area_marker_list.push(marker);
                     count += 1;
                 }
@@ -546,12 +580,15 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         }
     }
 
+    osm_map.invalidateSize();
     window.parent.area_marker_list = area_marker_list;
     /*
     var layer = new L.featureGroup(area_marker_list);
     layer.addTo(osm_map);
     window.parent.map_area_layer = layer;
     */
+
+    // console.log('DRAWN: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
 
     if (area == 'trees' && !window.parent.map_area_move && area_marker_list.length > 0) {
         var layer = new L.featureGroup(area_marker_list);
@@ -564,7 +601,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             var routing = window.parent.map_area_routing;
         } else {
             var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
-            var routing = L.Routing.control({
+            var routing = new L.Routing.control({
               waypoints: [
                 L.latLng(c_lat, c_long),
                 L.latLng(latlong.lat, latlong.lng)
