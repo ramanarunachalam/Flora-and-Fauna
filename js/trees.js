@@ -405,7 +405,7 @@ function get_url_info(handle_map, tree_id, name, level) {
         var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
         var image_style = '';
     }
-    var html = '<a href="' + url + '" ><div class="thumbnail"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></a>';
+    var html = '<a href="' + url + '" align="center"><div class="thumbnail"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></div></a>';
     return html;
 }
 
