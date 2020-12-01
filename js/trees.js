@@ -586,7 +586,9 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                     count += 1;
                 }
             }
-            tree_dict[tree_id] = (tree_dict[tree_id] || 0) + count;
+            if (count > 0) {
+                tree_dict[tree_id] = (tree_dict[tree_id] || 0) + count;
+            }
         }
     }
 
