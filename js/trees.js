@@ -73,21 +73,21 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
 }
 
 function tree_module_init(data) {
-    /*
-    if (window.parent.info_initialized == 'undefined') {
-        window.CARD_DATA = data;
-        var url = '../language.json';
+    if (window.parent.info_initialized == undefined) {
+        window.parent.CARD_DATA = data;
+        var url = '../../language.json';
         $.getJSON(url, function(lang_obj) {
             window.parent.LANG_DATA = lang_obj;
+            window.parent.LANG_OPT = 'English';
             window.parent.info_initialized = true;
-            tree_module_init(window.CARD_DATA);
+            tree_module_init(window.parent.CARD_DATA);
         });
+        return;
     }
-    */
 
-    window.CARD_DATA = data;
-    window.MAP_DATA = data['mapinfo'];
-    window.BOX_DATA = data['mapregion'];
+    window.parent.CARD_DATA = data;
+    window.parent.MAP_DATA = data['mapinfo'];
+    window.parent.BOX_DATA = data['mapregion'];
 
     var lang_obj = window.parent.LANG_DATA;
     var lang = window.parent.LANG_OPT;
@@ -101,7 +101,7 @@ function tree_module_init(data) {
     if (key_name === undefined) {
         key_name = english_lang_map['Name']; 
     }
-    var card_data = window.CARD_DATA;
+    var card_data = window.parent.CARD_DATA;
     var gallery_info = card_data['galleryinfo']
     set_key_map(gallery_info, key_group, 'HH');
     set_key_map(gallery_info, key_name, 'HN');
@@ -621,8 +621,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     }
 
     if (area == 'current') {
-        var state = window.parent.map_initialized;
-        if (state) {
+        if (window.parent.map_area_routing != undefined) {
             var routing = window.parent.map_area_routing;
         } else {
             var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
@@ -659,8 +658,26 @@ function tree_area_init(item_data) {
     var params = new UrlParameters(window.location.search);
     var area = params.getValue('area');
     var aid = params.getValue('aid');
+    if (area == undefined) {
+        var area = window.parent.AREA_TYPE;
+        var aid = window.parent.AREA_ID;
+    }
     window.parent.AREA_TYPE = area;
+    window.parent.AREA_ID = aid;
     window.parent.AREA_DATA = item_data;
+
+    if (window.parent.info_initialized == undefined) {
+        window.parent.CARD_DATA = data;
+        var url = 'language.json';
+        $.getJSON(url, function(lang_obj) {
+            window.parent.LANG_DATA = lang_obj;
+            window.parent.LANG_OPT = 'English';
+            window.parent.info_initialized = true;
+            create_icons();
+            tree_area_init(window.parent.AREA_DATA);
+        });
+        return;
+    }
 
     var lang_obj = window.parent.LANG_DATA;
     var lang = window.parent.LANG_OPT;
