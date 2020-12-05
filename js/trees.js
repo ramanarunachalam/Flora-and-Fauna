@@ -73,6 +73,18 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
 }
 
 function tree_module_init(data) {
+    /*
+    if (window.parent.info_initialized == 'undefined') {
+        window.CARD_DATA = data;
+        var url = '../language.json';
+        $.getJSON(url, function(lang_obj) {
+            window.parent.LANG_DATA = lang_obj;
+            window.parent.info_initialized = true;
+            tree_module_init(window.CARD_DATA);
+        });
+    }
+    */
+
     window.CARD_DATA = data;
     window.MAP_DATA = data['mapinfo'];
     window.BOX_DATA = data['mapregion'];
@@ -137,6 +149,7 @@ function tree_simple_init(data) {
 }
 
 function tree_intro_init(data) {
+    window.parent.info_initialized = true;
     window.parent.LANG_OPT = 'English';
     window.parent.search_initialized = false;
     window.parent.area_marker_list = [];
