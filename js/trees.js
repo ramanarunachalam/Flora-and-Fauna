@@ -374,7 +374,11 @@ function create_osm_map(module, id_name, c_lat, c_long) {
       maxZoom: 21 
     });
     tile_layer.addTo(osm_map);
-    var geocoder = new L.Control.geocoder();
+    var geocoder = new L.Control.geocoder({
+        geocoder: L.Control.Geocoder.nominatim({
+            geocodingQueryParams: { countrycodes: 'in' }
+        })
+    });
     geocoder.addTo(osm_map);
     if (module == 'area') {
         geocoder.on('markgeocode', handle_geocoder_mark);
@@ -465,7 +469,7 @@ function marker_on_mouseover() {
 }
 
 function marker_on_mouseout() {
-    if (window.parent.map_tree_id != undefined) {
+    if (window.parent.map_tree_id != undefined && window.parent.map_tree_id != 0) {
         set_chosen_image(window.parent.map_tree_id);
     }
 }
@@ -631,7 +635,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                 L.latLng(c_lat, c_long),
                 L.latLng(latlong.lat, latlong.lng)
               ],
-              geocoder: L.Control.Geocoder.nominatim()
+              geocoder: L.Control.Geocoder.nominatim({geocodingQueryParams: { countrycodes: 'in' }})
             });
             routing.addTo(osm_map);
             // routing.hide();
