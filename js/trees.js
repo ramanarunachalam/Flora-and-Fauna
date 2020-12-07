@@ -462,11 +462,12 @@ function set_chosen_image(tree_id) {
 
 function marker_on_mouseover() {
     set_chosen_image(this.tree_id);
-    // console.log('OVER: ' + this.getLatLng());
 }
 
 function marker_on_mouseout() {
-    // console.log('OUT: ' + this.getLatLng());
+    if (window.parent.map_tree_id != undefined) {
+        set_chosen_image(window.parent.map_tree_id);
+    }
 }
 
 function marker_on_click(e) {
