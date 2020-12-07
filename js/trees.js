@@ -469,7 +469,7 @@ function marker_on_mouseover() {
 }
 
 function marker_on_mouseout() {
-    if (window.parent.map_tree_id != undefined && window.parent.map_tree_id != 0) {
+    if (window.parent.map_tree_id != 0) {
         set_chosen_image(window.parent.map_tree_id);
     }
 }
@@ -496,11 +496,11 @@ function marker_on_doubleclick(e) {
 function draw_map_on_move(ev) {
     var osm_map = window.parent.map_osm_map;
     var a_name = window.parent.map_area_name;
-    var a_id = window.parent.map_area_id;
-    var t_id = window.parent.map_tree_id;
+    var aid = window.parent.map_area_id;
+    var tid = window.parent.map_tree_id;
     var latlong = osm_map.getCenter();
     window.parent.map_area_move = true;
-    show_area_latlong_in_osm(a_name, a_id, t_id, latlong.lat, latlong.lng);
+    show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
     window.parent.map_area_move = false;
     // console.log('DRAW: ' + latlong.lat + ' ' +  latlong.lng);
 }
@@ -509,14 +509,17 @@ function handle_geocoder_mark(ev) {
     draw_map_on_move(ev);
 }
 
-function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
+function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     var old_a_name = window.parent.map_area_name;
     window.parent.map_area_name = a_name;
-    window.parent.map_area_id = a_id;
-    window.parent.map_tree_id = t_id;
+    window.parent.map_area_id = aid;
+    if (tid == 0 && window.parent.map_tree_id != undefined) {
+        tid = window.parent.map_tree_id;
+    }
+    window.parent.map_tree_id = tid;
 
     $('#TITLE_HEADER').html(a_name);
-    // console.log('SHOW: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized);
+    // console.log('SHOW: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized);
     if (window.parent.map_initialized) {
         var osm_map = window.parent.map_osm_map;
         /*
@@ -526,26 +529,31 @@ function show_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         }
         */
         var area_marker_list = window.parent.area_marker_list;
-        // console.log('REUSE: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
+        // console.log('REUSE: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
         for (var i = 0; i < area_marker_list.length; i++) {
             osm_map.removeLayer(area_marker_list[i]);
+            //layer.removeLayer(area_marker_list[i]);
         }
         osm_map.setView([c_lat, c_long]);
     } else {
         var id_name = 'MAPINFO';
         var osm_map = create_osm_map('area', id_name, c_lat, c_long);
         window.parent.map_osm_map = osm_map;
+        /*
+        window.parent.map_area_layer = L.markerClusterGroup();
+        window.parent.map_area_layer.addTo(osm_map);
+        */
         window.parent.map_area_move = false;
         window.parent.map_initialized = true;
-        // console.log('FRESH: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized);
+        // console.log('FRESH: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized);
     }
-    if (t_id != 0) {
-        set_chosen_image(t_id);
+    if (tid != undefined && tid != 0) {
+        set_chosen_image(tid);
     }
-    draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long);
+    draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
 }
 
-function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
+function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     var osm_map = window.parent.map_osm_map;
     var area = window.parent.AREA_TYPE;
     var lang_obj = window.parent.LANG_DATA;
@@ -556,9 +564,9 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
 
     var s_id = 0;
     if (area == 'trees') {
-        s_id = a_id;
-    } else if (t_id != 0) {
-        s_id = t_id;
+        s_id = aid;
+    } else if (tid != 0) {
+        s_id = tid;
     }
 
     var bounds = osm_map.getBounds();
@@ -575,7 +583,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             if (!mesh_latlong_dict.hasOwnProperty(tree_id)) {
                 continue;
             }
-            if (area == 'trees' && a_id != tree_id) {
+            if (area == 'trees' && aid != tree_id) {
                 continue;
             }
             var blooming = get_blooming_info(handle_map, tree_id);
@@ -596,6 +604,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
                     marker.tree_id = tree_id;
                     marker.blooming = blooming;
                     osm_map.addLayer(marker);
+                    //window.parent.map_area_layer.addLayer(marker);
                     marker.on('mouseover', marker_on_mouseover);
                     marker.on('mouseout', marker_on_mouseout);
                     marker.on('click', marker_on_click);
@@ -610,7 +619,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
         }
     }
 
-    osm_map.invalidateSize();
+    // osm_map.invalidateSize();
     window.parent.area_marker_list = area_marker_list;
     /*
     var layer = new L.featureGroup(area_marker_list);
@@ -618,7 +627,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
     window.parent.map_area_layer = layer;
     */
 
-    // console.log('DRAWN: ' + c_lat + ' ' +  c_long + ' ' + a_id + ' ' + a_name + ' ' + t_id + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
+    // console.log('DRAWN: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
 
     if (area == 'trees' && !window.parent.map_area_move && area_marker_list.length > 0) {
         var layer = new L.featureGroup(area_marker_list);
@@ -649,7 +658,7 @@ function draw_area_latlong_in_osm(a_name, a_id, t_id, c_lat, c_long) {
             continue;
         }
         var t_name = key_name[tid];
-        tree_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'AID' : a_id, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
+        tree_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
     }
     if (tree_list.length > 0) {
         tree_list.sort(function (a, b) { return b.TC - a.TC; });
@@ -745,9 +754,15 @@ function tree_area_init(item_data) {
 
         var name = area[0].toUpperCase() + area.slice(1);
         var tid = 0;
+        if (window.parent.map_tree_id != undefined) {
+            tid = window.parent.map_tree_id;
+        }
         if (area == 'trees') {
-            if (aid == 0 || aid == '0') {
-                var handle_map = lang_obj['Handle'];
+            var handle_map = lang_obj['Handle'];
+            if (tid != 0) {
+                aid = tid;
+                name = handle_map[aid][2];
+            } else if (aid == 0 || aid == '0') {
                 var tree_list = Object.keys(handle_map);
                 aid = tree_list[Math.floor(Math.random() * tree_list.length)];
                 name = handle_map[aid][2];
@@ -755,7 +770,9 @@ function tree_area_init(item_data) {
                 name = params.getValue('name');
                 name = name.replace(/%20/g, ' ');
             }
-            tid = aid;
+            if (tid == 0) {
+                tid = aid;
+            }
         }
         show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
     });
