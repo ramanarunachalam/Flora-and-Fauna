@@ -759,7 +759,10 @@ function tree_area_init(item_data) {
         }
         if (area == 'trees') {
             var handle_map = lang_obj['Handle'];
-            if (tid != 0) {
+            if (aid != 0) {
+                tid = aid;
+                name = handle_map[aid][2];
+            } else if (tid != 0) {
                 aid = tid;
                 name = handle_map[aid][2];
             } else if (aid == 0 || aid == '0') {
