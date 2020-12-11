@@ -384,7 +384,12 @@ function get_search_results(search_word, search_options, item_list, id_list) {
         var max_score = results[0].score;
         results.forEach(function (result_item, result_index) {
             if (!id_list.has(result_item.id)) {
-                var name = key_name[result_item.name];
+                var d = result_item.name;
+                if (d[0] == 1) {
+                    var name = key_name[d[1]];
+                } else {
+                    var name = d[1];
+                }
                 var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
                 item_list.push(item);
                 id_list.add(result_item.id);
@@ -746,6 +751,7 @@ function tree_area_init(item_data) {
     var key_name = lang_map['Name'];
 
     var lat_long = [ BANGALORE_LAT, BANGALORE_LONG ];
+    var name = area[0].toUpperCase() + area.slice(1);
     if (area == 'parks') {
         var data = item_data['parks'];
         if (aid != '') {
@@ -755,6 +761,7 @@ function tree_area_init(item_data) {
                 for (var j = 0; j < park_list.length; j++) {
                     var park = park_list[j];
                     if (park['PID'] == aid) {
+                        name = park['PN'];
                         lat_long = [ parseFloat(park['PLAT']), parseFloat(park['PLONG']) ];
                     }
                 }
@@ -769,6 +776,7 @@ function tree_area_init(item_data) {
             for (var i = 0; i < ward_list.length; i++) {
                 var ward = ward_list[i];
                 if (ward['AID'] == aid) {
+                    name = ward['AN'];
                     lat_long = [ parseFloat(ward['ALAT']), parseFloat(ward['ALONG']) ];
                 }
             }
@@ -799,7 +807,6 @@ function tree_area_init(item_data) {
         window.parent.GRID_CENTRE = grid_obj['grid centre'];
         window.parent.map_initialized = false;
 
-        var name = area[0].toUpperCase() + area.slice(1);
         var tid = 0;
         if (window.parent.map_tree_id != undefined) {
             tid = window.parent.map_tree_id;
