@@ -510,6 +510,7 @@ function handle_geocoder_mark(ev) {
 }
 
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
+    var area = window.parent.AREA_TYPE;
     var old_a_name = window.parent.map_area_name;
     window.parent.map_area_name = a_name;
     window.parent.map_area_id = aid;
@@ -549,6 +550,9 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     if (tid != undefined && tid != 0) {
         set_chosen_image(tid);
+    }
+    if (area == 'trees') {
+        osm_map.options.minZoom = 12;
     }
     draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
 }
