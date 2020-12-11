@@ -6,7 +6,7 @@ function is_array(obj) {
 }
 
 function set_language(obj) {
-    window.parent.LANG_OPT = obj.value;
+    window.parent.TREE_LANG_OPT = obj.value;
 }
 
 function UrlParameters(q) {
@@ -74,23 +74,23 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
 
 function tree_module_init(data) {
     if (window.parent.info_initialized == undefined) {
-        window.parent.CARD_DATA = data;
+        window.parent.TREE_CARD_DATA = data;
         var url = '../../language.json';
         $.getJSON(url, function(lang_obj) {
-            window.parent.LANG_DATA = lang_obj;
-            window.parent.LANG_OPT = 'English';
+            window.parent.TREE_LANG_DATA = lang_obj;
+            window.parent.TREE_LANG_OPT = 'English';
             window.parent.info_initialized = true;
-            tree_module_init(window.parent.CARD_DATA);
+            tree_module_init(window.parent.TREE_CARD_DATA);
         });
         return;
     }
 
-    window.parent.CARD_DATA = data;
-    window.parent.MAP_DATA = data['mapinfo'];
-    window.parent.BOX_DATA = data['mapregion'];
+    window.parent.TREE_CARD_DATA = data;
+    window.parent.TREE_MAP_DATA = data['mapinfo'];
+    window.parent.TREE_BOX_DATA = data['mapregion'];
 
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
     var lang_map = lang_obj[lang];
     var english_lang_map = lang_obj['English'];
     var english_key_info = english_lang_map['Key Name'];
@@ -101,7 +101,7 @@ function tree_module_init(data) {
     if (key_name === undefined) {
         key_name = english_lang_map['Name']; 
     }
-    var card_data = window.parent.CARD_DATA;
+    var card_data = window.parent.TREE_CARD_DATA;
     var gallery_info = card_data['galleryinfo']
     set_key_map(gallery_info, key_group, 'HH');
     set_key_map(gallery_info, key_name, 'HN');
@@ -124,8 +124,8 @@ function tree_module_init(data) {
 }
 
 function tree_part_init(data) {
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var english_lang_map = lang_obj['English'];
@@ -150,7 +150,7 @@ function tree_simple_init(data) {
 
 function tree_intro_init(data) {
     window.parent.info_initialized = true;
-    window.parent.LANG_OPT = 'English';
+    window.parent.TREE_LANG_OPT = 'English';
     window.parent.search_initialized = false;
     window.parent.area_marker_list = [];
     window.parent.area_popup_list = [];
@@ -167,7 +167,8 @@ function tree_intro_init(data) {
 function tree_info_init() {
     var url = '../language.json';
     $.getJSON(url, function(lang_obj) {
-        window.parent.LANG_DATA = lang_obj;
+        window.parent.TREE_LANG_DATA = lang_obj;
+        transliterator_init();
     });
 
     $('.carousel').carousel({
@@ -273,8 +274,8 @@ function tree_grid_init(data) {
     data['pageinfo']['N'] = 'bottom';
     render_template_data('#pagination-template', '#BOTTOMPAGE', data);
 
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var row_list = data['cardinfo']['ROW'];
@@ -311,7 +312,6 @@ function search_load() {
     if (window.parent.search_initialized) {
         return;
     }
-
     var url = '../flora_index.json';
     var search_engine = window.parent.flora_fauna_search_engine;
     $.getJSON(url, function(search_obj) {
@@ -325,8 +325,52 @@ function search_load() {
             });
         }
     });
-
     window.parent.search_initialized = true;
+}
+
+function transliterator_init() {
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var char_map = lang_obj['Charmap'];
+    var key_list = [];
+    var max_len = 0;
+    for (var s in char_map) {
+        key_list.push(s); 
+        max_len = Math.max(max_len, s.length);
+    }
+    window.parent.CHAR_MAP_MAX_LENGTH = max_len;
+    window.parent.CHAR_MAP_KEY_LIST = new Set(key_list);
+}
+
+function transliterate_text(word) {
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var char_map = lang_obj['Charmap'];
+
+    var tokenset = window.parent.CHAR_MAP_KEY_LIST;
+    var maxlen = window.parent.CHAR_MAP_MAX_LENGTH;
+    var current = 0;
+    var tokenlist = [];
+    word = word.toString();
+    while (current < word.length) {
+        var nextstr = word.slice(current, current+maxlen);
+        var p = nextstr[0];
+        var j = 1;
+        var i = maxlen;
+        while (i > 0) {
+            var s = nextstr.slice(0, i);
+            if (tokenset.has(s)) {
+                p = s;
+                j = i;
+                break
+            }
+            i -= 1;
+        }
+        if (p in char_map) {
+            p = char_map[p];
+        }
+        tokenlist.push(p);
+        current += j;
+    }
+    return tokenlist.join('');
 }
 
 function get_search_results(search_word, search_options, item_list, id_list) {
@@ -347,7 +391,9 @@ function get_search_results(search_word, search_options, item_list, id_list) {
 function tree_search_init() {
     var params = new UrlParameters(window.location.search);
     var search_word = params.getValue('word');
-    search_word = search_word.replace(/\+/g, ' ');
+    var search_word = decodeURI(search_word);
+    var t_word = transliterate_text(search_word);
+    search_word = t_word;
     const s_search_word = search_word.replace(/\s/g, '');
     var item_list = [];
     var id_list = new Set();
@@ -449,8 +495,8 @@ function get_needed_icon(selected, blooming) {
 }
 
 function get_tree_handle(tree_id) {
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -502,7 +548,6 @@ function draw_map_on_move(ev) {
     window.parent.map_area_move = true;
     show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
     window.parent.map_area_move = false;
-    // console.log('DRAW: ' + latlong.lat + ' ' +  latlong.lng);
 }
 
 function handle_geocoder_mark(ev) {
@@ -520,7 +565,6 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     window.parent.map_tree_id = tid;
 
     $('#TITLE_HEADER').html(a_name);
-    // console.log('SHOW: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized);
     if (window.parent.map_initialized) {
         var osm_map = window.parent.map_osm_map;
         /*
@@ -530,7 +574,6 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         }
         */
         var area_marker_list = window.parent.area_marker_list;
-        // console.log('REUSE: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
         for (var i = 0; i < area_marker_list.length; i++) {
             osm_map.removeLayer(area_marker_list[i]);
             //layer.removeLayer(area_marker_list[i]);
@@ -546,7 +589,6 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         */
         window.parent.map_area_move = false;
         window.parent.map_initialized = true;
-        // console.log('FRESH: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized);
     }
     if (tid != undefined && tid != 0) {
         set_chosen_image(tid);
@@ -560,8 +602,8 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     var osm_map = window.parent.map_osm_map;
     var area = window.parent.AREA_TYPE;
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -574,7 +616,6 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
 
     var bounds = osm_map.getBounds();
-    // console.log(c_lat + ' ' + c_long + ' ' + bounds.toBBoxString() + ' ' + osm_map.getZoom());
     var area_marker_list = [];
     var tree_dict = {};
     var grid_flora = window.parent.GRID_FLORA;
@@ -623,15 +664,12 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         }
     }
 
-    // osm_map.invalidateSize();
     window.parent.area_marker_list = area_marker_list;
     /*
     var layer = new L.featureGroup(area_marker_list);
     layer.addTo(osm_map);
     window.parent.map_area_layer = layer;
     */
-
-    // console.log('DRAWN: ' + c_lat + ' ' +  c_long + ' ' + aid + ' ' + a_name + ' ' + tid + ' ' + window.parent.map_initialized + ' ' + area_marker_list.length);
 
     if (area == 'trees' && !window.parent.map_area_move && area_marker_list.length > 0) {
         var layer = new L.featureGroup(area_marker_list);
@@ -685,11 +723,11 @@ function tree_area_init(item_data) {
     window.parent.AREA_DATA = item_data;
 
     if (window.parent.info_initialized == undefined) {
-        window.parent.CARD_DATA = data;
+        window.parent.TREE_CARD_DATA = data;
         var url = 'language.json';
         $.getJSON(url, function(lang_obj) {
-            window.parent.LANG_DATA = lang_obj;
-            window.parent.LANG_OPT = 'English';
+            window.parent.TREE_LANG_DATA = lang_obj;
+            window.parent.TREE_LANG_OPT = 'English';
             window.parent.info_initialized = true;
             create_icons();
             tree_area_init(window.parent.AREA_DATA);
@@ -697,8 +735,8 @@ function tree_area_init(item_data) {
         return;
     }
 
-    var lang_obj = window.parent.LANG_DATA;
-    var lang = window.parent.LANG_OPT;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
 
