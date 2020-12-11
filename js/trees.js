@@ -364,7 +364,7 @@ function tree_search_init() {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long) {
-    var osm_map = new L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 12, maxZoom: 21 });
+    var osm_map = new L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 16, maxZoom: 21 });
     osm_map.on('zoomend dragend', draw_map_on_move);
 
     var tile_layer = new L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
