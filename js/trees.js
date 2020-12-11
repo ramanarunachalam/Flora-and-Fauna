@@ -374,13 +374,18 @@ function transliterate_text(word) {
 }
 
 function get_search_results(search_word, search_options, item_list, id_list) {
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var lang = window.parent.TREE_LANG_OPT;
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
     var search_engine = window.parent.flora_fauna_search_engine;
     var results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
         var max_score = results[0].score;
         results.forEach(function (result_item, result_index) {
             if (!id_list.has(result_item.id)) {
-                var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : result_item.name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
+                var name = key_name[result_item.name];
+                var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
                 item_list.push(item);
                 id_list.add(result_item.id);
             }
