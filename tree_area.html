@@ -40,7 +40,7 @@
   <script type="text/html" id="sidenav-template">
       {{#parkinfo}}
       <ul class="navbar-nav">
-         <li class="nav-item">{{AN}} ({{AC}})
+         <li class="nav-item">{{AN}} (<em><font color="brown">{{AC}}</font></em>)
              <ul>
                  {{#parks}}
                  <li class="nav-item">
@@ -57,7 +57,7 @@
       <ul class="navbar-nav">
          <li class="nav-item">
              <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
-                {{AN}} : {{AID}} ({{AC}})
+                {{AN}} : {{AID}} (<em><font color="brown">{{AC}}</font></em>)
              </a>
          </li>
       </ul>
@@ -66,7 +66,7 @@
       <ul class="navbar-nav">
          <li class="nav-item">
              <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
-                {{AID}}. {{AN}} ({{AC}})
+                {{AID}}. {{AN}} (<em><font color="brown">{{AC}}</font></em>)
              </a>
          </li>
       </ul>
@@ -97,7 +97,7 @@
                  </a>
                </td>
                <td>
-                 <em>{{{TC}}}</em>
+                 <em><font color="brown">{{{TC}}}</font></em>
                </td>
            </tr>
           {{/trees}}
