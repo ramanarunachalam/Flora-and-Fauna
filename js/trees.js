@@ -837,6 +837,7 @@ function tree_area_init(item_data) {
 
 function transliterator_word() {
     var source = $('#SOURCE').val();
+    source = source.replace(/\n/g, "<br />");
     var target = transliterate_text(source);
     $('#TARGET').html(target);
 }
