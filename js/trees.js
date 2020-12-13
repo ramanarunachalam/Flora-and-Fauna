@@ -834,3 +834,25 @@ function tree_area_init(item_data) {
         show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
     });
 }
+
+function transliterator_word() {
+    var source = $('#SOURCE').val();
+    var target = transliterate_text(source);
+    $('#TARGET').html(target);
+}
+
+function tree_transliterator_init() {
+    var url = 'language.json';
+    $.getJSON(url, function(lang_obj) {
+        window.parent.TREE_LANG_DATA = lang_obj;
+        transliterator_init();
+    });
+
+    var input = document.getElementById('SOURCE');
+    input.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            transliterator_word();
+        }
+    });
+}
