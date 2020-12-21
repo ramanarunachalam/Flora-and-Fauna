@@ -439,6 +439,37 @@ function create_osm_map(module, id_name, c_lat, c_long) {
     if (module == 'area') {
         geocoder.on('markgeocode', handle_geocoder_mark);
     }
+
+    $.contextMenu({
+      selector: 'img.leaflet-marker-icon',
+      callback: function(key, options) {
+          var marker = window.parent.TREE_CONTEXT_MARKER;
+          var pos = marker.getLatLng();
+          if (key == 'gmap') {
+              var url = 'http://maps.google.com/maps?z=12&t=m&q=loc:' + pos.lat + '+' + pos.lng;
+              window.open(url, '');
+          } else if (key == 'tmap') {
+              var url = 'tree_area.html?area=trees&aid=' + marker.tree_id;
+              window.open(url, 'FRAME_CONTENT');
+          }
+      },
+      items: {
+          "gmap": {
+              name: "Google Map",
+              icon: "edit"
+          },
+          "tmap": {
+              name: "Tree Map",
+              icon: "cut"
+          },
+          "sep1": "---------",
+          "quit": {
+              name: "Quit",
+              icon: "quit"
+          }
+      }
+    });
+
     return osm_map;
 }
 
@@ -549,6 +580,10 @@ function marker_on_doubleclick(e) {
     window.open(url, 'FRAME_CONTENT');
 }
 
+function marker_on_contextmenu(e) {
+    window.parent.TREE_CONTEXT_MARKER = this;
+}
+
 function draw_map_on_move(ev) {
     var osm_map = window.parent.map_osm_map;
     var a_name = window.parent.map_area_name;
@@ -656,6 +691,21 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
                 }
                 if (visible) {
                     var marker = new L.marker([m_lat, m_long], {icon: icon});
+                    /*
+                    var opts = {
+                        contextmenu: true,
+                        contextmenuWidth: 140,
+                        contextmenuItems: [{
+                            text: 'Marker item',
+                            index: 0
+                          }, {
+                            separator: 'Marker item',
+                            index: 1
+                          }],
+                        icon: icon
+                    };
+                    var marker = new L.marker(L.latLng(m_lat, m_long), opts);
+                    */
                     marker.tree_id = tree_id;
                     marker.blooming = blooming;
                     osm_map.addLayer(marker);
@@ -664,6 +714,7 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
                     marker.on('mouseout', marker_on_mouseout);
                     marker.on('click', marker_on_click);
                     marker.on('dblclick', marker_on_doubleclick);
+                    marker.on('contextmenu', marker_on_contextmenu);
                     area_marker_list.push(marker);
                     count += 1;
                 }
