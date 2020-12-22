@@ -440,35 +440,7 @@ function create_osm_map(module, id_name, c_lat, c_long) {
         geocoder.on('markgeocode', handle_geocoder_mark);
     }
 
-    $.contextMenu({
-      selector: 'img.leaflet-marker-icon',
-      callback: function(key, options) {
-          var marker = window.parent.TREE_CONTEXT_MARKER;
-          var pos = marker.getLatLng();
-          if (key == 'gmap') {
-              var url = 'http://maps.google.com/maps?z=12&t=m&q=loc:' + pos.lat + '+' + pos.lng;
-              window.open(url, '');
-          } else if (key == 'tmap') {
-              var url = 'tree_area.html?area=trees&aid=' + marker.tree_id;
-              window.open(url, 'FRAME_CONTENT');
-          }
-      },
-      items: {
-          "gmap": {
-              name: "Google Map",
-              icon: "edit"
-          },
-          "tmap": {
-              name: "Tree Map",
-              icon: "cut"
-          },
-          "sep1": "---------",
-          "quit": {
-              name: "Quit",
-              icon: "quit"
-          }
-      }
-    });
+    init_conetxt_menu();
 
     return osm_map;
 }
@@ -549,6 +521,47 @@ function set_chosen_image(tree_id) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
     var tooltip_html = get_url_info(handle_map, tree_id, name, 'tooltip');
     $('#IMAGEINFO').html(tooltip_html);
+}
+
+function init_conetxt_menu() {
+    $.contextMenu({
+      selector: 'img.leaflet-marker-icon',
+      callback: function(key, options) {
+          var marker = window.parent.TREE_CONTEXT_MARKER;
+          var tree_id = marker.tree_id;
+          var pos = marker.getLatLng();
+          if (key == 'info') {
+              const [ name, handle_map ] = get_tree_handle(tree_id);
+              const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
+              window.open(url, 'FRAME_CONTENT');
+          } else if (key == 'tmap') {
+              var url = 'tree_area.html?area=trees&aid=' + tree_id;
+              window.open(url, 'FRAME_CONTENT');
+          } else if (key == 'gmap') {
+              var url = 'http://maps.google.com/maps?z=12&t=m&q=loc:' + pos.lat + '+' + pos.lng;
+              window.open(url, '');
+          }
+      },
+      items: {
+          "info": {
+              name: "Tree Info",
+              icon: "info"
+          },
+          "tmap": {
+              name: "Tree Map",
+              icon: "map"
+          },
+          "gmap": {
+              name: "Google Map",
+              icon: "gmap"
+          },
+          "sep1": "---------",
+          "quit": {
+              name: "Quit",
+              icon: "quit"
+          }
+      }
+    });
 }
 
 function marker_on_mouseover() {

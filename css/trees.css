@@ -156,3 +156,19 @@ a {
     width: 680px;
     height: 680px;
 }
+
+.context-menu-icon {
+  min-height: 12px; background-repeat: no-repeat; background-position: 4px 2px;
+}
+
+.context-menu-icon-info {
+      background-image: url("../icons/marker_tree_green.png");
+}
+
+.context-menu-icon-map {
+      background-image: url("../icons/geo-alt.svg");
+}
+
+.context-menu-icon-gmap {
+      background-image: url("../icons/geo.svg");
+}
