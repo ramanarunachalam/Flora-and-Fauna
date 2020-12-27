@@ -658,7 +658,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 }
 
 function area_carousel_init(tree_image_list) {
-    window.parent.TREE_IMAGE_LIST = tree_image_list;
+    window.parent.tree_image_list = tree_image_list;
     $('#AREA_CAROUSEL').carousel({ interval: 5000 });
     var $img = $('.carousel-item').eq(0);
     $img.addClass('active');
@@ -679,9 +679,10 @@ function area_carousel_init(tree_image_list) {
     });
 
     $('.carousel').on('slide.bs.carousel', function(ev) {
-        var tree_image_list = window.parent.TREE_IMAGE_LIST;
+        var tree_image_list = window.parent.tree_image_list;
         var tree_id = tree_image_list[ev.from + 2]['TID'];
         // console.log('SLIDE: ' + ev.from + ' ' + tree_id);
+        var area_marker_list = window.parent.area_marker_list;
         for (var i = 0; i < area_marker_list.length; i++) {
             var marker = area_marker_list[i];
             var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
