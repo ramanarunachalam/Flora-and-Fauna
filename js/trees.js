@@ -680,8 +680,7 @@ function area_carousel_init(tree_image_list) {
 
     $('.carousel').on('slide.bs.carousel', function(ev) {
         var tree_image_list = window.parent.tree_image_list;
-        var tree_id = tree_image_list[ev.from + 2]['TID'];
-        // console.log('SLIDE: ' + ev.from + ' ' + tree_id);
+        var tree_id = tree_image_list[(ev.from + 2) % tree_image_list.length]['TID'];
         var area_marker_list = window.parent.area_marker_list;
         for (var i = 0; i < area_marker_list.length; i++) {
             var marker = area_marker_list[i];
