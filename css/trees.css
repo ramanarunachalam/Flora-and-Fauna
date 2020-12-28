@@ -199,12 +199,14 @@ a {
 
 #AREA_CAROUSEL .carousel-control-next,
 #AREA_CAROUSEL .carousel-control-prev {
-    filter: invert(100%);
     width: 20px;
     height: 20px;
+    filter: invert(100%);
+    /*
     background-color: none;
     top: calc(-20% -25%);
     opacity: .8;
+    */
 }
 
 #AREA_CAROUSEL .carousel-control-prev {

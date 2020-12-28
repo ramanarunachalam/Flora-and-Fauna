@@ -660,8 +660,14 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 function area_carousel_init(tree_image_list) {
     window.parent.tree_image_list = tree_image_list;
     $('#AREA_CAROUSEL').carousel({ interval: 0 });
-    var $img = $('.carousel-item').eq(0);
+
+    var start_tid = tree_image_list.length - 1;
+    var $img = $('.carousel-item').eq(start_tid);
     $img.addClass('active');
+
+    var tree_image_list = window.parent.tree_image_list;
+    var tree_id = tree_image_list[0]['TID'];
+    set_chosen_image(tree_id);
 
     $('.carousel .carousel-item').each(function() {
       var next = $(this).next();
@@ -680,7 +686,8 @@ function area_carousel_init(tree_image_list) {
 
     $('.carousel').on('slide.bs.carousel', function(ev) {
         var tree_image_list = window.parent.tree_image_list;
-        var tree_id = tree_image_list[(ev.from + 2) % tree_image_list.length]['TID'];
+        // console.log('SLIDE: FROM ' + ev.from + ' TO ' + ev.to);
+        var tree_id = tree_image_list[(ev.to + 1) % tree_image_list.length]['TID'];
         var area_marker_list = window.parent.area_marker_list;
         for (var i = 0; i < area_marker_list.length; i++) {
             var marker = area_marker_list[i];
