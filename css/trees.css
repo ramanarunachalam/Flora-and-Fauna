@@ -201,4 +201,15 @@ a {
 #AREA_CAROUSEL .carousel-control-prev {
     filter: invert(100%);
     align-items: flex-start;
+    width: 20px;
+    height: 20px;
+    background-color: none;
+    top: calc(-20% -25%);
+    opacity: .8;
 }
+
+#AREA_CAROUSEL .carousel-control-prev {
+    left: unset;
+    right: 30px;
+}
+
