@@ -200,7 +200,6 @@ a {
 #AREA_CAROUSEL .carousel-control-next,
 #AREA_CAROUSEL .carousel-control-prev {
     filter: invert(100%);
-    align-items: flex-start;
     width: 20px;
     height: 20px;
     background-color: none;

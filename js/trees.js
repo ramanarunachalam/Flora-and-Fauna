@@ -687,6 +687,7 @@ function area_carousel_init(tree_image_list) {
             var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
             marker.setIcon(icon);
         }
+        set_chosen_image(tree_id);
     });
 }
 
