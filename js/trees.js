@@ -657,6 +657,19 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
 }
 
+function area_highlight_tree(tree_id) {
+    var tree_image_list = window.parent.tree_image_list;
+    var tree_id = tree_id % tree_image_list.length;
+    var tree_id = tree_image_list[tree_id]['TID'];
+    var area_marker_list = window.parent.area_marker_list;
+    for (var i = 0; i < area_marker_list.length; i++) {
+        var marker = area_marker_list[i];
+        var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
+        marker.setIcon(icon);
+    }
+    set_chosen_image(tree_id);
+}
+
 function area_carousel_init(tree_image_list) {
     window.parent.tree_image_list = tree_image_list;
     $('#AREA_CAROUSEL').carousel({ interval: 0 });
@@ -665,9 +678,7 @@ function area_carousel_init(tree_image_list) {
     var $img = $('.carousel-item').eq(start_tid);
     $img.addClass('active');
 
-    var tree_image_list = window.parent.tree_image_list;
-    var tree_id = tree_image_list[0]['TID'];
-    set_chosen_image(tree_id);
+    area_highlight_tree(0);
 
     $('.carousel .carousel-item').each(function() {
       var next = $(this).next();
@@ -685,16 +696,8 @@ function area_carousel_init(tree_image_list) {
     });
 
     $('.carousel').on('slide.bs.carousel', function(ev) {
-        var tree_image_list = window.parent.tree_image_list;
         // console.log('SLIDE: FROM ' + ev.from + ' TO ' + ev.to);
-        var tree_id = tree_image_list[(ev.to + 1) % tree_image_list.length]['TID'];
-        var area_marker_list = window.parent.area_marker_list;
-        for (var i = 0; i < area_marker_list.length; i++) {
-            var marker = area_marker_list[i];
-            var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
-            marker.setIcon(icon);
-        }
-        set_chosen_image(tree_id);
+        area_highlight_tree(ev.to + 1);
     });
 }
 
