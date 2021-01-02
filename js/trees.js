@@ -583,6 +583,7 @@ function marker_on_click(e) {
         var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
         marker.setIcon(icon);
     }
+    find_area_carousel_tree(tree_id);
 }
 
 function marker_on_doubleclick(e) {
@@ -657,10 +658,22 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
 }
 
+function find_area_carousel_tree(tree_id) {
+    var tree_image_list = window.parent.tree_image_list;
+    for (var i = 0; i < tree_image_list.length; i++) {
+        var l_tree_id = tree_image_list[i]['TID'];
+        if (l_tree_id == tree_id) {
+            $('#AREA_CAROUSEL').carousel((i - 1) % tree_image_list.length);
+            break;
+        }
+    }
+}
+
 function area_highlight_tree(tree_id) {
     var tree_image_list = window.parent.tree_image_list;
     var tree_id = tree_id % tree_image_list.length;
     var tree_id = tree_image_list[tree_id]['TID'];
+    window.parent.map_tree_id = tree_id;
     var area_marker_list = window.parent.area_marker_list;
     for (var i = 0; i < area_marker_list.length; i++) {
         var marker = area_marker_list[i];
@@ -834,7 +847,9 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         tree_image_list.sort(function (a, b) { return b.SC - a.SC; });
         var data = { 'sliderinfo' : { 'items' : tree_image_list } };
         render_template_data('#tree-carousel-template', '#SLIDERINFO', data);
-        if (area != 'trees') {
+        if (area == 'trees') {
+            $('#SLIDERINFO').html('');
+        } else {
             area_carousel_init(tree_image_list);
         }
     }
