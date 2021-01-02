@@ -664,9 +664,10 @@ function find_area_carousel_tree(tree_id) {
         var l_tree_id = tree_image_list[i]['TID'];
         if (l_tree_id == tree_id) {
             $('#AREA_CAROUSEL').carousel((i - 1) % tree_image_list.length);
-            break;
+            return i;
         }
     }
+    return 0;
 }
 
 function area_highlight_tree(tree_id) {
@@ -687,11 +688,9 @@ function area_carousel_init(tree_image_list) {
     window.parent.tree_image_list = tree_image_list;
     $('#AREA_CAROUSEL').carousel({ interval: 0 });
 
-    var start_tid = tree_image_list.length - 1;
-    var $img = $('.carousel-item').eq(start_tid);
+    var start_id = tree_image_list.length - 1;
+    var $img = $('.carousel-item').eq(start_id);
     $img.addClass('active');
-
-    area_highlight_tree(0);
 
     $('.carousel .carousel-item').each(function() {
       var next = $(this).next();
@@ -712,6 +711,10 @@ function area_carousel_init(tree_image_list) {
         // console.log('SLIDE: FROM ' + ev.from + ' TO ' + ev.to);
         area_highlight_tree(ev.to + 1);
     });
+
+    var tree_id = window.parent.map_tree_id;
+    var start_id = find_area_carousel_tree(tree_id);
+    area_highlight_tree(start_id);
 }
 
 function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
