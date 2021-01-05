@@ -623,7 +623,13 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     window.parent.map_tree_id = tid;
 
-    $('#TITLE_HEADER').html(a_name);
+    if (area == 'trees') {
+          const [ t_name, t_handle_map ] = get_tree_handle(tid);
+          $('#TITLE_HEADER').html(t_name);
+    } else {
+        $('#TITLE_HEADER').html(a_name);
+    }
+
     if (window.parent.map_initialized) {
         var osm_map = window.parent.map_osm_map;
         /*
