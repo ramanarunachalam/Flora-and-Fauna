@@ -1,5 +1,6 @@
 const BANGALORE_LAT  = 12.97729;
 const BANGALORE_LONG = 77.59973;
+const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
 
 function is_array(obj) {
   return Object.prototype.toString.call(obj) === '[object Array]';
@@ -432,7 +433,7 @@ function create_osm_map(module, id_name, c_lat, c_long) {
     tile_layer.addTo(osm_map);
     var geocoder = new L.Control.geocoder({
         geocoder: L.Control.Geocoder.nominatim({
-            geocodingQueryParams: { countrycodes: 'in' }
+            geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
         })
     });
     geocoder.addTo(osm_map);
@@ -824,7 +825,9 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             osm_map.removeControl(routing);
         }
         var routing = new L.Routing.control({
-            geocoder: new L.Control.Geocoder.nominatim({geocodingQueryParams: { countrycodes: 'in' }})
+            geocoder: new L.Control.Geocoder.nominatim({
+                geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
+            })
         });
         routing.addTo(osm_map);
         routing.setWaypoints(point_list);
