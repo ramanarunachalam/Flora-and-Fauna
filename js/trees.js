@@ -405,7 +405,8 @@ function get_search_results(search_word, search_options, item_list, id_list) {
 }
 
 function load_search_data() {
-    $('#SEARCH_SUBMIT').submit();
+    $('#SEARCH_FORM').submit();
+    $(this).closest('form').submit();
 }
 
 function tree_search_init() {
