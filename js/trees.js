@@ -7,7 +7,7 @@ function is_array(obj) {
 }
 
 function set_language(obj) {
-    window.parent.TREE_LANG_OPT = obj.value;
+    window.parent.RENDER_LANGUAGE = obj.value;
 }
 
 function UrlParameters(q) {
@@ -79,7 +79,7 @@ function tree_module_init(data) {
         var url = '../../language.json';
         $.getJSON(url, function(lang_obj) {
             window.parent.TREE_LANG_DATA = lang_obj;
-            window.parent.TREE_LANG_OPT = 'English';
+            window.parent.RENDER_LANGUAGE = 'English';
             window.parent.info_initialized = true;
             tree_module_init(window.parent.TREE_CARD_DATA);
         });
@@ -91,7 +91,7 @@ function tree_module_init(data) {
     window.parent.TREE_BOX_DATA = data['mapregion'];
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var english_lang_map = lang_obj['English'];
     var english_key_info = english_lang_map['Key Name'];
@@ -126,7 +126,7 @@ function tree_module_init(data) {
 
 function tree_part_init(data) {
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var english_lang_map = lang_obj['English'];
@@ -151,7 +151,7 @@ function tree_simple_init(data) {
 
 function tree_intro_init(data) {
     window.parent.info_initialized = true;
-    window.parent.TREE_LANG_OPT = 'English';
+    window.parent.RENDER_LANGUAGE = 'English';
     window.parent.search_initialized = false;
     window.parent.area_marker_list = [];
     window.parent.area_popup_list = [];
@@ -163,6 +163,11 @@ function tree_intro_init(data) {
     render_template_data('#carousel-template', '#SLIDERINFO', data);
     create_icons();
     search_init();
+
+    // $('#SEARCH_INFO').tooltip();
+    $('#MIC_IMAGE').tooltip();
+    $('#KBD_IMAGE').tooltip();
+    speech_to_text_init();
 }
 
 function tree_info_init() {
@@ -276,7 +281,7 @@ function tree_grid_init(data) {
     render_template_data('#pagination-template', '#BOTTOMPAGE', data);
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var row_list = data['cardinfo']['ROW'];
@@ -376,7 +381,7 @@ function transliterate_text(word) {
 
 function get_search_results(search_word, search_options, item_list, id_list) {
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var search_engine = window.parent.flora_fauna_search_engine;
@@ -397,6 +402,10 @@ function get_search_results(search_word, search_options, item_list, id_list) {
             }
         });
     }
+}
+
+function load_search_data() {
+    $('#SEARCH_SUBMIT').submit();
 }
 
 function tree_search_init() {
@@ -510,7 +519,7 @@ function get_needed_icon(selected, blooming) {
 
 function get_tree_handle(tree_id) {
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -728,7 +737,7 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     var osm_map = window.parent.map_osm_map;
     var area = window.parent.AREA_TYPE;
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -882,7 +891,7 @@ function tree_area_init(item_data) {
         var url = 'language.json';
         $.getJSON(url, function(lang_obj) {
             window.parent.TREE_LANG_DATA = lang_obj;
-            window.parent.TREE_LANG_OPT = 'English';
+            window.parent.RENDER_LANGUAGE = 'English';
             window.parent.info_initialized = true;
             create_icons();
             tree_area_init(window.parent.AREA_DATA);
@@ -891,7 +900,7 @@ function tree_area_init(item_data) {
     }
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.TREE_LANG_OPT;
+    var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
 
@@ -1001,4 +1010,110 @@ function tree_transliterator_init() {
             transliterator_word();
         }
     });
+}
+
+/*
+    Speech To Text
+*/
+
+function speech_to_text_init() {
+    window.speech_recognizing = false;
+    window.speech_final_transcript = '';
+    window.speech_recognizing = false;
+    window.speech_ignore_onend;
+    window.speech_start_timestamp;
+    if (!('webkitSpeechRecognition' in window)) {
+        console.log('Speech not working:');
+    } else {
+        window.speech_recognition = new webkitSpeechRecognition();
+        window.speech_recognition.continuous = true;
+        window.speech_recognition.interimResults = true;
+
+        window.speech_recognition.onstart = function() {
+            window.speech_recognizing = true;
+            console.log('Speech Starting:');
+        };
+
+        window.speech_recognition.onerror = function(event) {
+            if (event.error == 'no-speech') {
+                console.log('Speech Error: No Speech');
+                window.speech_ignore_onend = true;
+            }
+            if (event.error == 'audio-capture') {
+                console.log('Speech Error: Audio Capture');
+              window.speech_ignore_onend = true;
+            }
+            if (event.error == 'not-allowed') {
+                if (event.timeStamp - window.speech_start_timestamp < 100) {
+                    console.log('Speech Error: Info Blocked');
+                } else {
+                    console.log('Speech Error: Info Denied');
+                }
+                window.speech_ignore_onend = true;
+            }
+        };
+
+        window.speech_recognition.onend = function() {
+            window.speech_recognizing = false;
+            if (window.speech_ignore_onend) {
+                console.log('Speech Error: Ignore End');
+                return;
+            }
+            if (!window.speech_final_transcript) {
+                console.log('Speech End:');
+                return;
+            }
+        };
+
+        window.speech_recognition.onresult = function(event) {
+            var interim_transcript = '';
+            /*
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    window.speech_final_transcript += event.results[i][0].transcript;
+                } else {
+                    interim_transcript += event.results[i][0].transcript;
+                }
+                console.log('Speech Interim: ' + event.resultIndex + ' ' + event.results.length + ' ' + event.results[i][0].transcript);
+            }
+            console.log('Speech Result: ' + event.resultIndex + ' ' + event.results.length + ' ' + interim_transcript);
+            */
+            if (event.results.length > 0) {
+                window.speech_final_transcript = event.results[0][0].transcript;
+            } else {
+                window.speech_final_transcript = '';
+            }
+            if (window.speech_final_transcript || interim_transcript) {
+                window.speech_recognition.stop();
+                $('#MIC_IMAGE').attr('src', 'icons/mic-mute.svg');
+                document.getElementById('SEARCH_WORD').value = window.speech_final_transcript;
+                // console.log('Speech Final: ' + window.speech_final_transcript);
+                load_search_data();
+            }
+        };
+    }
+}
+
+function speech_start(event) {
+    if (!('webkitSpeechRecognition' in window)) {
+        return;
+    }
+    if (window.speech_recognizing) {
+        window.speech_recognition.stop();
+        return;
+    }
+    var lang = window.parent.RENDER_LANGUAGE;
+    window.speech_final_transcript = '';
+    window.speech_recognition.lang = MAP_ISO_DICT[lang];
+    window.speech_recognition.start();
+    window.speech_ignore_onend = false;
+    window.speech_start_timestamp = event.timeStamp;
+    $('#MIC_IMAGE').attr('src', 'icons/mic.svg');
+}
+
+function load_keyboard(event) {
+    var lang = window.parent.RENDER_LANGUAGE;
+    set_input_keyboard(lang.toLowerCase());
+    $('#LANG_KBD').modal();
+    return;
 }
