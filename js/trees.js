@@ -54,6 +54,7 @@ function tree_nav_init() {
     $('.nav li').bind('click', function() {
        $(this).addClass('active').siblings().removeClass('active');
     });
+    tree_tool_init();
 }
 
 function set_key_map(d_obj, d_map, d_key) {
@@ -152,6 +153,14 @@ function tree_simple_init(data) {
     render_template_data('#card-info-template', '#CARDINFO', data);
 }
 
+function tree_tool_init(data) {
+    // $('#SEARCH_INFO').tooltip();
+    $('#MIC_IMAGE').tooltip();
+    $('#KBD_IMAGE').tooltip();
+    speech_to_text_init();
+    create_icons();
+}
+
 function tree_intro_init(data) {
     window.parent.info_initialized = true;
     window.parent.RENDER_LANGUAGE = 'English';
@@ -164,13 +173,7 @@ function tree_intro_init(data) {
     window.onload = tree_info_init;
 
     render_template_data('#carousel-template', '#SLIDERINFO', data);
-    create_icons();
     search_init();
-
-    // $('#SEARCH_INFO').tooltip();
-    $('#MIC_IMAGE').tooltip();
-    $('#KBD_IMAGE').tooltip();
-    speech_to_text_init();
 }
 
 function tree_info_init() {
