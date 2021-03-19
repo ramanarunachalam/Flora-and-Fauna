@@ -47,16 +47,6 @@ function render_template_data(template_name, id_name, data) {
     $(id_name).html(template_html);
 }
 
-function tree_nav_init() {
-    if (window.parent.RENDER_LANGUAGE == undefined) {
-        window.parent.RENDER_LANGUAGE = 'English';
-    }
-    $('.nav li').bind('click', function() {
-       $(this).addClass('active').siblings().removeClass('active');
-    });
-    tree_tool_init();
-}
-
 function set_key_map(d_obj, d_map, d_key) {
     var d = d_obj[d_key];
     if (d[0] == 1) {
@@ -77,7 +67,7 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
     }
 }
 
-function tree_module_init(data) {
+function tree_module_init(region, file_name, data) {
     if (window.parent.info_initialized == undefined) {
         window.parent.TREE_CARD_DATA = data;
         var url = '../../language.json';
@@ -125,10 +115,10 @@ function tree_module_init(data) {
             set_key_value_map(cv, english_key_info, lang_map, 'V');
         } 
     }
-    render_template_data('#card-info-template', '#CARDINFO', card_data);
+    render_template_data('#module-card-info-template', '#CARDINFO', card_data);
 }
 
-function tree_part_init(data) {
+function tree_grid_init(region, type, data) {
     var lang_obj = window.parent.TREE_LANG_DATA;
     var lang = window.parent.RENDER_LANGUAGE;
     var lang_map = lang_obj[lang];
@@ -146,42 +136,15 @@ function tree_part_init(data) {
             }
         }
     }
-    render_template_data('#card-info-template', '#CARDINFO', data);
+    render_template_data('#grid-card-info-template', '#CARDINFO', data);
 }
 
-function tree_simple_init(data) {
-    render_template_data('#card-info-template', '#CARDINFO', data);
+function tree_simple_init(region, data) {
+    render_template_data('#simple-card-info-template', '#CARDINFO', data);
 }
 
-function tree_tool_init(data) {
-    // $('#SEARCH_INFO').tooltip();
-    $('#MIC_IMAGE').tooltip();
-    $('#KBD_IMAGE').tooltip();
-    speech_to_text_init();
-    create_icons();
-}
-
-function tree_intro_init(data) {
-    window.parent.info_initialized = true;
-    window.parent.RENDER_LANGUAGE = 'English';
-    window.parent.search_initialized = false;
-    window.parent.area_marker_list = [];
-    window.parent.area_popup_list = [];
-    window.parent.area_tooltip_list = [];
-    window.parent.map_initialized = false;
-
-    window.onload = tree_info_init;
-
-    render_template_data('#carousel-template', '#SLIDERINFO', data);
-    search_init();
-}
-
-function tree_info_init() {
-    var url = '../language.json';
-    $.getJSON(url, function(lang_obj) {
-        window.parent.TREE_LANG_DATA = lang_obj;
-        transliterator_init();
-    });
+function tree_intro_init(region, slider_data) {
+    render_template_data('#carousel-template', '#SLIDERINFO', slider_data);
 
     $('.carousel').carousel({
           pause: "hover",
@@ -201,6 +164,50 @@ function tree_info_init() {
     $img.addClass('active');
     $img = $('img', $img);
     $img.attr('src', $img.attr('data_src'));
+}
+
+function add_history(data, title, url) {
+    if (!window.parent.tree_popstate) {
+        data['title'] = title;
+        console.log('PUSH: ', data, window.parent.tree_popstate);
+        history.pushState(data, title, url);
+    }
+}
+
+function handle_popstate(e) {
+    var data = e.state;
+    console.log('POP: ', e);
+    var title = data['title'];
+    var handled = true;
+    window.parent.tree_popstate = true;
+    if (title == 'introduction') {
+        load_intro_data(data['region']);
+    } else if (title == 'collection') {
+        load_collection_data(data['type'], data['letter'], data['page'], data['max']);
+    } else if (title == 'grid') {
+        load_grid_data(data['type']);
+    } else if (title == 'simple') {
+        load_simple_data();
+    } else if (title == 'module') {
+        load_module_data(data['module']);
+    } else if (title == 'area') {
+        load_area_data(data['type'], data['id']);
+    } else {
+        handled = false;
+    }
+    window.parent.tree_popstate = false;
+    return handled;
+}
+
+function load_intro_data(region) {
+    window.parent.tree_region = region;
+    var intro_data = {};
+    render_template_data('#introduction-template', '#SECTION', intro_data);
+    var url = `Flora/trees_${region}_intro.json`;
+    $.getJSON(url, function(slider_data) {
+        tree_intro_init(region, slider_data);
+        add_history({ 'region' : region }, 'introduction', 'trees.html');
+    });
 }
 
 function search_init() {
@@ -280,7 +287,7 @@ function tree_grid_load() {
     set_grid_page();
 }
 
-function tree_grid_init(data) {
+function tree_collection_init(region, type, letter, data) {
     data['pageinfo']['N'] = 'top';
     render_template_data('#pagination-template', '#TOPPAGE', data);
     data['pageinfo']['N'] = 'bottom';
@@ -301,7 +308,7 @@ function tree_grid_init(data) {
             set_key_map(row['COLF'], key_name, 'CN');
         }
     }
-    render_template_data('#card-info-template', '#CARDINFO', data);
+    render_template_data('#collection-card-info-template', '#CARDINFO', data);
 
     $("#top-page-next").click(show_top_next_page);
     $("#top-page-previous").click(show_top_prev_page);
@@ -324,7 +331,7 @@ function search_load() {
     if (window.parent.search_initialized) {
         return;
     }
-    var url = '../flora_index.json';
+    var url = 'flora_index.json';
     var search_engine = window.parent.flora_fauna_search_engine;
     $.getJSON(url, function(search_obj) {
         var data_id = 0;
@@ -411,13 +418,8 @@ function get_search_results(search_word, search_options, item_list, id_list) {
 }
 
 function load_search_data() {
-    $('#SEARCH_FORM').submit();
-    // $(this).closest('form').submit();
-}
-
-function tree_search_init() {
-    var params = new UrlParameters(window.location.search);
-    var search_word = params.getValue('word');
+    var lang = window.parent.RENDER_LANGUAGE;
+    var search_word = document.getElementById('SEARCH_WORD').value;
     var search_word = decodeURI(search_word);
     var t_word = transliterate_text(search_word);
     search_word = t_word;
@@ -432,8 +434,9 @@ function tree_search_init() {
     item_list.sort(function (a, b) { return b.P - a.P; });
     var new_item_list = item_list.slice(0, 25);
     var item_data = { "searchinfo" : { "results" : new_item_list } };
-    render_template_data('#search-template', '#CARDINFO', item_data);
+    render_template_data('#search-template', '#SECTION', item_data);
     window.scrollTo(0, 0);
+    add_history({ 'search' : search_word }, 'search', 'trees.html');
 }
 
 function create_osm_map(module, id_name, c_lat, c_long) {
@@ -484,13 +487,14 @@ function create_icons() {
 function get_url_prefix(handle_map, tree_id) {
     var handle = handle_map[tree_id];
     var prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
-    var url = prefix + handle[2] + '.html'
+    var url = handle[1] + ' - ' + handle[2] + '/' + handle[2];
     var image = handle[2] + ' - ' + handle[3];
     return [prefix, image, url];
 }
 
 function get_url_info(handle_map, tree_id, name, level) {
     const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
+    var j_url = "javascript:load_module_data('" + url + "');";
     if (level == 'popup') {
         var image_url = prefix + image + '.jpg'
         var image_style = 'style="width: 240px; height: 180px;"';
@@ -498,7 +502,7 @@ function get_url_info(handle_map, tree_id, name, level) {
         var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
         var image_style = '';
     }
-    var html = '<a href="' + url + '" align="center"><div class="thumbnail"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></div></a>';
+    var html = '<a href="' + j_url + '" align="center"><div class="thumbnail"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></div></a>';
     return html;
 }
 
@@ -550,10 +554,9 @@ function init_conetxt_menu() {
           if (key == 'info') {
               const [ name, handle_map ] = get_tree_handle(tree_id);
               const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
-              window.open(url, 'FRAME_CONTENT');
+              load_module_data(url);
           } else if (key == 'tmap') {
-              var url = 'tree_area.html?area=trees&aid=' + tree_id;
-              window.open(url, 'FRAME_CONTENT');
+              load_area_data('trees', tree_id);
           } else if (key == 'gmap') {
               var url = 'http://maps.google.com/maps?z=12&t=m&q=loc:' + pos.lat + '+' + pos.lng;
               window.open(url, '');
@@ -608,7 +611,7 @@ function marker_on_doubleclick(e) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
     const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
     window.parent.map_tree_id = tree_id;
-    window.open(url, 'FRAME_CONTENT');
+    load_module_data(url);
 }
 
 function marker_on_contextmenu(e) {
@@ -881,10 +884,7 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     window.scrollTo(0, 0);
 }
 
-function tree_area_init(item_data) {
-    var params = new UrlParameters(window.location.search);
-    var area = params.getValue('area');
-    var aid = params.getValue('aid');
+function tree_area_init(area, aid, item_data) {
     if (area == undefined) {
         var area = window.parent.AREA_TYPE;
         var aid = window.parent.AREA_ID;
@@ -901,7 +901,7 @@ function tree_area_init(item_data) {
             window.parent.RENDER_LANGUAGE = 'English';
             window.parent.info_initialized = true;
             create_icons();
-            tree_area_init(window.parent.AREA_DATA);
+            tree_area_init(undefined, undefined, window.parent.AREA_DATA);
         });
         return;
     }
@@ -993,6 +993,60 @@ function tree_area_init(item_data) {
             }
         }
         show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
+    });
+}
+
+function load_area_data(area_type, area_id) {
+    var area_data = {}
+    render_template_data('#area-template', '#SECTION', area_data);
+    var url = 'tree_area.json';
+    $.getJSON(url, function(item_data) {
+        tree_area_init(area_type, area_id, item_data);
+        add_history({ 'type' : area_type, 'id' : area_id }, 'area', 'trees.html');
+    });
+}
+
+function load_collection_data(type, letter, page_index, page_max) {
+    var region = window.parent.tree_region;
+    var collection_data = {};
+    render_template_data('#page-template', '#SECTION', collection_data);
+    var url = `Flora/trees_${region}_${type}_page_${letter}.json`;
+    $.getJSON(url, function(item_data) {
+        tree_collection_init(region, type, letter, item_data);
+        add_history({ 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max }, 'collection', 'trees.html');
+    });
+}
+
+function load_grid_data(type) {
+    var region = window.parent.tree_region;
+    var grid_data = {};
+    render_template_data('#grid-template', '#SECTION', grid_data);
+    var url = `Flora/trees_${region}_${type}_grid.json`;
+    $.getJSON(url, function(item_data) {
+        tree_grid_init(region, type, item_data);
+        add_history({ 'type' : type }, 'grid', 'trees.html');
+    });
+}
+
+function load_simple_data() {
+    var region = window.parent.tree_region;
+    var simple_data = {};
+    render_template_data('#simple-template', '#SECTION', simple_data);
+    var url = `Flora/trees_${region}_simple.json`;
+    $.getJSON(url, function(item_data) {
+        tree_simple_init(region, item_data);
+        add_history({ 'region' : region }, 'simple', 'trees.html');
+    });
+}
+
+function load_module_data(file_name) {
+    var region = window.parent.tree_region;
+    var module_data = {};
+    render_template_data('#module-template', '#SECTION', module_data);
+    var url = `Flora/${file_name}.json`;
+    $.getJSON(url, function(item_data) {
+        tree_module_init(region, file_name, item_data);
+        add_history({ 'module' : file_name }, 'module', 'trees.html');
     });
 }
 
@@ -1125,3 +1179,38 @@ function load_keyboard(event) {
     $('#LANG_KBD').modal();
     return;
 }
+
+function tree_main_init() {
+    window.parent.info_initialized = true;
+    window.parent.RENDER_LANGUAGE = 'English';
+    window.parent.tree_region = 'bangalore';
+    window.parent.search_initialized = false;
+    window.parent.area_marker_list = [];
+    window.parent.area_popup_list = [];
+    window.parent.area_tooltip_list = [];
+    window.parent.map_initialized = false;
+    window.parent.tree_popstate = false;
+
+    $('.nav li').bind('click', function() {
+       $(this).addClass('active').siblings().removeClass('active');
+    });
+
+    // $('#SEARCH_INFO').tooltip();
+    $('#MIC_IMAGE').tooltip();
+    $('#KBD_IMAGE').tooltip();
+    create_icons();
+
+    window.addEventListener('popstate', handle_popstate);
+
+    speech_to_text_init();
+    search_init();
+
+    var url = 'language.json';
+    $.getJSON(url, function(lang_obj) {
+        window.parent.TREE_LANG_DATA = lang_obj;
+        transliterator_init();
+    });
+
+    load_intro_data(window.parent.tree_region);
+}
+
