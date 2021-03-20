@@ -1153,6 +1153,9 @@ function load_keyboard(event) {
 
 function handle_popstate(e) {
     var data = e.state;
+    if (data == null || data == undefined) {
+        return;
+    }
     // console.log('POP: ', e);
     var context = data['context'];
     var propagate = true;
