@@ -152,7 +152,7 @@ a {
     height: 640px;
 }
 
-.modal-content {
+#IMAGE_MODAL .modal-content {
     width: 680px;
     height: 680px;
 }

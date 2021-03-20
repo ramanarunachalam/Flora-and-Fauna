@@ -852,6 +852,10 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 }
 
 function tree_area_init(area, aid, item_data) {
+    if (window.parent.green_tree_icon == undefined) {
+        create_icons();
+    }
+
     if (area == undefined) {
         var area = window.parent.AREA_TYPE;
         var aid = window.parent.AREA_ID;
@@ -1180,6 +1184,17 @@ function add_history(context, data, url) {
     window.parent.tree_popstate = false;
 }
 
+function load_content() {
+    var url = 'language.json';
+    $.getJSON(url, function(lang_obj) {
+        window.parent.TREE_LANG_DATA = lang_obj;
+        transliterator_init();
+    });
+
+    speech_to_text_init();
+    search_init();
+}
+
 function tree_main_init() {
     window.parent.info_initialized = true;
     window.parent.RENDER_LANGUAGE = 'English';
@@ -1198,18 +1213,9 @@ function tree_main_init() {
     // $('#SEARCH_INFO').tooltip();
     $('#MIC_IMAGE').tooltip();
     $('#KBD_IMAGE').tooltip();
-    create_icons();
 
     window.addEventListener('popstate', handle_popstate);
-
-    speech_to_text_init();
-    search_init();
-
-    var url = 'language.json';
-    $.getJSON(url, function(lang_obj) {
-        window.parent.TREE_LANG_DATA = lang_obj;
-        transliterator_init();
-    });
+    window.onload = load_content;
 
     load_intro_data(window.parent.tree_region);
 }
