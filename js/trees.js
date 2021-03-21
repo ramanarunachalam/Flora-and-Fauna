@@ -6,6 +6,10 @@ function is_array(obj) {
   return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
+function capitalize_word(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function set_language(obj) {
     window.parent.RENDER_LANGUAGE = obj.value;
 }
@@ -883,7 +887,7 @@ function tree_area_init(area, aid, item_data) {
     var key_name = lang_map['Name'];
 
     var lat_long = [ BANGALORE_LAT, BANGALORE_LONG ];
-    var name = area[0].toUpperCase() + area.slice(1);
+    var name = capitalize_word(area);
     if (area == 'parks') {
         var data = item_data['parks'];
         if (aid != '') {
@@ -973,7 +977,7 @@ function load_area_data(area_type, area_id) {
     var url = 'tree_area.json';
     $.getJSON(url, function(item_data) {
         tree_area_init(area_type, area_id, item_data);
-        add_history('area', { 'type' : area_type, 'id' : area_id }, 'trees.html');
+        add_history('maps', { 'type' : area_type, 'id' : area_id }, 'trees.html');
     });
 }
 
@@ -984,18 +988,18 @@ function load_collection_data(type, letter, page_index, page_max) {
     var url = `Flora/trees_${region}_${type}_page_${letter}.json`;
     $.getJSON(url, function(item_data) {
         tree_collection_init(region, type, letter, item_data);
-        add_history('collection', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max }, 'trees.html');
+        add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max }, 'trees.html');
     });
 }
 
-function load_grid_data(type) {
+function load_category_data(type) {
     var region = window.parent.tree_region;
     var grid_data = {};
     render_template_data('#grid-template', '#SECTION', grid_data);
     var url = `Flora/trees_${region}_${type}_grid.json`;
     $.getJSON(url, function(item_data) {
         tree_grid_init(region, type, item_data);
-        add_history('grid', { 'type' : type }, 'trees.html');
+        add_history('categories', { 'type' : type }, 'trees.html');
     });
 }
 
@@ -1006,7 +1010,7 @@ function load_simple_data() {
     var url = `Flora/trees_${region}_simple.json`;
     $.getJSON(url, function(item_data) {
         tree_simple_init(region, item_data);
-        add_history('simple', { 'region' : region }, 'trees.html');
+        add_history('alphabetical', { 'region' : region }, 'trees.html');
     });
 }
 
@@ -1017,7 +1021,7 @@ function load_module_data(file_name) {
     var url = `Flora/${file_name}.json`;
     $.getJSON(url, function(item_data) {
         tree_module_init(region, file_name, item_data);
-        add_history('module', { 'module' : file_name }, 'trees.html');
+        add_history('trees', { 'module' : file_name }, 'trees.html');
     });
 }
 
@@ -1157,20 +1161,20 @@ function handle_popstate(e) {
         return;
     }
     // console.log('POP: ', e);
-    var context = data['context'];
     var propagate = true;
     window.parent.tree_popstate = true;
+    var context = data['context'];
     if (context == 'introduction') {
         load_intro_data(data['region']);
-    } else if (context == 'collection') {
+    } else if (context == 'collections') {
         load_collection_data(data['type'], data['letter'], data['page'], data['max']);
-    } else if (context == 'grid') {
-        load_grid_data(data['type']);
-    } else if (context == 'simple') {
+    } else if (context == 'categories') {
+        load_category_data(data['type']);
+    } else if (context == 'alphabetical') {
         load_simple_data();
-    } else if (context == 'module') {
+    } else if (context == 'trees') {
         load_module_data(data['module']);
-    } else if (context == 'area') {
+    } else if (context == 'maps') {
         load_area_data(data['type'], data['id']);
     } else {
         propagate = false;
@@ -1180,7 +1184,20 @@ function handle_popstate(e) {
 function add_history(context, data, url) {
     if (!window.parent.tree_popstate) {
         data['context'] = context;
-        var title = context.toUpperCase();
+        var title = capitalize_word(context);
+        if (context == 'introduction') {
+            title += ' ' + capitalize_word(data['region']);
+        } else if (context == 'collections') {
+            title += ' ' + capitalize_word(data['type']) + ' ' + data['letter'];
+        } else if (context == 'categories') {
+            title += ' ' + capitalize_word(data['type']);
+        } else if (context == 'alphabetical') {
+            title += ' Alphabetical'
+        } else if (context == 'trees') {
+            title += ' ' + data['module'];
+        } else if (context == 'maps') {
+            title += ' ' + capitalize_word(data['type']);
+        }
         // console.log('PUSH: ', data, window.parent.tree_popstate);
         history.pushState(data, title, url);
     }
