@@ -14,37 +14,6 @@ function set_language(obj) {
     window.parent.RENDER_LANGUAGE = obj.value;
 }
 
-function UrlParameters(q) {
-    if(q.length > 1) this.q = q.substring(1, q.length);
-    else this.q = null;
-        this.keyValuePairs = new Array();
-    if(q) {
-        for(var i=0; i < this.q.split("&").length; i++) {
-            this.keyValuePairs[i] = this.q.split("&")[i];
-        }
-    }
-
-    this.getKeyValuePairs = function() { return this.keyValuePairs; }
-
-    this.getValue = function(s) {
-        for(var j=0; j < this.keyValuePairs.length; j++) {
-            if(this.keyValuePairs[j].split("=")[0] == s)
-                return this.keyValuePairs[j].split("=")[1];
-        }
-        return '';
-    }
-
-    this.getParameters = function() {
-        var a = new Array(this.getLength());
-        for(var j=0; j < this.keyValuePairs.length; j++) {
-            a[j] = this.keyValuePairs[j].split("=")[0];
-        }
-        return a;
-    }
-
-    this.getLength = function() { return this.keyValuePairs.length; }
-}
-
 function render_template_data(template_name, id_name, data) {
     var ul_template = $(template_name).html();
     var template_html = Mustache.to_html(ul_template, data);
@@ -193,9 +162,7 @@ function search_init() {
 var current_page = 1;
 var max_page = 100;
 
-function set_grid_page() {
-    var page = new UrlParameters(window.location.search);
-    current_page = unescape(page.getValue('page'));
+function set_grid_page(current_page, max_page) {
     if (current_page == '') {
         current_page = 1;
     }
@@ -209,7 +176,6 @@ function set_grid_page() {
     var id_str = 'bottom_' + current_page
     $('li#' + id_str).addClass('active');
 
-    max_page = unescape(page.getValue('max'));
     if (max_page == '') {
         max_page = 100;
     }
@@ -254,11 +220,7 @@ function show_bottom_next_page() {
     show_page('bottom', false);
 }
 
-function tree_grid_load() {
-    set_grid_page();
-}
-
-function tree_collection_init(region, type, letter, data) {
+function tree_collection_init(region, type, letter, page_index, max_page, data) {
     data['pageinfo']['N'] = 'top';
     render_template_data('#pagination-template', '#TOPPAGE', data);
     data['pageinfo']['N'] = 'bottom';
@@ -286,7 +248,7 @@ function tree_collection_init(region, type, letter, data) {
     $("#bottom-page-next").click(show_bottom_prev_page);
     $("#bottom-page-previous").click(show_bottom_prev_page);
 
-    window.onload = tree_grid_load;
+    set_grid_page(page_index, max_page);
 }
 
 function show_bigger_image() {
@@ -987,7 +949,7 @@ function load_collection_data(type, letter, page_index, page_max) {
     render_template_data('#page-template', '#SECTION', collection_data);
     var url = `Flora/trees_${region}_${type}_page_${letter}.json`;
     $.getJSON(url, function(item_data) {
-        tree_collection_init(region, type, letter, item_data);
+        tree_collection_init(region, type, letter, page_index, page_max, item_data);
         add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max }, 'trees.html');
     });
 }
