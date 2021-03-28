@@ -11,7 +11,8 @@ function capitalize_word(s) {
 }
 
 function set_language(obj) {
-    window.parent.RENDER_LANGUAGE = obj.value;
+    window.parent.GOT_LANGUAGE = obj.value;
+    window.parent.RENDER_LANGUAGE = MAP_LANG_DICT[obj.value];
     load_menu_data();
 }
 
@@ -118,6 +119,10 @@ function tree_simple_init(region, data) {
 }
 
 function tree_intro_init(region, slider_data) {
+    var lang = window.parent.RENDER_LANGUAGE;
+    var stats_list = slider_data['statsinfo'];
+    get_lang_map(lang, stats_list);
+
     render_template_data('#carousel-template', '#SLIDERINFO', slider_data);
 
     $('.carousel').carousel({
@@ -1167,12 +1172,44 @@ function add_history(context, data, url) {
     window.parent.tree_popstate = false;
 }
 
+function get_lang_map_word(lang, map_dict, n) {
+   if (map_dict == undefined) {
+       return n;
+   }
+   var t = map_dict[n];
+   if (t == undefined) {
+       return n;
+   }
+   t = t[lang];
+   if (t == undefined) {
+       return n;
+   }
+   return t;
+}
+
+function get_lang_map(lang, n_dict) {
+    if (lang == 'English') {
+        return;
+    }
+    var map_dict = window.parent.TREE_LANG_DATA['Keys'];
+    n_dict['T'] = get_lang_map_word(lang, map_dict, n_dict['T']);
+    var i_list = n_dict['items'];
+    for (var i = 0; i < i_list.length; i++) {
+        var i_dict = i_list[i];
+        i_dict['N'] = get_lang_map_word(lang, map_dict, i_dict['N']);
+    }
+}
+
 function load_menu_data() {
+    var lang = window.parent.RENDER_LANGUAGE;
+    var map_dict = window.parent.TREE_LANG_DATA['Keys'];
     var LANG_LIST = [ 'English', 'Tamil', 'Kannada', 'Telugu', 'Malayalam', 'Hindi', 'Marathi', 'Gujarati', 'Bengali', 'Punjabi' ];
     var lang_list = [];
     for (var i = 0; i < LANG_LIST.length; i++) {
         var l = LANG_LIST[i];
-        var d = (l == window.parent.RENDER_LANGUAGE) ? { 'N' : l, 'O' : 'selected' } : { 'N' : l };
+        var t = get_lang_map_word(lang, map_dict, l);
+        var t = REVERSE_LANG_DICT[l];
+        var d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
         lang_list.push(d);
     }
     var map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' }, { 'N' : 'Wards', 'A' : 'wards', 'I' : '' },
@@ -1198,7 +1235,15 @@ function load_menu_data() {
                                       { 'N' : 'India', 'R' : 'india' }
                                     ]
                         };
-    var menu_dict = { 'menus' : { 'languages' : lang_list,
+    // get_lang_map(lang, lang_list);
+    get_lang_map(lang, map_list);
+    get_lang_map(lang, collection_list);
+    get_lang_map(lang, category_list);
+    get_lang_map(lang, region_list);
+    var menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word(lang, map_dict, 'Trees'),
+                                  'SEARCH' : get_lang_map_word(lang, map_dict, 'Search'),
+                                  'ALPHABETICAL' : get_lang_map_word(lang, map_dict, 'Alphabetical'),
+                                  'languages' : lang_list,
                                   'maps' : map_list,
                                   'collections' : collection_list,
                                   'categories' : category_list,
@@ -1212,6 +1257,7 @@ function load_menu_data() {
     $('#KBD_IMAGE').tooltip();
 
     speech_to_text_init();
+    load_intro_data(window.parent.tree_region);
 }
 
 function load_content() {
@@ -1226,6 +1272,7 @@ function load_content() {
 function tree_main_init() {
     window.parent.info_initialized = true;
     window.parent.RENDER_LANGUAGE = 'English';
+    window.parent.TREE_LANG_DATA = {};
     window.parent.tree_region = 'bangalore';
     window.parent.search_initialized = false;
     window.parent.area_marker_list = [];
@@ -1242,6 +1289,5 @@ function tree_main_init() {
     window.onload = load_content;
 
     load_menu_data();
-    load_intro_data(window.parent.tree_region);
 }
 

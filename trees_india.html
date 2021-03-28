@@ -55,7 +55,7 @@
     {{#menus}}
         <div class="navbar-nav col-1">
             <a class="nav-item" href="javascript:load_intro_data('bangalore');">
-              <img class="ICON" src="icons/house-fill.svg"> &nbsp; Trees
+              <img class="ICON" src="icons/house-fill.svg"> &nbsp; {{TITLE}}
             </a>
         </div>
 
@@ -71,7 +71,7 @@
             <form method="GET" action="javascript:load_search_data();" class="nav-item navbar-form" role="search">
                 <div class="input-group">
                     <button class="button" type="submit"><img class="ICON" src="icons/search.svg"></button>
-                    <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="Search" type="text">
+                    <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="{{SEARCH}}" type="text">
                     <button class="button" onclick="speech_start(event)"><img id="MIC_IMAGE" class="ICON" data-toggle="tooltip" data-placement="bottom" data-html="true" data-title="<em>Only in Chrome</em>" src="icons/mic-mute.svg"></button>
                     <button class="button" onclick="load_keyboard(event)"><img id="KBD_IMAGE" class="ICON" data-toggle="tooltip" data-placement="bottom" data-html="true" data-title="<em>Language Keyboard</em>" src="icons/keyboard.svg"></button>
                 </div>
@@ -109,7 +109,7 @@
                 <a class="dropdown-item" href="javascript:load_category_data('{{A}}');">{{N}}</a>
                 {{/items}}
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="javascript:load_simple_data();">Alphabetical</a>
+                <a class="dropdown-item" href="javascript:load_simple_data();">{{ALPHABETICAL}}</a>
               </div>
               {{/categories}}
             </div>

@@ -1,5 +1,9 @@
-const MAP_LANG_DICT = { 'English' : 'English', 'தமிழ்' : 'Tamil', 'తెలుగు' : 'Telugu', 'ಕನ್ನಡ' : 'Kannada', 'മലയാളം' : 'Malayalam', 'संस्कृत' : 'Sanskrit' }
-const MAP_ISO_DICT = { 'English' : 'en-IN', 'Tamil' : 'ta-IN', 'Telugu' : 'te-IN', 'Kannada' : 'kn-IN', 'Malayalam' : 'ml-IN', 'Hindi' : 'hi-IN', 'Bengali' : 'bn-IN', 'Marathi' : 'mr-IN', 'Gujarati' : 'gu-IN', 'Punjabi' : 'pa-IN' }
+const MAP_LANG_DICT = { 'English' : 'English', 'தமிழ்' : 'Tamil', 'తెలుగు' : 'Telugu', 'ಕನ್ನಡ' : 'Kannada', 'മലയാളം' : 'Malayalam', 'हिन्दी' : 'Hindi', 'বাংলা' : 'Bengali', 'ગુજરાતી' : 'Gujarati', 'मराठी' : 'Marathi', 'ਪੰਜਾਬੀ' : 'Punjabi' };
+var REVERSE_LANG_DICT = {}
+for (var k in MAP_LANG_DICT) {
+    REVERSE_LANG_DICT[MAP_LANG_DICT[k]] = k;
+}
+const MAP_ISO_DICT = { 'English' : 'en-IN', 'Tamil' : 'ta-IN', 'Telugu' : 'te-IN', 'Kannada' : 'kn-IN', 'Malayalam' : 'ml-IN', 'Hindi' : 'hi-IN', 'Bengali' : 'bn-IN', 'Marathi' : 'mr-IN', 'Gujarati' : 'gu-IN', 'Punjabi' : 'pa-IN' };
 
 /*
      Language Keyboards
