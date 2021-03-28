@@ -12,6 +12,7 @@ function capitalize_word(s) {
 
 function set_language(obj) {
     window.parent.RENDER_LANGUAGE = obj.value;
+    load_menu_data();
 }
 
 function render_template_data(template_name, id_name, data) {
@@ -1166,14 +1167,59 @@ function add_history(context, data, url) {
     window.parent.tree_popstate = false;
 }
 
+function load_menu_data() {
+    var LANG_LIST = [ 'English', 'Tamil', 'Kannada', 'Telugu', 'Malayalam', 'Hindi', 'Marathi', 'Gujarati', 'Bengali', 'Punjabi' ];
+    var lang_list = [];
+    for (var i = 0; i < LANG_LIST.length; i++) {
+        var l = LANG_LIST[i];
+        var d = (l == window.parent.RENDER_LANGUAGE) ? { 'N' : l, 'O' : 'selected' } : { 'N' : l };
+        lang_list.push(d);
+    }
+    var map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' }, { 'N' : 'Wards', 'A' : 'wards', 'I' : '' },
+                                               { 'N' : 'Trees', 'A' : 'trees', 'I' : 0 }, { 'N' : 'Explore', 'A' : 'current', 'I' : '' }
+                                             ]
+                   };
+    var collection_list = { 'T' : 'Collections',
+                            'items' : [ { 'N' : 'Name', 'A' : 'alphabetical', 'L' : 'A' },
+                                        { 'N' : 'Family', 'A' : 'family', 'L' : 'A' },
+                                        { 'N' : 'Genus', 'A' : 'genus', 'L' : 'A' }
+                                      ]
+                          };
+    var category_list = { 'T' : 'Categories',
+                          'items' : [ { 'N' : 'Flower Color', 'A' : 'flowers' },
+                                      { 'N' : 'Flower Season', 'A' : 'season' },
+                                      { 'N' : 'Fruit Color', 'A' : 'fruits' },
+                                      { 'N' : 'Leaf Type', 'A' : 'leaves' },
+                                      { 'N' : 'Bark Color', 'A' : 'bark' }
+                                    ]
+                        };
+    var region_list = { 'T' : 'Regions',
+                          'items' : [ { 'N' : 'Bangalore', 'R' : 'bangalore' },
+                                      { 'N' : 'India', 'R' : 'india' }
+                                    ]
+                        };
+    var menu_dict = { 'menus' : { 'languages' : lang_list,
+                                  'maps' : map_list,
+                                  'collections' : collection_list,
+                                  'categories' : category_list,
+                                  'regions' : region_list
+                                }
+                    };
+    render_template_data('#menu-template', '#MENU_DATA', menu_dict);
+
+    // $('#SEARCH_INFO').tooltip();
+    $('#MIC_IMAGE').tooltip();
+    $('#KBD_IMAGE').tooltip();
+
+    speech_to_text_init();
+}
+
 function load_content() {
     var url = 'language.json';
     $.getJSON(url, function(lang_obj) {
         window.parent.TREE_LANG_DATA = lang_obj;
         transliterator_init();
     });
-
-    speech_to_text_init();
     search_init();
 }
 
@@ -1192,13 +1238,10 @@ function tree_main_init() {
        $(this).addClass('active').siblings().removeClass('active');
     });
 
-    // $('#SEARCH_INFO').tooltip();
-    $('#MIC_IMAGE').tooltip();
-    $('#KBD_IMAGE').tooltip();
-
     window.addEventListener('popstate', handle_popstate);
     window.onload = load_content;
 
+    load_menu_data();
     load_intro_data(window.parent.tree_region);
 }
 

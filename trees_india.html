@@ -17,81 +17,8 @@
 </head>
 
 <body>
-    <div id="DIV_MENU" class="navbar navbar-expand sticky-top navbar-light bg-light nav-fill w-100 ">
-        <div class="navbar-nav col-1">
-            <a class="nav-item" href="javascript:load_intro_data('bangalore');">
-              <img class="ICON" src="icons/house-fill.svg"> &nbsp; Flora
-            </a>
-        </div>
-
-        <div class="navbar-nav col-6">
-            <div class="nav-item">
-                <select class="form-control" id="LANG_DATA" onchange="set_language(this)">
-                  <option>English</option>
-                  <option>Tamil</option>
-                  <option>Kannada</option>
-                  <option>Telugu</option>
-                  <option>Malayalam</option>
-                  <option>Hindi</option>
-                  <option>Marathi</option>
-                  <option>Gujarati</option>
-                  <option>Bengali</option>
-                  <option>Punjabi</option>
-                </select>
-            </div>
-
-            <form method="GET" action="javascript:load_search_data();" class="nav-item navbar-form" role="search">
-                <div class="input-group">
-                    <button class="button" type="submit"><img class="ICON" src="icons/search.svg"></button>
-                    <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="Search" type="text">
-                    <button class="button" onclick="speech_start(event)"><img id="MIC_IMAGE" class="ICON" data-toggle="tooltip" data-placement="bottom" data-html="true" data-title="<em>Only in Chrome</em>" src="icons/mic-mute.svg"></button>
-                    <button class="button" onclick="load_keyboard(event)"><img id="KBD_IMAGE" class="ICON" data-toggle="tooltip" data-placement="bottom" data-html="true" data-title="<em>Language Keyboard</em>" src="icons/keyboard.svg"></button>
-                </div>
-            </form>
-        </div>
-
-        <div class="navbar-nav col-5">
-            <div class="nav-item dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Maps<b class="caret"></b></a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="javascript:load_area_data('parks', '');">Parks</a>
-                <a class="dropdown-item" href="javascript:load_area_data('wards', '');">Wards</a>
-                <a class="dropdown-item" href="javascript:load_area_data('trees', 0);">Trees</a>
-                <a class="dropdown-item" href="javascript:load_area_data('current', '');">Explore</a>
-              </div>
-            </div>
-
-            <div class="nav-item dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Collections<b class="caret"></b></a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="javascript:load_collection_data('alphabetical', 'A');">Name</a>
-                <a class="dropdown-item" href="javascript:load_collection_data('family', 'A');">Family</a>
-                <a class="dropdown-item" href="javascript:load_collection_data('genus', 'A');">Genus</a>
-              </div>
-            </div>
-
-            <div class="nav-item dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories<b class="caret"></b></a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="javascript:load_category_data('flowers');">Flower Color</a>
-                <a class="dropdown-item" href="javascript:load_category_data('season');">Flower Season</a>
-                <a class="dropdown-item" href="javascript:load_category_data('fruits');">Fruit Color</a>
-                <a class="dropdown-item" href="javascript:load_category_data('leaves');">Leaf Type</a>
-                <a class="dropdown-item" href="javascript:load_category_data('bark');">Bark Color</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="javascript:load_simple_data();">Alphabetical</a>
-              </div>
-            </div>
-    
-            <div class="nav-item dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Region<b class="caret"></b></a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="javascript:load_intro_data('bangalore');">Bangalore</a>
-                <a class="dropdown-item" href="javascript:load_intro_data('india');">India</a>
-              </div>
-            </div>
-        </div>
-    </div>  
+    <header id="MENU_DATA" class="navbar navbar-expand sticky-top navbar-light bg-light nav-fill w-100 ">
+    </header>  
     
     <div class="container">
       <div id="SECTION" class="row">
@@ -123,6 +50,83 @@
         </div>
       </div>
     </div>
+
+  <script type="text/html" id="menu-template">
+    {{#menus}}
+        <div class="navbar-nav col-1">
+            <a class="nav-item" href="javascript:load_intro_data('bangalore');">
+              <img class="ICON" src="icons/house-fill.svg"> &nbsp; Trees
+            </a>
+        </div>
+
+        <div class="navbar-nav col-6">
+            <div class="nav-item">
+                <select class="form-control" id="LANG_DATA" onchange="set_language(this)">
+                  {{#languages}}
+                  <option style="font-size: 12px" {{O}}>{{N}}</option>
+                  {{/languages}}
+                </select>
+            </div>
+
+            <form method="GET" action="javascript:load_search_data();" class="nav-item navbar-form" role="search">
+                <div class="input-group">
+                    <button class="button" type="submit"><img class="ICON" src="icons/search.svg"></button>
+                    <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="Search" type="text">
+                    <button class="button" onclick="speech_start(event)"><img id="MIC_IMAGE" class="ICON" data-toggle="tooltip" data-placement="bottom" data-html="true" data-title="<em>Only in Chrome</em>" src="icons/mic-mute.svg"></button>
+                    <button class="button" onclick="load_keyboard(event)"><img id="KBD_IMAGE" class="ICON" data-toggle="tooltip" data-placement="bottom" data-html="true" data-title="<em>Language Keyboard</em>" src="icons/keyboard.svg"></button>
+                </div>
+            </form>
+        </div>
+
+        <div class="navbar-nav col-5">
+            <div class="nav-item dropdown">
+              {{#maps}}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{T}}<b class="caret"></b></a>
+              <div class="dropdown-menu">
+                {{#items}}
+                <a class="dropdown-item" href="javascript:load_area_data('{{A}}', '{{I}}');">{{N}}</a>
+                {{/items}}
+              </div>
+              {{/maps}}
+            </div>
+
+            <div class="nav-item dropdown">
+              {{#collections}}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{T}}<b class="caret"></b></a>
+              <div class="dropdown-menu">
+                {{#items}}
+                <a class="dropdown-item" href="javascript:load_collection_data('{{A}}', '{{L}}');">{{N}}</a>
+                {{/items}}
+              </div>
+              {{/collections}}
+            </div>
+
+            <div class="nav-item dropdown">
+              {{#categories}}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{T}}<b class="caret"></b></a>
+              <div class="dropdown-menu">
+                {{#items}}
+                <a class="dropdown-item" href="javascript:load_category_data('{{A}}');">{{N}}</a>
+                {{/items}}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="javascript:load_simple_data();">Alphabetical</a>
+              </div>
+              {{/categories}}
+            </div>
+    
+            <div class="nav-item dropdown">
+              {{#regions}}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{T}}<b class="caret"></b></a>
+              <div class="dropdown-menu">
+                {{#items}}
+                <a class="dropdown-item" href="javascript:load_intro_data('{{R}}');">{{N}}</a>
+                {{/items}}
+              </div>
+              {{/regions}}
+            </div>
+        </div>
+    {{/menus}}
+  </script>
 
   <script type="text/html" id="search-template">
     <div class="col-12">
