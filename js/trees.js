@@ -120,8 +120,19 @@ function tree_simple_init(region, data) {
 
 function tree_intro_init(region, slider_data) {
     var lang = window.parent.RENDER_LANGUAGE;
+
     var stats_list = slider_data['statsinfo'];
     get_lang_map(lang, stats_list);
+
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    console.log(`LANGUAGE: ${lang}`);
+    var lang_map = lang_obj[lang];
+    var key_name = lang_map['Name'];
+    var slider_list = slider_data['sliderinfo']['items'];
+    for (var i = 0; i < slider_list.length; i++) {
+        var s_dict = slider_list[i];
+        set_key_map(s_dict, key_name, 'SN');
+    }
 
     render_template_data('#carousel-template', '#SLIDERINFO', slider_data);
 
@@ -1257,7 +1268,10 @@ function load_menu_data() {
     $('#KBD_IMAGE').tooltip();
 
     speech_to_text_init();
-    load_intro_data(window.parent.tree_region);
+
+    if (Object.keys(window.parent.TREE_LANG_DATA).length != 0) {
+        load_intro_data(window.parent.tree_region);
+    }
 }
 
 function load_content() {
@@ -1265,6 +1279,7 @@ function load_content() {
     $.getJSON(url, function(lang_obj) {
         window.parent.TREE_LANG_DATA = lang_obj;
         transliterator_init();
+        load_intro_data(window.parent.tree_region);
     });
     search_init();
 }
