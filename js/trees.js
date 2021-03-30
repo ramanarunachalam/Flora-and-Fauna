@@ -157,8 +157,11 @@ function tree_intro_init(region, slider_data) {
 
 function load_intro_data(region) {
     window.parent.tree_region = region;
-    var intro_data = {};
-    render_template_data('#introduction-template', '#SECTION', intro_data);
+    var lang = window.parent.render_language;
+    var lang_obj = window.parent.TREE_LANG_DATA;
+    var map_dict = lang_obj['Keys'];
+    var intro_data = { 'T' : get_lang_map_word(lang, map_dict, 'Trees'), 'P' : get_lang_map_word(lang, map_dict, capitalize_word(region)) };
+    render_template_data('#intro-template', '#SECTION', intro_data);
     var url = `Flora/trees_${region}_intro.json`;
     $.getJSON(url, function(slider_data) {
         tree_intro_init(region, slider_data);
