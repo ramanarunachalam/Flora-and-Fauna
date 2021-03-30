@@ -368,10 +368,7 @@ function get_search_results(search_word, search_options, item_list, id_list) {
     }
 }
 
-function load_search_data() {
-    var lang = window.parent.render_language;
-    var search_word = document.getElementById('SEARCH_WORD').value;
-    var search_word = decodeURI(search_word);
+function handle_search_word(search_word) {
     var t_word = transliterate_text(search_word);
     search_word = t_word;
     const s_search_word = search_word.replace(/\s/g, '');
@@ -388,6 +385,18 @@ function load_search_data() {
     render_template_data('#search-template', '#SECTION', item_data);
     window.scrollTo(0, 0);
     add_history('search', { 'search' : search_word }, 'trees.html');
+}
+
+function load_search_data() {
+    var search_word = document.getElementById('SEARCH_WORD').value;
+    var search_word = decodeURI(search_word);
+    handle_search_word(search_word);
+}
+
+function load_search_history(data) {
+    var search_word = data['search'];
+    document.getElementById('SEARCH_WORD').value = search_word;
+    handle_search_word(search_word);
 }
 
 function create_osm_map(module, id_name, c_lat, c_long) {
@@ -1149,6 +1158,8 @@ function handle_history_context(data) {
         load_module_data(data['module']);
     } else if (context == 'maps') {
         load_area_data(data['type'], data['id']);
+    } else if (context == 'search') {
+      load_search_history(data);
     }
 }
 
