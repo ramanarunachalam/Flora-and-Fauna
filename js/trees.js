@@ -162,7 +162,7 @@ function load_intro_data(region) {
     var map_dict = lang_obj['Keys'];
     var intro_data = { 'N' : 'Tree', 'T' : 'Trees', 'P' : capitalize_word(region),
                        'I' : 'Keys To Identify', 'R' : 'References', 'B' : 'Books',
-                       'L' : 'Leaves', 'F' : 'Flowers', 'BA' : 'Bark', 'FR' : 'Fruits', 'FI' : 'Figs', 'P' : 'Pods',
+                       'L' : 'Leaves', 'F' : 'Flowers', 'BA' : 'Bark', 'FR' : 'Fruits', 'FI' : 'Figs', 'PO' : 'Pods',
                        'SP' : 'Spines', 'TW' : 'Branch', 'A' : 'Aerial Root', 'G' : 'Gall'
                      };
     for (var k in intro_data) {
