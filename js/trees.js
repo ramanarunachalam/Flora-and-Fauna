@@ -160,7 +160,14 @@ function load_intro_data(region) {
     var lang = window.parent.render_language;
     var lang_obj = window.parent.TREE_LANG_DATA;
     var map_dict = lang_obj['Keys'];
-    var intro_data = { 'T' : get_lang_map_word(lang, map_dict, 'Trees'), 'P' : get_lang_map_word(lang, map_dict, capitalize_word(region)) };
+    var intro_data = { 'N' : 'Tree', 'T' : 'Trees', 'P' : capitalize_word(region),
+                       'I' : 'Keys To Identify', 'R' : 'References', 'B' : 'Books',
+                       'L' : 'Leaves', 'F' : 'Flowers', 'BA' : 'Bark', 'FR' : 'Fruits', 'FI' : 'Figs', 'P' : 'Pods',
+                       'SP' : 'Spines', 'TW' : 'Branch', 'A' : 'Aerial Root', 'G' : 'Gall'
+                     };
+    for (var k in intro_data) {
+         intro_data[k] = get_lang_map_word(lang, map_dict, intro_data[k]);
+    }
     render_template_data('#intro-template', '#SECTION', intro_data);
     var url = `Flora/trees_${region}_intro.json`;
     $.getJSON(url, function(slider_data) {
