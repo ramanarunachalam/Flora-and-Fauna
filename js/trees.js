@@ -12,7 +12,7 @@ function capitalize_word(s) {
 
 function set_language(obj) {
     window.parent.GOT_LANGUAGE = obj.value;
-    window.parent.RENDER_LANGUAGE = MAP_LANG_DICT[obj.value];
+    window.parent.render_language = MAP_LANG_DICT[obj.value];
     load_menu_data();
 }
 
@@ -48,7 +48,7 @@ function tree_module_init(region, file_name, data) {
         var url = '../../language.json';
         $.getJSON(url, function(lang_obj) {
             window.parent.TREE_LANG_DATA = lang_obj;
-            window.parent.RENDER_LANGUAGE = 'English';
+            window.parent.render_language = 'English';
             window.parent.info_initialized = true;
             tree_module_init(window.parent.TREE_CARD_DATA);
         });
@@ -60,7 +60,7 @@ function tree_module_init(region, file_name, data) {
     window.parent.TREE_BOX_DATA = data['mapregion'];
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var english_lang_map = lang_obj['English'];
     var english_key_info = english_lang_map['Key Name'];
@@ -95,7 +95,7 @@ function tree_module_init(region, file_name, data) {
 
 function tree_grid_init(region, type, data) {
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var english_lang_map = lang_obj['English'];
@@ -119,13 +119,12 @@ function tree_simple_init(region, data) {
 }
 
 function tree_intro_init(region, slider_data) {
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
 
     var stats_list = slider_data['statsinfo'];
     get_lang_map(lang, stats_list);
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    console.log(`LANGUAGE: ${lang}`);
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var slider_list = slider_data['sliderinfo']['items'];
@@ -244,7 +243,7 @@ function tree_collection_init(region, type, letter, page_index, max_page, data) 
     render_template_data('#pagination-template', '#BOTTOMPAGE', data);
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var row_list = data['cardinfo']['ROW'];
@@ -344,7 +343,7 @@ function transliterate_text(word) {
 
 function get_search_results(search_word, search_options, item_list, id_list) {
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var search_engine = window.parent.flora_fauna_search_engine;
@@ -368,7 +367,7 @@ function get_search_results(search_word, search_options, item_list, id_list) {
 }
 
 function load_search_data() {
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var search_word = document.getElementById('SEARCH_WORD').value;
     var search_word = decodeURI(search_word);
     var t_word = transliterate_text(search_word);
@@ -480,7 +479,7 @@ function get_needed_icon(selected, blooming) {
 
 function get_tree_handle(tree_id) {
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -697,7 +696,7 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     var osm_map = window.parent.map_osm_map;
     var area = window.parent.AREA_TYPE;
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -852,7 +851,7 @@ function tree_area_init(area, aid, item_data) {
         var url = 'language.json';
         $.getJSON(url, function(lang_obj) {
             window.parent.TREE_LANG_DATA = lang_obj;
-            window.parent.RENDER_LANGUAGE = 'English';
+            window.parent.render_language = 'English';
             window.parent.info_initialized = true;
             create_icons();
             tree_area_init(undefined, undefined, window.parent.AREA_DATA);
@@ -861,7 +860,7 @@ function tree_area_init(area, aid, item_data) {
     }
 
     var lang_obj = window.parent.TREE_LANG_DATA;
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
 
@@ -1117,7 +1116,7 @@ function speech_start(event) {
         window.parent.speech_recognition.stop();
         return;
     }
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var s_lang = MAP_ISO_DICT[lang];
     window.parent.speech_final_transcript = '';
     window.parent.speech_recognition.lang = s_lang;
@@ -1128,20 +1127,13 @@ function speech_start(event) {
 }
 
 function load_keyboard(event) {
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     set_input_keyboard(lang.toLowerCase());
     $('#LANG_KBD').modal();
     return;
 }
 
-function handle_popstate(e) {
-    var data = e.state;
-    if (data == null || data == undefined) {
-        return;
-    }
-    // console.log('POP: ', e);
-    var propagate = true;
-    window.parent.tree_popstate = true;
+function handle_history_context(data) {
     var context = data['context'];
     if (context == 'introduction') {
         load_intro_data(data['region']);
@@ -1155,9 +1147,17 @@ function handle_popstate(e) {
         load_module_data(data['module']);
     } else if (context == 'maps') {
         load_area_data(data['type'], data['id']);
-    } else {
-        propagate = false;
     }
+}
+
+function handle_popstate(e) {
+    var data = e.state;
+    if (data == null || data == undefined) {
+        return;
+    }
+    // console.log('POP: ', e);
+    window.parent.tree_popstate = true;
+    handle_history_context(data);
 }
 
 function add_history(context, data, url) {
@@ -1180,6 +1180,7 @@ function add_history(context, data, url) {
         // console.log('PUSH: ', data, window.parent.tree_popstate);
         history.pushState(data, title, url);
     }
+    window.parent.history_data = data;
     window.parent.tree_popstate = false;
 }
 
@@ -1212,7 +1213,7 @@ function get_lang_map(lang, n_dict) {
 }
 
 function load_menu_data() {
-    var lang = window.parent.RENDER_LANGUAGE;
+    var lang = window.parent.render_language;
     var map_dict = window.parent.TREE_LANG_DATA['Keys'];
     var LANG_LIST = [ 'English', 'Tamil', 'Kannada', 'Telugu', 'Malayalam', 'Hindi', 'Marathi', 'Gujarati', 'Bengali', 'Punjabi' ];
     var lang_list = [];
@@ -1269,8 +1270,12 @@ function load_menu_data() {
 
     speech_to_text_init();
 
-    if (Object.keys(window.parent.TREE_LANG_DATA).length != 0) {
-        load_intro_data(window.parent.tree_region);
+    if (window.parent.history_data == undefined) {
+        if (Object.keys(window.parent.TREE_LANG_DATA).length != 0) {
+            load_intro_data(window.parent.tree_region);
+        }
+    } else  {
+        handle_history_context(window.parent.history_data);
     }
 }
 
@@ -1286,7 +1291,8 @@ function load_content() {
 
 function tree_main_init() {
     window.parent.info_initialized = true;
-    window.parent.RENDER_LANGUAGE = 'English';
+    window.parent.render_language = 'English';
+    window.parent.history_data = undefined;
     window.parent.TREE_LANG_DATA = {};
     window.parent.tree_region = 'bangalore';
     window.parent.search_initialized = false;
