@@ -346,6 +346,7 @@ function get_search_results(search_word, search_options, item_list, id_list) {
     var lang = window.parent.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
+    var map_dict = lang_obj['Keys'];
     var search_engine = window.parent.flora_fauna_search_engine;
     var results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
@@ -358,7 +359,8 @@ function get_search_results(search_word, search_options, item_list, id_list) {
                 } else {
                     var name = d[1];
                 }
-                var item = { 'T' : result_item.category, 'H' : result_item.href, 'N' : name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
+                var category = get_lang_map_word(lang, map_dict, result_item.category);
+                var item = { 'T' : category, 'H' : result_item.href, 'N' : name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
                 item_list.push(item);
                 id_list.add(result_item.id);
             }
