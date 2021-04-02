@@ -10,6 +10,15 @@ function capitalize_word(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function get_url_params() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+    function(m,key,value) {
+      vars[key] = value;
+    });
+    return vars;
+}
+
 function set_language(obj) {
     window.parent.GOT_LANGUAGE = obj.value;
     window.parent.render_language = MAP_LANG_DICT[obj.value];
@@ -576,12 +585,16 @@ function marker_on_click(e) {
     find_area_carousel_tree(tree_id);
 }
 
-function marker_on_doubleclick(e) {
-    var tree_id = e.target.tree_id;
+function load_module_data_with_id(tree_id) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
     const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
     window.parent.map_tree_id = tree_id;
     load_module_data(url);
+}
+
+function marker_on_doubleclick(e) {
+    var tree_id = e.target.tree_id;
+    load_module_data_with_id(tree_id);
 }
 
 function marker_on_contextmenu(e) {
@@ -1307,7 +1320,12 @@ function load_content() {
     $.getJSON(url, function(lang_obj) {
         window.parent.TREE_LANG_DATA = lang_obj;
         transliterator_init();
-        load_intro_data(window.parent.tree_region);
+        var tree_id = window.parent.url_params['tid'];
+        if (tree_id == undefined) {
+            load_intro_data(window.parent.tree_region);
+        } else {
+            load_module_data_with_id(tree_id);
+        }
     });
     search_init();
 }
@@ -1324,6 +1342,7 @@ function tree_main_init() {
     window.parent.area_tooltip_list = [];
     window.parent.map_initialized = false;
     window.parent.tree_popstate = false;
+    window.parent.url_params = get_url_params();
 
     $('.nav li').bind('click', function() {
        $(this).addClass('active').siblings().removeClass('active');
