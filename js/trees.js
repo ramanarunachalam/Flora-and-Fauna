@@ -181,7 +181,7 @@ function load_intro_data(region) {
     var url = `Flora/trees_${region}_intro.json`;
     $.getJSON(url, function(slider_data) {
         tree_intro_init(region, slider_data);
-        add_history('introduction', { 'region' : region }, 'trees.html');
+        add_history('introduction', { 'region' : region });
     });
 }
 
@@ -403,7 +403,7 @@ function handle_search_word(search_word) {
     var item_data = { "searchinfo" : { "results" : new_item_list } };
     render_template_data('#search-template', '#SECTION', item_data);
     window.scrollTo(0, 0);
-    add_history('search', { 'search' : search_word }, 'trees.html');
+    add_history('search', { 'search' : search_word });
 }
 
 function load_search_data() {
@@ -617,6 +617,8 @@ function handle_geocoder_mark(ev) {
 }
 
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
+    var lang = window.parent.render_language;
+    var map_dict = window.parent.TREE_LANG_DATA['Keys'];
     var area = window.parent.AREA_TYPE;
     var old_a_name = window.parent.map_area_name;
     window.parent.map_area_name = a_name;
@@ -630,7 +632,8 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
           const [ t_name, t_handle_map ] = get_tree_handle(tid);
           $('#TITLE_HEADER').html(t_name);
     } else {
-        $('#TITLE_HEADER').html(a_name);
+        var n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
+        $('#TITLE_HEADER').html(n_name);
     }
 
     if (window.parent.map_initialized) {
@@ -984,12 +987,16 @@ function tree_area_init(area, aid, item_data) {
 }
 
 function load_area_data(area_type, area_id) {
-    var area_data = {}
+    var lang = window.parent.render_language;
+    var map_dict = window.parent.TREE_LANG_DATA['Keys'];
+    var area_data = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
+                      'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
+                    };
     render_template_data('#area-template', '#SECTION', area_data);
     var url = 'tree_area.json';
     $.getJSON(url, function(item_data) {
         tree_area_init(area_type, area_id, item_data);
-        add_history('maps', { 'type' : area_type, 'id' : area_id }, 'trees.html');
+        add_history('maps', { 'type' : area_type, 'id' : area_id });
     });
 }
 
@@ -1000,7 +1007,7 @@ function load_collection_data(type, letter, page_index, page_max) {
     var url = `Flora/trees_${region}_${type}_page_${letter}.json`;
     $.getJSON(url, function(item_data) {
         tree_collection_init(region, type, letter, page_index, page_max, item_data);
-        add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max }, 'trees.html');
+        add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max });
     });
 }
 
@@ -1011,7 +1018,7 @@ function load_category_data(type) {
     var url = `Flora/trees_${region}_${type}_grid.json`;
     $.getJSON(url, function(item_data) {
         tree_grid_init(region, type, item_data);
-        add_history('categories', { 'type' : type }, 'trees.html');
+        add_history('categories', { 'type' : type });
     });
 }
 
@@ -1022,7 +1029,7 @@ function load_simple_data() {
     var url = `Flora/trees_${region}_simple.json`;
     $.getJSON(url, function(item_data) {
         tree_simple_init(region, item_data);
-        add_history('alphabetical', { 'region' : region }, 'trees.html');
+        add_history('alphabetical', { 'region' : region });
     });
 }
 
@@ -1033,7 +1040,7 @@ function load_module_data(file_name) {
     var url = `Flora/${file_name}.json`;
     $.getJSON(url, function(item_data) {
         tree_module_init(region, file_name, item_data);
-        add_history('trees', { 'module' : file_name }, 'trees.html');
+        add_history('trees', { 'module' : file_name });
     });
 }
 
@@ -1196,7 +1203,8 @@ function handle_popstate(e) {
     handle_history_context(data);
 }
 
-function add_history(context, data, url) {
+function add_history(context, data) {
+    var url = 'trees.html';
     if (!window.parent.tree_popstate) {
         data['context'] = context;
         var title = capitalize_word(context);
