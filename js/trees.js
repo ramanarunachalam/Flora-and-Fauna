@@ -473,7 +473,8 @@ function get_url_prefix(handle_map, tree_id) {
 
 function get_url_info(handle_map, tree_id, name, level) {
     const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
-    var j_url = "javascript:load_module_data('" + url + "');";
+    var m_url = "javascript:load_module_data('" + url + "');";
+    var a_url = "javascript:load_area_data('trees', '" + tree_id + "');";
     if (level == 'popup') {
         var image_url = prefix + image + '.jpg'
         var image_style = 'style="width: 240px; height: 180px;"';
@@ -481,7 +482,7 @@ function get_url_info(handle_map, tree_id, name, level) {
         var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
         var image_style = '';
     }
-    var html = '<a href="' + j_url + '" align="center"><div class="thumbnail"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"><p align="center">' + name + '</p></div></a>';
+    var html = '<a href="' + m_url + '" align="center"><div class="thumbnail" align="center"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"></a><a href="' + a_url + '"><p align="center">' + name + '</p></div></a>';
     return html;
 }
 
