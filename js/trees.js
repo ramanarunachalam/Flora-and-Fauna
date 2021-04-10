@@ -633,12 +633,15 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     window.parent.map_tree_id = tid;
 
     if (area == 'trees') {
-          const [ t_name, t_handle_map ] = get_tree_handle(tid);
-          $('#TITLE_HEADER').html(t_name);
+        const [ t_name, t_handle_map ] = get_tree_handle(tid);
+        var n_name = t_name;
     } else {
         var n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
-        $('#TITLE_HEADER').html(n_name);
+        if (aid != '') {
+            n_name = aid + '. ' + n_name;
+        }
     }
+    $('#TITLE_HEADER').html(n_name);
 
     if (window.parent.map_initialized) {
         var osm_map = window.parent.map_osm_map;
