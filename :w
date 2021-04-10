@@ -179,11 +179,7 @@ a {
 #AREA_CAROUSEL {
     width: 80%;
     height: 120px;
-    margin: 0 auto;
-}
-
-#AREA_CAROUSEL .carousel-inner {
-    margin: 50px;
+    margin: auto;
 }
 
 #AREA_CAROUSEL .carousel-inner .carousel-item-right.active,
@@ -208,12 +204,13 @@ a {
     filter: invert(100%);
 }
 
-/*
 #AREA_CAROUSEL .carousel-control-prev {
+/*
     left: unset;
+*/
+    left: 30px;
     right: 30px;
 }
-*/
 
 :root {
     --black-100: #d6d9dc;

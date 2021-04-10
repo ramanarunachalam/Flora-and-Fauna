@@ -482,7 +482,9 @@ function get_url_info(handle_map, tree_id, name, level) {
         var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
         var image_style = '';
     }
-    var html = '<a href="' + m_url + '" align="center"><div class="thumbnail" align="center"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"></a><a href="' + a_url + '"><p align="center">' + name + '</p></div></a>';
+    var img_html = '<a href="' + m_url + '" align="center"><div class="thumbnail" align="center"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"></a>';
+    var name_html = '<a href="' + a_url + '"><p align="center">' + name + '</p></div></a>';
+    var html = img_html + name_html;
     return html;
 }
 
