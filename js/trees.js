@@ -444,22 +444,23 @@ function create_osm_map(module, id_name, c_lat, c_long) {
     return osm_map;
 }
 
+const MAP_ICON_SIZE = [24, 24];
 function create_icons() {
     window.parent.green_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_green.png',
-        iconSize: [24, 24],
+        iconSize: MAP_ICON_SIZE
     });
     window.parent.green_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_green.png',
-        iconSize: [24, 24],
+        iconSize: MAP_ICON_SIZE
     });
     window.parent.red_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_red.png',
-        iconSize: [24, 24],
+        iconSize: MAP_ICON_SIZE
     });
     window.parent.red_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_red.png',
-        iconSize: [24, 24],
+        iconSize: MAP_ICON_SIZE
     });
 }
 
@@ -849,7 +850,9 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             continue;
         }
         var t_name = key_name[tid];
-        tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
+        var blooming = get_blooming_info(handle_map, tid);
+        var icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
+        tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
 
         if (area != 'trees') {
             const [prefix, image, url] = get_url_prefix(handle_map, tid);
