@@ -851,7 +851,7 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         if (area != 'trees') {
             const [prefix, image, url] = get_url_prefix(handle_map, tid);
             var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
-            tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'TID' : tid, 'SC' : tree_dict[tid] })
+            tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'SH' : url, 'TID' : tid, 'SC' : tree_dict[tid] })
         }
     }
     if (tree_stat_list.length > 0) {

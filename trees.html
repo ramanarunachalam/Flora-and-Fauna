@@ -403,8 +403,12 @@
             {{#items}}
             <div class="carousel-item d-flex">
               <div class="thumbnail p-2">
-                <em>{{SN}}</em>
-                <img class="d-block" src="{{SI}}" alt="{{SN}}" />
+                <a href="javascript:load_area_data('trees', '{{TID}}', '{{SN}}');">
+                    <em>{{SN}}</em>
+                </a>
+                <a href="javascript:load_module_data('{{SH}}');">
+                    <img class="d-block" src="{{SI}}" alt="{{SN}}" />
+                </a>
               </div>
             </div>
             {{/items}}
