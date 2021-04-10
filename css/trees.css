@@ -183,7 +183,7 @@ a {
 }
 
 #AREA_CAROUSEL .carousel-inner {
-    margin: 50px;
+    margin-left: 50px;
 }
 
 #AREA_CAROUSEL .carousel-inner .carousel-item-right.active,
