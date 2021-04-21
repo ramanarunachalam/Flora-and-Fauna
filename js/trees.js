@@ -375,11 +375,16 @@ function get_search_results(search_word, search_options, item_list, id_list) {
                 var d = result_item.name;
                 if (d[0] == 1) {
                     var name = key_name[d[1]];
+                    var name_id = d[1];
                 } else {
                     var name = d[1];
+                    var name_id = '';
                 }
                 var category = get_lang_map_word(lang, map_dict, result_item.category);
                 var item = { 'T' : category, 'H' : result_item.href, 'N' : name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
+                if (name_id != '') {
+                    item['I'] = name_id;
+                }
                 item_list.push(item);
                 id_list.add(result_item.id);
             }
