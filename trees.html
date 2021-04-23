@@ -335,7 +335,7 @@
              <ul>
                  {{#parks}}
                  <li class="nav-item">
-                     <a href="javascript:show_area_latlong_in_osm('{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
+                     <a href="javascript:load_area_latlong_in_osm('{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
                         {{PID}}. {{PN}}
                      </a>
                  </li>
@@ -347,7 +347,7 @@
       {{#wardinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">
-             <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
+             <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
                 {{AN}} : {{AID}} (<em><font color="brown">{{AC}}</font></em>)
              </a>
          </li>
@@ -356,7 +356,7 @@
       {{#mapinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">
-             <a href="javascript:show_area_latlong_in_osm('{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
+             <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
                 {{AN}} (<em><font color="brown">{{AC}}</font></em>)
              </a>
          </li>
@@ -384,7 +384,7 @@
            <tr>
                <td>
                  <img class="ICON" src="{{TI}}" alt="{{TN}}" />
-                 <a href="javascript:show_area_latlong_in_osm('{{TN}}', '{{AID}}', {{TID}}, '{{ALAT}}', '{{ALONG}}');">
+                 <a href="javascript:load_area_latlong_in_osm('{{TN}}', '{{AID}}', {{TID}}, '{{ALAT}}', '{{ALONG}}');">
                     <b><strong>{{TN}}</strong></b>
                  </a>
                </td>
