@@ -682,9 +682,11 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         osm_map.options.minZoom = 12;
     }
     draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
+    window.parent.area_latlong = [];
 }
 
 function load_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
+    window.parent.area_latlong = [];
     show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
     add_history('maps', { 'type' : window.parent.area_type, 'id' : aid });
 }
@@ -985,7 +987,6 @@ function tree_area_init(area, aid, item_data) {
         }
         show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
     });
-    window.parent.area_latlong = [];
 }
 
 function load_area_data(area_type, area_id) {
