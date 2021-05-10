@@ -681,7 +681,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     if (area == 'trees') {
         osm_map.options.minZoom = 12;
     }
-    draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
+    draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long);
     window.parent.area_latlong = [];
 }
 
@@ -749,7 +749,7 @@ function area_carousel_init(tree_image_list) {
     area_highlight_tree(start_id);
 }
 
-function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
+function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     var osm_map = window.parent.map_osm_map;
     var area = window.parent.area_type;
     var lang_obj = window.parent.tree_lang_data;
@@ -854,10 +854,17 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     if (tree_stat_list.length > 0) {
         tree_stat_list.sort(function (a, b) { return b.TC - a.TC; });
         var tin = 1;
+        var tcount = 0;
         for (var i = 0; i < tree_stat_list.length; i++) {
             var info = tree_stat_list[i];
             info['TIN'] = tin;
             tin += 1;
+            tcount += info['TC'];
+        }
+        if (area != 'trees') {
+            tin -= 1;
+            var n_title = `${n_name} (<font color=brown>${tin} / ${tcount}</font>)`;
+            $('#TITLE_HEADER').html(n_title);
         }
         var data = { 'trees' : tree_stat_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
