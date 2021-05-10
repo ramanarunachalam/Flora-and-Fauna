@@ -853,6 +853,12 @@ function draw_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     if (tree_stat_list.length > 0) {
         tree_stat_list.sort(function (a, b) { return b.TC - a.TC; });
+        var tin = 1;
+        for (var i = 0; i < tree_stat_list.length; i++) {
+            var info = tree_stat_list[i];
+            info['TIN'] = tin;
+            tin += 1;
+        }
         var data = { 'trees' : tree_stat_list };
         render_template_data('#tree-stats-template', '#STATINFO', data);
         tree_image_list.sort(function (a, b) { return b.SC - a.SC; });
