@@ -1009,7 +1009,7 @@ function load_area_data(area_type, area_id) {
                       'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
                     };
     render_template_data('#area-template', '#SECTION', area_data);
-    var url = 'tree_area.json';
+    var url = 'area.json';
     $.getJSON(url, function(item_data) {
         tree_area_init(area_type, area_id, item_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
