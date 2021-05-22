@@ -703,10 +703,7 @@ function find_area_carousel_tree(tree_id) {
     return 0;
 }
 
-function area_highlight_tree(tree_id) {
-    var tree_image_list = window.parent.tree_image_list;
-    var tree_id = tree_id % tree_image_list.length;
-    var tree_id = tree_image_list[tree_id]['TID'];
+function area_chosen_tree(tree_id) {
     window.parent.map_tree_id = tree_id;
     var area_marker_list = window.parent.area_marker_list;
     for (var i = 0; i < area_marker_list.length; i++) {
@@ -715,6 +712,19 @@ function area_highlight_tree(tree_id) {
         marker.setIcon(icon);
     }
     set_chosen_image(tree_id);
+}
+
+function area_highlight_tree(tree_id) {
+    var tree_image_list = window.parent.tree_image_list;
+    var tree_index = tree_id % tree_image_list.length;
+    var tree_id = tree_image_list[tree_index]['TID'];
+    area_chosen_tree(tree_id);
+}
+
+function area_click_tree(tree_id) {
+    var tree_index = find_area_carousel_tree(tree_id);
+    area_chosen_tree(tree_id);
+    window.scrollTo(0, 0);
 }
 
 function area_carousel_init(tree_image_list) {
