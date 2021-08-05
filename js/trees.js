@@ -21,8 +21,8 @@ function get_url_params() {
 }
 
 function set_language(obj) {
-    window.parent.GOT_LANGUAGE = obj.value;
-    window.parent.render_language = MAP_LANG_DICT[obj.value];
+    window.GOT_LANGUAGE = obj.value;
+    window.render_language = MAP_LANG_DICT[obj.value];
     load_menu_data();
 }
 
@@ -53,24 +53,24 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
 }
 
 function tree_module_init(region, file_name, data) {
-    if (window.parent.info_initialized == undefined) {
-        window.parent.tree_card_data = data;
+    if (window.info_initialized == undefined) {
+        window.tree_card_data = data;
         var url = '../../language.json';
         $.getJSON(url, function(lang_obj) {
-            window.parent.tree_lang_data = lang_obj;
-            window.parent.render_language = 'English';
-            window.parent.info_initialized = true;
-            tree_module_init(window.parent.tree_card_data);
+            window.tree_lang_data = lang_obj;
+            window.render_language = 'English';
+            window.info_initialized = true;
+            tree_module_init(window.tree_card_data);
         });
         return;
     }
 
-    window.parent.tree_card_data = data;
-    window.parent.tree_map_data = data['mapinfo'];
-    window.parent.tree_box_data = data['mapregion'];
+    window.tree_card_data = data;
+    window.tree_map_data = data['mapinfo'];
+    window.tree_box_data = data['mapregion'];
 
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var english_lang_map = lang_obj['English'];
     var english_key_info = english_lang_map['Key Name'];
@@ -81,7 +81,7 @@ function tree_module_init(region, file_name, data) {
     if (key_name === undefined) {
         key_name = english_lang_map['Name']; 
     }
-    var card_data = window.parent.tree_card_data;
+    var card_data = window.tree_card_data;
     var gallery_info = card_data['galleryinfo']
     set_key_map(gallery_info, key_group, 'HH');
     set_key_map(gallery_info, key_name, 'HN');
@@ -104,8 +104,8 @@ function tree_module_init(region, file_name, data) {
 }
 
 function tree_grid_init(region, type, data) {
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var english_lang_map = lang_obj['English'];
@@ -129,12 +129,12 @@ function tree_simple_init(region, data) {
 }
 
 function tree_intro_init(region, slider_data) {
-    var lang = window.parent.render_language;
+    var lang = window.render_language;
 
     var stats_list = slider_data['statsinfo'];
     get_lang_map(lang, stats_list);
 
-    var lang_obj = window.parent.tree_lang_data;
+    var lang_obj = window.tree_lang_data;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var slider_list = slider_data['sliderinfo']['items'];
@@ -166,9 +166,9 @@ function tree_intro_init(region, slider_data) {
 }
 
 function load_intro_data(region) {
-    window.parent.tree_region = region;
-    var lang = window.parent.render_language;
-    var lang_obj = window.parent.tree_lang_data;
+    window.tree_region = region;
+    var lang = window.render_language;
+    var lang_obj = window.tree_lang_data;
     var map_dict = lang_obj['Keys'];
     var intro_data = { 'N' : 'Tree', 'T' : 'Trees', 'P' : capitalize_word(region),
                        'I' : 'Keys To Identify', 'R' : 'References', 'B' : 'Books',
@@ -187,11 +187,11 @@ function load_intro_data(region) {
 }
 
 function search_init() {
-    window.parent.flora_fauna_search_engine = new MiniSearch({
+    window.flora_fauna_search_engine = new MiniSearch({
         fields: [ 'aka' ], // fields to index for full-text search
         storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop'] // fields to return with search results
     });
-    window.parent.search_initialized = false;
+    window.search_initialized = false;
     search_load();
 }
 
@@ -262,8 +262,8 @@ function tree_collection_init(region, type, letter, page_index, max_page, data) 
     data['pageinfo']['N'] = 'bottom';
     render_template_data('#pagination-template', '#BOTTOMPAGE', data);
 
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var row_list = data['cardinfo']['ROW'];
@@ -297,11 +297,11 @@ function show_bigger_image() {
 }
 
 function search_load() {
-    if (window.parent.search_initialized) {
+    if (window.search_initialized) {
         return;
     }
     var url = 'flora_index.json';
-    var search_engine = window.parent.flora_fauna_search_engine;
+    var search_engine = window.flora_fauna_search_engine;
     $.getJSON(url, function(search_obj) {
         var data_id = 0;
         for (var category in search_obj) {
@@ -313,11 +313,11 @@ function search_load() {
             });
         }
     });
-    window.parent.search_initialized = true;
+    window.search_initialized = true;
 }
 
 function transliterator_init() {
-    var lang_obj = window.parent.tree_lang_data;
+    var lang_obj = window.tree_lang_data;
     var char_map = lang_obj['Charmap'];
     var key_list = [];
     var max_len = 0;
@@ -325,16 +325,16 @@ function transliterator_init() {
         key_list.push(s); 
         max_len = Math.max(max_len, s.length);
     }
-    window.parent.char_map_max_length = max_len;
-    window.parent.char_map_key_list = new Set(key_list);
+    window.char_map_max_length = max_len;
+    window.char_map_key_list = new Set(key_list);
 }
 
 function transliterate_text(word) {
-    var lang_obj = window.parent.tree_lang_data;
+    var lang_obj = window.tree_lang_data;
     var char_map = lang_obj['Charmap'];
 
-    var tokenset = window.parent.char_map_key_list;
-    var maxlen = window.parent.char_map_max_length;
+    var tokenset = window.char_map_key_list;
+    var maxlen = window.char_map_max_length;
     var current = 0;
     var tokenlist = [];
     word = word.toString();
@@ -358,16 +358,22 @@ function transliterate_text(word) {
         tokenlist.push(p);
         current += j;
     }
-    return tokenlist.join('');
+    var new_word = tokenlist.join('');
+    if (word != new_word) {
+        new_word = new_word.replace(/_/g, '');
+        new_word = new_word.replace(/G/g, 'n');
+        new_word = new_word.replace(/J/g, 'n');
+    }
+    return new_word;
 }
 
 function get_search_results(search_word, search_options, item_list, id_list) {
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var map_dict = lang_obj['Keys'];
-    var search_engine = window.parent.flora_fauna_search_engine;
+    var search_engine = window.flora_fauna_search_engine;
     var results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
         var max_score = results[0].score;
@@ -454,19 +460,19 @@ function create_osm_map(module, id_name, c_lat, c_long) {
 
 const MAP_ICON_SIZE = [24, 24];
 function create_icons() {
-    window.parent.green_tree_icon = new L.icon({
+    window.green_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_green.png',
         iconSize: MAP_ICON_SIZE
     });
-    window.parent.green_bloom_icon = new L.icon({
+    window.green_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_green.png',
         iconSize: MAP_ICON_SIZE
     });
-    window.parent.red_tree_icon = new L.icon({
+    window.red_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_red.png',
         iconSize: MAP_ICON_SIZE
     });
-    window.parent.red_bloom_icon = new L.icon({
+    window.red_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_red.png',
         iconSize: MAP_ICON_SIZE
     });
@@ -504,24 +510,24 @@ function get_blooming_info(handle_map, tree_id) {
 }
 
 function get_needed_icon(selected, blooming) {
-    var icon = window.parent.green_tree_icon;
+    var icon = window.green_tree_icon;
     if (selected) {
         if (blooming) {
-            icon = window.parent.red_bloom_icon;
+            icon = window.red_bloom_icon;
         } else {
-            icon = window.parent.red_tree_icon;
+            icon = window.red_tree_icon;
         }
     } else {
         if (blooming) {
-            icon = window.parent.green_bloom_icon;
+            icon = window.green_bloom_icon;
         }
     }
     return icon;
 }
 
 function get_tree_handle(tree_id) {
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -539,7 +545,7 @@ function init_conetxt_menu() {
     $.contextMenu({
       selector: 'img.leaflet-marker-icon',
       callback: function(key, options) {
-          var marker = window.parent.TREE_CONTEXT_MARKER;
+          var marker = window.TREE_CONTEXT_MARKER;
           var tree_id = marker.tree_id;
           var pos = marker.getLatLng();
           if (key == 'info') {
@@ -580,15 +586,15 @@ function marker_on_mouseover() {
 }
 
 function marker_on_mouseout() {
-    if (window.parent.map_tree_id != 0) {
-        set_chosen_image(window.parent.map_tree_id);
+    if (window.map_tree_id != 0) {
+        set_chosen_image(window.map_tree_id);
     }
 }
 
 function marker_on_click(e) {
     var tree_id = e.target.tree_id;
-    window.parent.map_tree_id = tree_id;
-    var area_marker_list = window.parent.area_marker_list;
+    window.map_tree_id = tree_id;
+    var area_marker_list = window.area_marker_list;
     for (var i = 0; i < area_marker_list.length; i++) {
         var marker = area_marker_list[i];
         var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
@@ -600,7 +606,7 @@ function marker_on_click(e) {
 function load_module_data_with_id(tree_id) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
     const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
-    window.parent.map_tree_id = tree_id;
+    window.map_tree_id = tree_id;
     load_module_data(url);
 }
 
@@ -610,45 +616,45 @@ function marker_on_doubleclick(e) {
 }
 
 function marker_on_contextmenu(e) {
-    window.parent.TREE_CONTEXT_MARKER = this;
+    window.TREE_CONTEXT_MARKER = this;
 }
 
 function draw_map_on_move(ev) {
-    var osm_map = window.parent.map_osm_map;
-    var a_name = window.parent.map_area_name;
-    var aid = window.parent.map_area_id;
-    var tid = window.parent.map_tree_id;
+    var osm_map = window.map_osm_map;
+    var a_name = window.map_area_name;
+    var aid = window.map_area_id;
+    var tid = window.map_tree_id;
     var latlong = osm_map.getCenter();
-    window.parent.map_area_move = true;
+    window.map_area_move = true;
     show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
-    window.parent.map_area_move = false;
+    window.map_area_move = false;
 }
 
 function get_area_centre() {
-    if (window.parent.map_osm_map == undefined) {
+    if (window.map_osm_map == undefined) {
         return [];
     }
-    var latlong = window.parent.map_osm_map.getCenter();
+    var latlong = window.map_osm_map.getCenter();
     var area_latlong = [ latlong.lat, latlong.lng ];
     return area_latlong;
 }
 
 function handle_geocoder_mark(ev) {
     draw_map_on_move(ev);
-    add_history('maps', { 'type' : window.parent.area_type, 'id' : window.parent.map_area_id });
+    add_history('maps', { 'type' : window.area_type, 'id' : window.parent.map_area_id });
 }
 
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
-    var lang = window.parent.render_language;
-    var map_dict = window.parent.tree_lang_data['Keys'];
-    var area = window.parent.area_type;
-    var old_a_name = window.parent.map_area_name;
-    window.parent.map_area_name = a_name;
-    window.parent.map_area_id = aid;
-    if (tid == 0 && window.parent.map_tree_id != undefined) {
-        tid = window.parent.map_tree_id;
+    var lang = window.render_language;
+    var map_dict = window.tree_lang_data['Keys'];
+    var area = window.area_type;
+    var old_a_name = window.map_area_name;
+    window.map_area_name = a_name;
+    window.map_area_id = aid;
+    if (tid == 0 && window.map_tree_id != undefined) {
+        tid = window.map_tree_id;
     }
-    window.parent.map_tree_id = tid;
+    window.map_tree_id = tid;
 
     if (area == 'trees') {
         const [ t_name, t_handle_map ] = get_tree_handle(tid);
@@ -661,9 +667,9 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     $('#TITLE_HEADER').html(n_name);
 
-    if (window.parent.map_initialized) {
-        var osm_map = window.parent.map_osm_map;
-        var area_marker_list = window.parent.area_marker_list;
+    if (window.map_initialized) {
+        var osm_map = window.map_osm_map;
+        var area_marker_list = window.area_marker_list;
         for (var i = 0; i < area_marker_list.length; i++) {
             osm_map.removeLayer(area_marker_list[i]);
         }
@@ -671,9 +677,9 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     } else {
         var id_name = 'MAPINFO';
         var osm_map = create_osm_map('area', id_name, c_lat, c_long);
-        window.parent.map_osm_map = osm_map;
-        window.parent.map_area_move = false;
-        window.parent.map_initialized = true;
+        window.map_osm_map = osm_map;
+        window.map_area_move = false;
+        window.map_initialized = true;
     }
     if (tid != undefined && tid != 0) {
         set_chosen_image(tid);
@@ -682,17 +688,17 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         osm_map.options.minZoom = 12;
     }
     draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long);
-    window.parent.area_latlong = [];
+    window.area_latlong = [];
 }
 
 function load_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
-    window.parent.area_latlong = [];
+    window.area_latlong = [];
     show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
-    add_history('maps', { 'type' : window.parent.area_type, 'id' : aid });
+    add_history('maps', { 'type' : window.area_type, 'id' : aid });
 }
 
 function find_area_carousel_tree(tree_id) {
-    var tree_image_list = window.parent.tree_image_list;
+    var tree_image_list = window.tree_image_list;
     for (var i = 0; i < tree_image_list.length; i++) {
         var l_tree_id = tree_image_list[i]['TID'];
         if (l_tree_id == tree_id) {
@@ -704,8 +710,8 @@ function find_area_carousel_tree(tree_id) {
 }
 
 function area_chosen_tree(tree_id) {
-    window.parent.map_tree_id = tree_id;
-    var area_marker_list = window.parent.area_marker_list;
+    window.map_tree_id = tree_id;
+    var area_marker_list = window.area_marker_list;
     for (var i = 0; i < area_marker_list.length; i++) {
         var marker = area_marker_list[i];
         var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
@@ -715,7 +721,7 @@ function area_chosen_tree(tree_id) {
 }
 
 function area_highlight_tree(tree_id) {
-    var tree_image_list = window.parent.tree_image_list;
+    var tree_image_list = window.tree_image_list;
     var tree_index = tree_id % tree_image_list.length;
     var tree_id = tree_image_list[tree_index]['TID'];
     area_chosen_tree(tree_id);
@@ -728,7 +734,7 @@ function area_click_tree(tree_id) {
 }
 
 function area_carousel_init(tree_image_list) {
-    window.parent.tree_image_list = tree_image_list;
+    window.tree_image_list = tree_image_list;
     $('#AREA_CAROUSEL').carousel({ interval: 0 });
 
     var start_id = tree_image_list.length - 1;
@@ -754,16 +760,16 @@ function area_carousel_init(tree_image_list) {
         area_highlight_tree(ev.to + 1);
     });
 
-    var tree_id = window.parent.map_tree_id;
+    var tree_id = window.map_tree_id;
     var start_id = find_area_carousel_tree(tree_id);
     area_highlight_tree(start_id);
 }
 
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
-    var osm_map = window.parent.map_osm_map;
-    var area = window.parent.area_type;
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var osm_map = window.map_osm_map;
+    var area = window.area_type;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var handle_map = lang_obj['Handle'];
@@ -778,7 +784,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     var bounds = osm_map.getBounds();
     var area_marker_list = [];
     var tree_dict = {};
-    var grid_flora = window.parent.GRID_FLORA;
+    var grid_flora = window.GRID_FLORA;
     for (var mesh_id in grid_flora) {
         if (!grid_flora.hasOwnProperty(mesh_id)) {
             continue;
@@ -824,9 +830,9 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         }
     }
 
-    window.parent.area_marker_list = area_marker_list;
+    window.area_marker_list = area_marker_list;
 
-    if (area == 'trees' && !window.parent.map_area_move && area_marker_list.length > 0) {
+    if (area == 'trees' && !window.map_area_move && area_marker_list.length > 0) {
         var layer = new L.featureGroup(area_marker_list);
         osm_map.fitBounds(layer.getBounds());
     }
@@ -834,14 +840,14 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     if (area == 'current') {
         var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
         var point_list = [ L.latLng(c_lat, c_long), L.latLng(latlong.lat, latlong.lng) ];
-        if (window.parent.map_area_routing != undefined) {
-            var routing = window.parent.map_area_routing;
+        if (window.map_area_routing != undefined) {
+            var routing = window.map_area_routing;
             osm_map.removeControl(routing);
         }
         var routing = new L.Routing.control({ geocoder: get_geocoder_nominatim() });
         routing.addTo(osm_map);
         routing.setWaypoints(point_list);
-        window.parent.map_area_routing = routing;
+        window.map_area_routing = routing;
     }
 
     var tree_stat_list = [];
@@ -891,42 +897,42 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
 }
 
 function tree_area_init(area, aid, item_data) {
-    if (window.parent.green_tree_icon == undefined) {
+    if (window.green_tree_icon == undefined) {
         create_icons();
     }
 
     if (area == undefined) {
-        var area = window.parent.area_type;
-        var aid = window.parent.area_id;
+        var area = window.area_type;
+        var aid = window.area_id;
     }
-    window.parent.area_type = area;
-    window.parent.area_id = aid;
-    window.parent.area_data = item_data;
+    window.area_type = area;
+    window.area_id = aid;
+    window.area_data = item_data;
 
-    if (window.parent.info_initialized == undefined) {
-        window.parent.tree_card_data = data;
+    if (window.info_initialized == undefined) {
+        window.tree_card_data = data;
         var url = 'language.json';
         $.getJSON(url, function(lang_obj) {
-            window.parent.tree_lang_data = lang_obj;
-            window.parent.render_language = 'English';
-            window.parent.info_initialized = true;
+            window.tree_lang_data = lang_obj;
+            window.render_language = 'English';
+            window.info_initialized = true;
             create_icons();
-            tree_area_init(undefined, undefined, window.parent.area_data);
+            tree_area_init(undefined, undefined, window.area_data);
         });
         return;
     }
 
-    var lang_obj = window.parent.tree_lang_data;
-    var lang = window.parent.render_language;
+    var lang_obj = window.tree_lang_data;
+    var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
 
     var lat_long = BANGALORE_LAT_LONG;
-    if (window.parent.area_latlong == undefined) {
-        window.parent.area_latlong = [];
+    if (window.area_latlong == undefined) {
+        window.area_latlong = [];
     }
-    if (window.parent.area_latlong.length > 0) {
-        lat_long = window.parent.area_latlong;
+    if (window.area_latlong.length > 0) {
+        lat_long = window.area_latlong;
     }
     var name = capitalize_word(area);
     if (area == 'parks') {
@@ -979,14 +985,14 @@ function tree_area_init(area, aid, item_data) {
 
     var url = 'grid.json';
     $.getJSON(url, function(grid_obj) {
-        window.parent.GRID_FLORA = grid_obj['grid flora'];
-        window.parent.GRID_MESH = grid_obj['grid mesh'];
-        window.parent.GRID_CENTRE = grid_obj['grid centre'];
-        window.parent.map_initialized = false;
+        window.GRID_FLORA = grid_obj['grid flora'];
+        window.GRID_MESH = grid_obj['grid mesh'];
+        window.GRID_CENTRE = grid_obj['grid centre'];
+        window.map_initialized = false;
 
         var tid = 0;
-        if (window.parent.map_tree_id != undefined) {
-            tid = window.parent.map_tree_id;
+        if (window.map_tree_id != undefined) {
+            tid = window.map_tree_id;
         }
         if (area == 'trees') {
             var handle_map = lang_obj['Handle'];
@@ -1013,8 +1019,8 @@ function tree_area_init(area, aid, item_data) {
 }
 
 function load_area_data(area_type, area_id) {
-    var lang = window.parent.render_language;
-    var map_dict = window.parent.tree_lang_data['Keys'];
+    var lang = window.render_language;
+    var map_dict = window.tree_lang_data['Keys'];
     var area_data = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
                       'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
                     };
@@ -1027,7 +1033,7 @@ function load_area_data(area_type, area_id) {
 }
 
 function load_collection_data(type, letter, page_index, page_max) {
-    var region = window.parent.tree_region;
+    var region = window.tree_region;
     var collection_data = {};
     render_template_data('#page-template', '#SECTION', collection_data);
     var url = `Flora/trees_${region}_${type}_page_${letter}.json`;
@@ -1038,7 +1044,7 @@ function load_collection_data(type, letter, page_index, page_max) {
 }
 
 function load_category_data(type) {
-    var region = window.parent.tree_region;
+    var region = window.tree_region;
     var grid_data = {};
     render_template_data('#grid-template', '#SECTION', grid_data);
     var url = `Flora/trees_${region}_${type}_grid.json`;
@@ -1049,7 +1055,7 @@ function load_category_data(type) {
 }
 
 function load_simple_data() {
-    var region = window.parent.tree_region;
+    var region = window.tree_region;
     var simple_data = {};
     render_template_data('#simple-template', '#SECTION', simple_data);
     var url = `Flora/trees_${region}_simple.json`;
@@ -1060,7 +1066,7 @@ function load_simple_data() {
 }
 
 function load_module_data(file_name) {
-    var region = window.parent.tree_region;
+    var region = window.tree_region;
     var module_data = {};
     render_template_data('#module-template', '#SECTION', module_data);
     var url = `Flora/${file_name}.json`;
@@ -1080,7 +1086,7 @@ function transliterator_word() {
 function tree_transliterator_init() {
     var url = 'language.json';
     $.getJSON(url, function(lang_obj) {
-        window.parent.tree_lang_data = lang_obj;
+        window.tree_lang_data = lang_obj;
         transliterator_init();
     });
 
@@ -1098,60 +1104,60 @@ function tree_transliterator_init() {
 */
 
 function speech_to_text_init() {
-    window.parent.speech_recognizing = false;
-    window.parent.speech_final_transcript = '';
-    window.parent.speech_recognizing = false;
-    window.parent.speech_ignore_onend;
-    window.parent.speech_start_timestamp;
-    if (!('webkitSpeechRecognition' in window.parent)) {
+    window.speech_recognizing = false;
+    window.speech_final_transcript = '';
+    window.speech_recognizing = false;
+    window.speech_ignore_onend;
+    window.speech_start_timestamp;
+    if (!('webkitSpeechRecognition' in window)) {
         console.log('Speech not working:');
     } else {
-        window.parent.speech_recognition = new webkitSpeechRecognition();
-        window.parent.speech_recognition.continuous = true;
-        window.parent.speech_recognition.interimResults = true;
+        window.speech_recognition = new webkitSpeechRecognition();
+        window.speech_recognition.continuous = true;
+        window.speech_recognition.interimResults = true;
 
-        window.parent.speech_recognition.onstart = function() {
-            window.parent.speech_recognizing = true;
+        window.speech_recognition.onstart = function() {
+            window.speech_recognizing = true;
             console.log('Speech Starting:');
         };
 
-        window.parent.speech_recognition.onerror = function(event) {
+        window.speech_recognition.onerror = function(event) {
             if (event.error == 'no-speech') {
                 console.log('Speech Error: No Speech');
-                window.parent.speech_ignore_onend = true;
+                window.speech_ignore_onend = true;
             }
             if (event.error == 'audio-capture') {
                 console.log('Speech Error: Audio Capture');
-              window.parent.speech_ignore_onend = true;
+              window.speech_ignore_onend = true;
             }
             if (event.error == 'not-allowed') {
-                if (event.timeStamp - window.parent.speech_start_timestamp < 100) {
+                if (event.timeStamp - window.speech_start_timestamp < 100) {
                     console.log('Speech Error: Info Blocked');
                 } else {
                     console.log('Speech Error: Info Denied');
                 }
-                window.parent.speech_ignore_onend = true;
+                window.speech_ignore_onend = true;
             }
         };
 
-        window.parent.speech_recognition.onend = function() {
-            window.parent.speech_recognizing = false;
-            if (window.parent.speech_ignore_onend) {
+        window.speech_recognition.onend = function() {
+            window.speech_recognizing = false;
+            if (window.speech_ignore_onend) {
                 console.log('Speech Error: Ignore End');
                 return;
             }
-            if (!window.parent.speech_final_transcript) {
+            if (!window.speech_final_transcript) {
                 console.log('Speech End:');
                 return;
             }
         };
 
-        window.parent.speech_recognition.onresult = function(event) {
+        window.speech_recognition.onresult = function(event) {
             var interim_transcript = '';
             /*
             for (var i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
-                    window.parent.speech_final_transcript += event.results[i][0].transcript;
+                    window.speech_final_transcript += event.results[i][0].transcript;
                 } else {
                     interim_transcript += event.results[i][0].transcript;
                 }
@@ -1160,15 +1166,15 @@ function speech_to_text_init() {
             console.log('Speech Result: ' + event.resultIndex + ' ' + event.results.length + ' ' + interim_transcript);
             */
             if (event.results.length > 0) {
-                window.parent.speech_final_transcript = event.results[0][0].transcript;
+                window.speech_final_transcript = event.results[0][0].transcript;
             } else {
-                window.parent.speech_final_transcript = '';
+                window.speech_final_transcript = '';
             }
-            if (window.parent.speech_final_transcript || interim_transcript) {
-                window.parent.speech_recognition.stop();
+            if (window.speech_final_transcript || interim_transcript) {
+                window.speech_recognition.stop();
                 $('#MIC_IMAGE').attr('src', 'icons/mic-mute.svg');
-                document.getElementById('SEARCH_WORD').value = window.parent.speech_final_transcript;
-                // console.log('Speech Final: ' + window.parent.speech_final_transcript);
+                document.getElementById('SEARCH_WORD').value = window.speech_final_transcript;
+                // console.log('Speech Final: ' + window.speech_final_transcript);
                 load_search_data();
             }
         };
@@ -1176,25 +1182,25 @@ function speech_to_text_init() {
 }
 
 function speech_start(event) {
-    if (!('webkitSpeechRecognition' in window.parent)) {
+    if (!('webkitSpeechRecognition' in window)) {
         return;
     }
-    if (window.parent.speech_recognizing) {
-        window.parent.speech_recognition.stop();
+    if (window.speech_recognizing) {
+        window.speech_recognition.stop();
         return;
     }
-    var lang = window.parent.render_language;
+    var lang = window.render_language;
     var s_lang = MAP_ISO_DICT[lang];
-    window.parent.speech_final_transcript = '';
-    window.parent.speech_recognition.lang = s_lang;
-    window.parent.speech_recognition.start();
-    window.parent.speech_ignore_onend = false;
-    window.parent.speech_start_timestamp = event.timeStamp;
+    window.speech_final_transcript = '';
+    window.speech_recognition.lang = s_lang;
+    window.speech_recognition.start();
+    window.speech_ignore_onend = false;
+    window.speech_start_timestamp = event.timeStamp;
     $('#MIC_IMAGE').attr('src', 'icons/mic.svg');
 }
 
 function load_keyboard(event) {
-    var lang = window.parent.render_language;
+    var lang = window.render_language;
     set_input_keyboard(lang.toLowerCase());
     $('#LANG_KBD').modal();
     return;
@@ -1213,8 +1219,8 @@ function handle_history_context(data) {
     } else if (context == 'trees') {
         load_module_data(data['module']);
     } else if (context == 'maps') {
-        window.parent.area_latlong = data['latlong'];
-        // console.log('HISTORY POP: ', window.parent.area_latlong);
+        window.area_latlong = data['latlong'];
+        // console.log('HISTORY POP: ', window.area_latlong);
         load_area_data(data['type'], data['id']);
     } else if (context == 'search') {
       load_search_history(data);
@@ -1227,13 +1233,13 @@ function handle_popstate(e) {
         return;
     }
     // console.log('POP: ', e);
-    window.parent.tree_popstate = true;
+    window.tree_popstate = true;
     handle_history_context(data);
 }
 
 function add_history(context, data) {
     var url = 'trees.html';
-    if (!window.parent.tree_popstate) {
+    if (!window.tree_popstate) {
         data['context'] = context;
         var title = capitalize_word(context);
         if (context == 'introduction') {
@@ -1251,11 +1257,11 @@ function add_history(context, data) {
             title += ' ' + capitalize_word(data['type']);
             // console.log('HISTORY PUSH: ', data['latlong']);
         }
-        // console.log('PUSH: ', data, window.parent.tree_popstate);
+        // console.log('PUSH: ', data, window.tree_popstate);
         history.pushState(data, title, url);
     }
-    window.parent.history_data = data;
-    window.parent.tree_popstate = false;
+    window.history_data = data;
+    window.tree_popstate = false;
 }
 
 function get_lang_map_word(lang, map_dict, n) {
@@ -1277,7 +1283,7 @@ function get_lang_map(lang, n_dict) {
     if (lang == 'English') {
         return;
     }
-    var map_dict = window.parent.tree_lang_data['Keys'];
+    var map_dict = window.tree_lang_data['Keys'];
     n_dict['T'] = get_lang_map_word(lang, map_dict, n_dict['T']);
     var i_list = n_dict['items'];
     for (var i = 0; i < i_list.length; i++) {
@@ -1287,8 +1293,8 @@ function get_lang_map(lang, n_dict) {
 }
 
 function load_menu_data() {
-    var lang = window.parent.render_language;
-    var map_dict = window.parent.tree_lang_data['Keys'];
+    var lang = window.render_language;
+    var map_dict = window.tree_lang_data['Keys'];
     var LANG_LIST = [ 'English', 'Tamil', 'Kannada', 'Telugu', 'Malayalam', 'Hindi', 'Marathi', 'Gujarati', 'Bengali', 'Punjabi' ];
     var lang_list = [];
     for (var i = 0; i < LANG_LIST.length; i++) {
@@ -1344,23 +1350,23 @@ function load_menu_data() {
 
     speech_to_text_init();
 
-    if (window.parent.history_data == undefined) {
-        if (Object.keys(window.parent.tree_lang_data).length != 0) {
-            load_intro_data(window.parent.tree_region);
+    if (window.history_data == undefined) {
+        if (Object.keys(window.tree_lang_data).length != 0) {
+            load_intro_data(window.tree_region);
         }
     } else  {
-        handle_history_context(window.parent.history_data);
+        handle_history_context(window.history_data);
     }
 }
 
 function load_content() {
     var url = 'language.json';
     $.getJSON(url, function(lang_obj) {
-        window.parent.tree_lang_data = lang_obj;
+        window.tree_lang_data = lang_obj;
         transliterator_init();
-        var tree_id = window.parent.url_params['tid'];
+        var tree_id = window.url_params['tid'];
         if (tree_id == undefined) {
-            load_intro_data(window.parent.tree_region);
+            load_intro_data(window.tree_region);
         } else {
             load_module_data_with_id(tree_id);
         }
@@ -1369,19 +1375,19 @@ function load_content() {
 }
 
 function tree_main_init() {
-    window.parent.info_initialized = true;
-    window.parent.render_language = 'English';
-    window.parent.history_data = undefined;
-    window.parent.tree_lang_data = {};
-    window.parent.tree_region = 'bangalore';
-    window.parent.search_initialized = false;
-    window.parent.area_marker_list = [];
-    window.parent.area_popup_list = [];
-    window.parent.area_tooltip_list = [];
-    window.parent.area_latlong = [];
-    window.parent.map_initialized = false;
-    window.parent.tree_popstate = false;
-    window.parent.url_params = get_url_params();
+    window.info_initialized = true;
+    window.render_language = 'English';
+    window.history_data = undefined;
+    window.tree_lang_data = {};
+    window.tree_region = 'bangalore';
+    window.search_initialized = false;
+    window.area_marker_list = [];
+    window.area_popup_list = [];
+    window.area_tooltip_list = [];
+    window.area_latlong = [];
+    window.map_initialized = false;
+    window.tree_popstate = false;
+    window.url_params = get_url_params();
 
     $('.nav li').bind('click', function() {
        $(this).addClass('active').siblings().removeClass('active');
@@ -1390,6 +1396,7 @@ function tree_main_init() {
     window.addEventListener('popstate', handle_popstate);
     window.onload = load_content;
 
+    init_input_keyboard();
     load_menu_data();
 }
 
