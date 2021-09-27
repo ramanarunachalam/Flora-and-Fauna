@@ -110,16 +110,33 @@ function tree_grid_init(region, type, data) {
     var key_name = lang_map['Name'];
     var english_lang_map = lang_obj['English'];
     var english_key_info = english_lang_map['Key Name'];
+    var english_key_image = english_lang_map['Image'];
+    var handle_map = lang_obj['Handle'];
     var card_list = data['cardinfo'];
+    const MAX_COL = 6;
     for (var i = 0; i < card_list.length; i++) {
         set_key_value_map(card_list[i], english_key_info, lang_map, 'N');
-        var row_list = card_list[i]['ROW'];
+        var card = card_list[i];
+        var new_row_list = [];
+        var new_col_list = [];
+        var row_list = card['ROW'];
         for (var j = 0; j < row_list.length; j++) {
-            var col_list = row_list[j]['COL'];
-            for (var k = 0; k < col_list.length; k++) {
-                set_key_map(col_list[k], key_name, 'CN');
+            const [ tree_id, caption ] = row_list[j].split(',');
+            const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+            const href = `${genus} - ${name}/${name}`;
+            const prefix = `${genus} - ${name}/Thumbnails`;
+            const new_caption = (caption == '') ? 'empty.thumbnail' : `${prefix}/${name} - ${english_key_image[caption]}.thumbnail`
+            new_item = { CN: key_name[tree_id], CH: href, CT: new_caption };
+            new_col_list.push(new_item);
+            if (new_col_list.length >= MAX_COL) {
+                new_row_list.push({ COL: new_col_list });
+                new_col_list = [];
             }
         }
+        if (new_col_list.length > 0) {
+            new_row_list.push({ COL: new_col_list });
+        }
+        card['ROW'] = new_row_list;
     }
     render_template_data('#grid-card-info-template', '#CARDINFO', data);
 }
@@ -137,12 +154,20 @@ function tree_intro_init(region, slider_data) {
     var lang_obj = window.tree_lang_data;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
-    var slider_list = slider_data['sliderinfo']['items'];
+    var handle_map = lang_obj['Handle'];
+    var slider_info = slider_data['sliderinfo'];
+    var slider_list = slider_info['items'];
+    var new_slider_list = [];
     for (var i = 0; i < slider_list.length; i++) {
-        var s_dict = slider_list[i];
-        set_key_map(s_dict, key_name, 'SN');
+        const tree_id = slider_list[i];
+        const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+        const href = `${genus} - ${name}/${name}`;
+        const item = { SB: `${genus} ${species}`, SA: authority, SH: href,
+                       SN: key_name[tree_id], SI: `${genus} - ${name}/${name} - ${part}.jpg`
+                     }
+        new_slider_list.push(item);
     }
-
+    slider_info['items'] = new_slider_list;
     render_template_data('#carousel-template', '#SLIDERINFO', slider_data);
 
     $('.carousel').carousel({
@@ -256,28 +281,64 @@ function show_bottom_next_page() {
     show_page('bottom', false);
 }
 
-function tree_collection_init(region, type, letter, page_index, max_page, data) {
-    data['pageinfo']['N'] = 'top';
-    render_template_data('#pagination-template', '#TOPPAGE', data);
-    data['pageinfo']['N'] = 'bottom';
-    render_template_data('#pagination-template', '#BOTTOMPAGE', data);
+const COL_LIST = [ 'COLA', 'COLG', 'COLF' ];
 
+function tree_collection_init(region, type, letter, page_index, max_page, data) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
+    var english_lang_map = lang_obj['English'];
+    var english_key_image = english_lang_map['Image'];
+    var handle_map = lang_obj['Handle'];
+    var reverse_map = lang_obj['Reverse Maps'];
     var key_name = lang_map['Name'];
-    var row_list = data['cardinfo']['ROW'];
+    var letter_data = data['LETTER'];
+    var new_row_list = [];
+    const [ col_name, row_list ] = letter_data[letter];
     for (var i = 0; i < row_list.length; i++) {
-        var row = row_list[i];
-        if ('COLA' in row) { 
-            set_key_map(row['COLA'], key_name, 'CN');
-        } else if ('COLG' in row) { 
-            set_key_map(row['COLG'], key_name, 'CN');
-        } else if ('COLF' in row) { 
-            set_key_map(row['COLF'], key_name, 'CN');
+        const [ tree_id, images ] = row_list[i];
+        const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+        const href = `${genus} - ${name}/${name}`;
+        const prefix = `${genus} - ${name}/Thumbnails`;
+        var new_image_list = [];
+        var image_list = images.split(',');
+        for (var k = 0; k < image_list.length; k++) {
+            var caption = image_list[k];
+            if (caption != '') {
+                caption = english_key_image[caption];
+                if (caption in reverse_map) {
+                    caption = reverse_map[caption];
+                }
+                caption = `${prefix}/${name} - ${caption}.thumbnail`;
+            } else {
+                caption = 'empty.thumbnail';
+            }
+            var new_item = { CI: caption, CH: href };
+            new_image_list.push(new_item);
         }
+        var new_item = { COLIMAGE: new_image_list };
+        new_item[col_name] = { CC: (i + 1), CN: key_name[tree_id], CF: family,
+                               CB: `${genus} ${species}`, CA: authority, CH: href
+                             }
+        new_row_list.push(new_item);
     }
-    render_template_data('#collection-card-info-template', '#CARDINFO', data);
+    const [ group, max_pages, links ] = data['PAGES'];
+    const link_list = links.split(',')
+    var new_link_list = [];
+    for (var i = 0; i < link_list.length; i++) {
+        const page = link_list[i];
+        const page_id = i + 1;
+        const item = { PL: page, PC: (i + 1), PH: `load_collection_data('${group}', '${page}', ${page_id}, ${max_pages})` };
+        new_link_list.push(item);
+    }
+    var page_data = { N: 'Page', links: new_link_list };
+    var new_data = { cardinfo: { N: letter, ROW: new_row_list }, pageinfo: page_data };
+
+    new_data['pageinfo']['N'] = 'top';
+    render_template_data('#pagination-template', '#TOPPAGE', new_data);
+    new_data['pageinfo']['N'] = 'bottom';
+    render_template_data('#pagination-template', '#BOTTOMPAGE', new_data);
+    render_template_data('#collection-card-info-template', '#CARDINFO', new_data);
 
     $("#top-page-next").click(show_top_next_page);
     $("#top-page-previous").click(show_top_prev_page);
@@ -306,11 +367,12 @@ function search_load() {
         var data_id = 0;
         for (var category in search_obj) {
             var data_list = search_obj[category];
-            data_list.forEach(function (data_item, data_index) {
-                var data_doc = { "id" : data_id, "name" : data_item.N, 'aka' : data_item.A, "family" : data_item.F, "genus" : data_item.G, "species" : data_item.S, "href" : data_item.H, "category" : data_item.T, "pop" : data_item.P };
+            for (var i = 0; i < data_list.length; i++) {
+                const item = data_list[i];
+                var data_doc = { "id" : data_id, "category" : item.T, "name" : item.N, 'aka' : item.A, "href" : item.H, "pop" : item.P };
                 search_engine.add(data_doc);
                 data_id += 1;
-            });
+            }
         }
     });
     window.search_initialized = true;
@@ -367,19 +429,28 @@ function transliterate_text(word) {
     return new_word;
 }
 
+function get_search_href(category, arg_list) {
+    var func = (category == 'Trees') ? 'load_module_data' : 'load_area_data';
+    var args = arg_list.join("', '");
+    var href = `${func}('${args}')`;
+    return href
+}
+
 function get_search_results(search_word, search_options, item_list, id_list) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
     var map_dict = lang_obj['Keys'];
+    var handle_map = lang_obj['Handle'];
     var search_engine = window.flora_fauna_search_engine;
     var results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
         var max_score = results[0].score;
-        results.forEach(function (result_item, result_index) {
-            if (!id_list.has(result_item.id)) {
-                var d = result_item.name;
+        for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            if (!id_list.has(item.id)) {
+                var d = item.name;
                 if (d[0] == 1) {
                     var name = key_name[d[1]];
                     var name_id = d[1];
@@ -387,15 +458,19 @@ function get_search_results(search_word, search_options, item_list, id_list) {
                     var name = d[1];
                     var name_id = '';
                 }
-                var category = get_lang_map_word(lang, map_dict, result_item.category);
-                var item = { 'T' : category, 'H' : result_item.href, 'N' : name, 'G' : result_item.genus, 'S' : result_item.species, 'P' : result_item.pop };
-                if (name_id != '') {
-                    item['I'] = name_id;
+                var category = get_lang_map_word(lang, map_dict, item.category);
+                var href = get_search_href(item.category, item.href);
+                var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : item.pop };
+                if (item.category == 'Trees' || item.category == 'Maps') {
+                    set_genus_species(handle_map, name_id, r_item);
                 }
-                item_list.push(item);
-                id_list.add(result_item.id);
+                if (name_id != '') {
+                    r_item['I'] = name_id;
+                }
+                item_list.push(r_item);
+                id_list.add(item.id);
             }
-        });
+        }
     }
 }
 
@@ -453,7 +528,7 @@ function create_osm_map(module, id_name, c_lat, c_long) {
         geocoder.on('finishgeocode', handle_geocoder_mark);
     }
 
-    init_conetxt_menu();
+    init_context_menu();
 
     return osm_map;
 }
@@ -478,53 +553,6 @@ function create_icons() {
     });
 }
 
-function get_url_prefix(handle_map, tree_id) {
-    var handle = handle_map[tree_id];
-    var prefix = handle[0] + '/' + handle[1] + ' - ' + handle[2] + '/';
-    var url = handle[1] + ' - ' + handle[2] + '/' + handle[2];
-    var image = handle[2] + ' - ' + handle[3];
-    return [prefix, image, url];
-}
-
-function get_url_info(handle_map, tree_id, name, level) {
-    const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
-    var m_url = "javascript:load_module_data('" + url + "');";
-    var a_url = "javascript:load_area_data('trees', '" + tree_id + "');";
-    if (level == 'popup') {
-        var image_url = prefix + image + '.jpg'
-        var image_style = 'style="width: 240px; height: 180px;"';
-    } else {
-        var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
-        var image_style = '';
-    }
-    var img_html = '<a href="' + m_url + '" align="center"><div class="thumbnail" align="center"><img ' + image_style + ' src="' + image_url + '" class="shadow-box"></a>';
-    var name_html = '<a href="' + a_url + '"><p align="center">' + name + '</p></div></a>';
-    var html = img_html + name_html;
-    return html;
-}
-
-function get_blooming_info(handle_map, tree_id) {
-    var handle = handle_map[tree_id];
-    var blooming = handle[4];
-    return blooming;
-}
-
-function get_needed_icon(selected, blooming) {
-    var icon = window.green_tree_icon;
-    if (selected) {
-        if (blooming) {
-            icon = window.red_bloom_icon;
-        } else {
-            icon = window.red_tree_icon;
-        }
-    } else {
-        if (blooming) {
-            icon = window.green_bloom_icon;
-        }
-    }
-    return icon;
-}
-
 function get_tree_handle(tree_id) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
@@ -535,13 +563,72 @@ function get_tree_handle(tree_id) {
     return [ name, handle_map ];
 }
 
-function set_chosen_image(tree_id) {
+function get_url_prefix(handle_map, tree_id) {
+    const base = 'Flora';
+    const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+    var prefix = `${base}/${genus} - ${name}/`;
+    var m_url = `${genus} - ${name}/${name}`;
+    var image = `${name} - ${part}`;
+    return [ prefix, image, m_url ];
+}
+
+function get_image_url(handle_map, tree_id, level) {
+    const [ prefix, image, m_url ] = get_url_prefix(handle_map, tree_id);
+    const image_url = (level == 'popup') ? `${prefix}${image}.jpg` : `${prefix}Thumbnails/${image}.thumbnail` ;
+    return [ m_url, image_url ];
+}
+
+function get_module_url(tree_id) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
-    var tooltip_html = get_url_info(handle_map, tree_id, name, 'tooltip');
+    const [ prefix, image, m_url ] = get_url_prefix(handle_map, tree_id);
+    return m_url;
+}
+
+function get_module_name(handle_map, tree_id) {
+    if (handle_map == null) {
+        const [ p_name, p_handle_map ] = get_tree_handle(tree_id);
+        handle_map = p_handle_map; 
+    }
+    const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+    return name;
+}
+
+function get_blooming_info(handle_map, tree_id) {
+    const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+    return blooming;
+}
+
+function set_genus_species(handle_map, tree_id, r_item) {
+    const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+    r_item['G'] = genus;
+    r_item['S'] = species;
+}
+
+function get_url_info(tree_id, level) {
+    const [ name, handle_map ] = get_tree_handle(tree_id);
+    const [ url, image_url ] = get_image_url(handle_map, tree_id, level);
+    var m_url = `javascript:load_module_data('${url}');`;
+    var a_url = `javascript:load_area_data('trees', '${tree_id}');`;
+    var image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
+    var img_html = `<a href="${m_url}" align="center"><div class="thumbnail" align="center"><img ${image_style} src="${image_url}" class="shadow-box"></a>`;
+    var name_html = `<a href="${a_url}"><p align="center"> ${name} </p></div></a>`;
+    var html = img_html + name_html;
+    return html;
+}
+
+function get_needed_icon(selected, blooming) {
+    if (selected) {
+        return (blooming) ? window.red_bloom_icon : window.red_tree_icon;
+    } else if (blooming) return window.green_bloom_icon;
+    return window.green_tree_icon;
+}
+
+function set_chosen_image(tree_id) {
+    var tooltip_html = get_url_info(tree_id, 'tooltip');
     $('#IMAGEINFO').html(tooltip_html);
 }
 
-function init_conetxt_menu() {
+function init_context_menu() {
     $.contextMenu({
       selector: 'img.leaflet-marker-icon',
       callback: function(key, options) {
@@ -549,13 +636,12 @@ function init_conetxt_menu() {
           var tree_id = marker.tree_id;
           var pos = marker.getLatLng();
           if (key == 'info') {
-              const [ name, handle_map ] = get_tree_handle(tree_id);
-              const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
-              load_module_data(url);
+              const m_url = get_module_url(tree_id);
+              load_module_data(m_url);
           } else if (key == 'tmap') {
               load_area_data('trees', tree_id);
           } else if (key == 'gmap') {
-              var url = 'http://maps.google.com/maps?z=12&t=m&q=loc:' + pos.lat + '+' + pos.lng;
+              var url = `http://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
               window.open(url, '');
           }
       },
@@ -604,10 +690,9 @@ function marker_on_click(e) {
 }
 
 function load_module_data_with_id(tree_id) {
-    const [ name, handle_map ] = get_tree_handle(tree_id);
-    const [prefix, image, url] = get_url_prefix(handle_map, tree_id);
     window.map_tree_id = tree_id;
-    load_module_data(url);
+    const m_url = get_module_url(tree_id);
+    load_module_data(m_url);
 }
 
 function marker_on_doubleclick(e) {
@@ -657,8 +742,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     window.map_tree_id = tid;
 
     if (area == 'trees') {
-        const [ t_name, t_handle_map ] = get_tree_handle(tid);
-        var n_name = t_name;
+        var n_name = get_module_name(null, tid);
     } else {
         var n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
         if (aid != '') {
@@ -862,9 +946,8 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
 
         if (area != 'trees') {
-            const [prefix, image, url] = get_url_prefix(handle_map, tid);
-            var image_url = prefix + 'Thumbnails/' + image + '.thumbnail'
-            tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'SH' : url, 'TID' : tid, 'SC' : tree_dict[tid] })
+            const [ m_url, image_url ] = get_image_url(handle_map, tid, 'thumbnail');
+            tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'SH' : m_url, 'TID' : tid, 'SC' : tree_dict[tid] })
         }
     }
     if (tree_stat_list.length > 0) {
@@ -996,16 +1079,17 @@ function tree_area_init(area, aid, item_data) {
         }
         if (area == 'trees') {
             var handle_map = lang_obj['Handle'];
+            var m_name = get_module_name(handle_map, aid);
             if (aid != 0) {
                 tid = aid;
-                name = handle_map[aid][2];
+                name = m_name;
             } else if (tid != 0) {
                 aid = tid;
-                name = handle_map[aid][2];
+                name = m_name;
             } else if (aid == 0 || aid == '0') {
                 var tree_list = Object.keys(handle_map);
                 aid = tree_list[Math.floor(Math.random() * tree_list.length)];
-                name = handle_map[aid][2];
+                name = m_name;
             } else {
                 name = params.getValue('name');
                 name = name.replace(/%20/g, ' ');
@@ -1036,7 +1120,7 @@ function load_collection_data(type, letter, page_index, page_max) {
     var region = window.tree_region;
     var collection_data = {};
     render_template_data('#page-template', '#SECTION', collection_data);
-    var url = `Flora/trees_${region}_${type}_page_${letter}.json`;
+    var url = `Flora/trees_${region}_${type}_page.json`;
     $.getJSON(url, function(item_data) {
         tree_collection_init(region, type, letter, page_index, page_max, item_data);
         add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max });
