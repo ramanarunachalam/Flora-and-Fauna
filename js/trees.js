@@ -149,6 +149,13 @@ function tree_intro_init(region, slider_data) {
     var lang = window.render_language;
 
     var stats_list = slider_data['statsinfo'];
+    var i_list = stats_list['items'];
+    for (var i = 0; i < i_list.length; i++) {
+        var i_dict = i_list[i];
+        if (i_dict['N'] == 'Updated') {
+            i_dict['C'] = i_dict['C'].split(' ')[0];
+        }
+    }
     get_lang_map(lang, stats_list);
 
     var lang_obj = window.tree_lang_data;
@@ -443,33 +450,44 @@ function get_search_results(search_word, search_options, item_list, id_list) {
     var key_name = lang_map['Name'];
     var map_dict = lang_obj['Keys'];
     var handle_map = lang_obj['Handle'];
+    var park_map = lang_obj['Park'];
+    var ward_map = lang_obj['Ward'];
     var search_engine = window.flora_fauna_search_engine;
     var results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
         var max_score = results[0].score;
         for (var i = 0; i < results.length; i++) {
             var item = results[i];
-            if (!id_list.has(item.id)) {
-                var d = item.name;
-                if (d[0] == 1) {
-                    var name = key_name[d[1]];
-                    var name_id = d[1];
-                } else {
-                    var name = d[1];
-                    var name_id = '';
-                }
-                var category = get_lang_map_word(lang, map_dict, item.category);
-                var href = get_search_href(item.category, item.href);
-                var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : item.pop };
-                if (item.category == 'Trees' || item.category == 'Maps') {
-                    set_genus_species(handle_map, name_id, r_item);
-                }
-                if (name_id != '') {
-                    r_item['I'] = name_id;
-                }
-                item_list.push(r_item);
-                id_list.add(item.id);
+            if (id_list.has(item.id)) continue;
+            var name_id = item.name;
+            var name = '';
+            var href = '';
+            if (item.category == 'Trees') {
+                const [ h_name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[name_id];
+                name = key_name[name_id];
+                href = [ `${genus} - ${name}/${name}` ];
+            } else if (item.category == 'Maps') {
+                const [ h_name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[name_id];
+                name = key_name[name_id];
+                href = [ 'trees', name_id, `${genus} - ${name}/${name}` ];
+            } else if (item.category == 'Parks') {
+                name = park_map[name_id];
+                href = [ 'parks', name_id, name ];
+            } else if (item.category == 'Wards') {
+                name = ward_map[name_id];
+                href = [ 'wards', name_id, name ];
             }
+            var category = get_lang_map_word(lang, map_dict, item.category);
+            var href = get_search_href(item.category, href);
+            var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : item.pop };
+            if (item.category == 'Trees' || item.category == 'Maps') {
+                set_genus_species(handle_map, name_id, r_item);
+            }
+            if (name_id != '') {
+                r_item['I'] = name_id;
+            }
+            item_list.push(r_item);
+            id_list.add(item.id);
         }
     }
 }
