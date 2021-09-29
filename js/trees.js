@@ -52,7 +52,7 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
     }
 }
 
-function tree_module_init(region, file_name, data) {
+function tree_module_init(file_name, data) {
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
         var url = '../../language.json';
@@ -60,7 +60,7 @@ function tree_module_init(region, file_name, data) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
             window.info_initialized = true;
-            tree_module_init(window.tree_card_data);
+            tree_module_init('', window.tree_card_data);
         });
         return;
     }
@@ -72,6 +72,7 @@ function tree_module_init(region, file_name, data) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
+    var handle_map = lang_obj['Handle'];
     var english_lang_map = lang_obj['English'];
     var english_key_info = english_lang_map['Key Name'];
     var key_group = lang_map['Key Group'];
@@ -83,12 +84,21 @@ function tree_module_init(region, file_name, data) {
     }
     var card_data = window.tree_card_data;
     var gallery_info = card_data['galleryinfo']
-    set_key_map(gallery_info, key_group, 'HH');
-    set_key_map(gallery_info, key_name, 'HN');
-    var gallery_list = gallery_info['gallery']
+    var tree_id = gallery_info['HID'];
+
+    const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
+    gallery_info['HH'] = key_group[gallery_info['HH']];
+    gallery_info['HN'] = key_name[gallery_info['HN']];
+    var gallery_list = gallery_info['gallery'].split(',');
+    var new_gallery_list = [];
     for (var i = 0; i < gallery_list.length; i++) {
-        set_key_map(gallery_list[i], key_image, 'IC');
+        var caption = gallery_list[i];
+        caption = (caption.length == 4) ? caption : key_image[caption];
+        image = `${genus} - ${name}/${name} - ${caption}.jpg`;
+        var new_item = { 'IC': caption, 'IN': image };
+        new_gallery_list.push(new_item);
     }
+    gallery_info['gallery'] = new_gallery_list;
     var info_list = card_data['cardinfo'];
     for (var i = 0; i < info_list.length; i++) {
         var cv_info = info_list[i];
@@ -103,7 +113,7 @@ function tree_module_init(region, file_name, data) {
     render_template_data('#module-card-info-template', '#CARDINFO', card_data);
 }
 
-function tree_grid_init(region, type, data) {
+function tree_grid_init(type, data) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
@@ -141,11 +151,16 @@ function tree_grid_init(region, type, data) {
     render_template_data('#grid-card-info-template', '#CARDINFO', data);
 }
 
-function tree_simple_init(region, data) {
+function tree_simple_init(data) {
     render_template_data('#simple-card-info-template', '#CARDINFO', data);
 }
 
-function tree_intro_init(region, slider_data) {
+function get_region_url(type) {
+    var region = window.tree_region;
+    return `Flora/trees_${region}_${type}.json`;
+}
+
+function tree_intro_init(slider_data) {
     var lang = window.render_language;
 
     var stats_list = slider_data['statsinfo'];
@@ -211,9 +226,9 @@ function load_intro_data(region) {
          intro_data[k] = get_lang_map_word(lang, map_dict, intro_data[k]);
     }
     render_template_data('#intro-template', '#SECTION', intro_data);
-    var url = `Flora/trees_${region}_intro.json`;
+    var url = get_region_url('intro');
     $.getJSON(url, function(slider_data) {
-        tree_intro_init(region, slider_data);
+        tree_intro_init(slider_data);
         add_history('introduction', { 'region' : region });
     });
 }
@@ -288,34 +303,31 @@ function show_bottom_next_page() {
     show_page('bottom', false);
 }
 
-const COL_LIST = [ 'COLA', 'COLG', 'COLF' ];
-
-function tree_collection_init(region, type, letter, page_index, max_page, data) {
+function tree_collection_init(type, letter, page_index, max_page, full_data) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var english_lang_map = lang_obj['English'];
     var english_key_image = english_lang_map['Image'];
     var handle_map = lang_obj['Handle'];
-    var reverse_map = lang_obj['Reverse Maps'];
     var key_name = lang_map['Name'];
+    var data = full_data[type];
+    var image_data = full_data['Images'];
     var letter_data = data['LETTER'];
     var new_row_list = [];
-    const [ col_name, row_list ] = letter_data[letter];
+    const row_list = letter_data[letter];
+    const col_name = 'COL' + type[0].toUpperCase();
     for (var i = 0; i < row_list.length; i++) {
-        const [ tree_id, images ] = row_list[i];
+        const tree_id = row_list[i];
         const [ name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[tree_id];
         const href = `${genus} - ${name}/${name}`;
         const prefix = `${genus} - ${name}/Thumbnails`;
         var new_image_list = [];
-        var image_list = images.split(',');
+        var image_list = image_data[tree_id].split(',');
         for (var k = 0; k < image_list.length; k++) {
             var caption = image_list[k];
-            if (caption != '') {
+            if (caption) {
                 caption = english_key_image[caption];
-                if (caption in reverse_map) {
-                    caption = reverse_map[caption];
-                }
                 caption = `${prefix}/${name} - ${caption}.thumbnail`;
             } else {
                 caption = 'empty.thumbnail';
@@ -1135,45 +1147,41 @@ function load_area_data(area_type, area_id) {
 }
 
 function load_collection_data(type, letter, page_index, page_max) {
-    var region = window.tree_region;
     var collection_data = {};
     render_template_data('#page-template', '#SECTION', collection_data);
-    var url = `Flora/trees_${region}_${type}_page.json`;
+    var url = get_region_url('page');
     $.getJSON(url, function(item_data) {
-        tree_collection_init(region, type, letter, page_index, page_max, item_data);
+        tree_collection_init(type, letter, page_index, page_max, item_data);
         add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max });
     });
 }
 
 function load_category_data(type) {
-    var region = window.tree_region;
     var grid_data = {};
     render_template_data('#grid-template', '#SECTION', grid_data);
-    var url = `Flora/trees_${region}_${type}_grid.json`;
+    var url = get_region_url('grid');
     $.getJSON(url, function(item_data) {
-        tree_grid_init(region, type, item_data);
+        tree_grid_init(type, item_data[type]);
         add_history('categories', { 'type' : type });
     });
 }
 
 function load_simple_data() {
-    var region = window.tree_region;
     var simple_data = {};
     render_template_data('#simple-template', '#SECTION', simple_data);
-    var url = `Flora/trees_${region}_simple.json`;
+    var url = get_region_url('simple');
     $.getJSON(url, function(item_data) {
-        tree_simple_init(region, item_data);
-        add_history('alphabetical', { 'region' : region });
+        tree_simple_init(item_data);
+        add_history('alphabetical', { 'region' : window.tree_region });
     });
 }
 
 function load_module_data(file_name) {
-    var region = window.tree_region;
     var module_data = {};
     render_template_data('#module-template', '#SECTION', module_data);
     var url = `Flora/${file_name}.json`;
     $.getJSON(url, function(item_data) {
-        tree_module_init(region, file_name, item_data);
+        tree_module_init(file_name, item_data);
         add_history('trees', { 'module' : file_name });
     });
 }
@@ -1411,22 +1419,22 @@ function load_menu_data() {
                                              ]
                    };
     var collection_list = { 'T' : 'Collections',
-                            'items' : [ { 'N' : 'Name', 'A' : 'alphabetical', 'L' : 'A' },
+                            'items' : [ { 'N' : 'Name',   'A' : 'alphabetical', 'L' : 'A' },
                                         { 'N' : 'Family', 'A' : 'family', 'L' : 'A' },
-                                        { 'N' : 'Genus', 'A' : 'genus', 'L' : 'A' }
+                                        { 'N' : 'Genus',  'A' : 'genus', 'L' : 'A' }
                                       ]
                           };
     var category_list = { 'T' : 'Categories',
-                          'items' : [ { 'N' : 'Flower Color', 'A' : 'flowers' },
+                          'items' : [ { 'N' : 'Flower Color',  'A' : 'flowers' },
                                       { 'N' : 'Flower Season', 'A' : 'season' },
-                                      { 'N' : 'Fruit Color', 'A' : 'fruits' },
-                                      { 'N' : 'Leaf Type', 'A' : 'leaves' },
-                                      { 'N' : 'Bark Color', 'A' : 'bark' }
+                                      { 'N' : 'Fruit Color',   'A' : 'fruits' },
+                                      { 'N' : 'Leaf Type',     'A' : 'leaves' },
+                                      { 'N' : 'Bark Color',    'A' : 'bark' }
                                     ]
                         };
     var region_list = { 'T' : 'Regions',
                           'items' : [ { 'N' : 'Bangalore', 'R' : 'bangalore' },
-                                      { 'N' : 'India', 'R' : 'india' }
+                                      { 'N' : 'India',     'R' : 'india' }
                                     ]
                         };
     // get_lang_map(lang, lang_list);
