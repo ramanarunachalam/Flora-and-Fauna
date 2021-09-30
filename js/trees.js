@@ -20,9 +20,23 @@ function get_url_params() {
     return vars;
 }
 
+function lang_name_init() {
+    var lang = window.render_language;
+    if (lang == 'English') return;
+    var tree_lang_data = window.tree_lang_data;
+    var english_name = tree_lang_data['English']['Name'];
+    var lang_name = tree_lang_data[lang]['Name'];
+    for (var i = 0; i < tree_lang_data.length; i++) {
+        if (lang_name[i] == '') {
+            lang_name[i] = english_name[i];
+        }
+    }
+}
+
 function set_language(obj) {
     window.GOT_LANGUAGE = obj.value;
     window.render_language = MAP_LANG_DICT[obj.value];
+    lang_name_init();
     load_menu_data();
 }
 
@@ -59,6 +73,7 @@ function tree_module_init(file_name, data) {
         $.getJSON(url, function(lang_obj) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
+            lang_name_init();
             window.info_initialized = true;
             tree_module_init('', window.tree_card_data);
         });
@@ -78,6 +93,7 @@ function tree_module_init(file_name, data) {
     var key_group = lang_map['Key Group'];
     var key_part = lang_map['Key Part'];
     var key_image = lang_map['Image'];
+    var english_key_image = english_lang_map['Image'];
     var key_name = lang_map['Name'];
     if (key_name === undefined) {
         key_name = english_lang_map['Name']; 
@@ -92,9 +108,10 @@ function tree_module_init(file_name, data) {
     var gallery_list = gallery_info['gallery'].split(',');
     var new_gallery_list = [];
     for (var i = 0; i < gallery_list.length; i++) {
-        var caption = gallery_list[i];
-        caption = (caption.length == 4) ? caption : key_image[caption];
-        image = `${genus} - ${name}/${name} - ${caption}.jpg`;
+        var image_id = gallery_list[i];
+        var part_name = (image_id.length == 4) ? image_id : english_key_image[image_id];
+        caption = (image_id.length == 4) ? image_id : key_image[image_id];
+        image = `${genus} - ${name}/${name} - ${part_name}.jpg`;
         var new_item = { 'IC': caption, 'IN': image };
         new_gallery_list.push(new_item);
     }
@@ -476,12 +493,10 @@ function get_search_results(search_word, search_options, item_list, id_list) {
             var href = '';
             if (item.category == 'Trees') {
                 const [ h_name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[name_id];
-                name = key_name[name_id];
-                href = [ `${genus} - ${name}/${name}` ];
+                href = [ `${genus} - ${h_name}/${h_name}` ];
             } else if (item.category == 'Maps') {
                 const [ h_name, family, genus, species, authority, part, blooming, grow_type, leaf_type ] = handle_map[name_id];
-                name = key_name[name_id];
-                href = [ 'trees', name_id, `${genus} - ${name}/${name}` ];
+                href = [ 'trees', name_id, `${genus} - ${h_name}/${h_name}` ];
             } else if (item.category == 'Parks') {
                 name = park_map[name_id];
                 href = [ 'parks', name_id, name ];
@@ -615,6 +630,8 @@ function get_module_url(tree_id) {
 }
 
 function get_module_name(handle_map, tree_id) {
+    if (tree_id == 0) return '';
+
     if (handle_map == null) {
         const [ p_name, p_handle_map ] = get_tree_handle(tree_id);
         handle_map = p_handle_map; 
@@ -772,7 +789,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     window.map_tree_id = tid;
 
     if (area == 'trees') {
-        var n_name = get_module_name(null, tid);
+        var n_name = get_module_name(null, parseInt(tid));
     } else {
         var n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
         if (aid != '') {
@@ -1029,6 +1046,7 @@ function tree_area_init(area, aid, item_data) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
             window.info_initialized = true;
+            lang_name_init();
             create_icons();
             tree_area_init(undefined, undefined, window.area_data);
         });
@@ -1039,6 +1057,7 @@ function tree_area_init(area, aid, item_data) {
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
     var key_name = lang_map['Name'];
+    var handle_map = lang_obj['Handle'];
 
     var lat_long = BANGALORE_LAT_LONG;
     if (window.area_latlong == undefined) {
@@ -1108,8 +1127,7 @@ function tree_area_init(area, aid, item_data) {
             tid = window.map_tree_id;
         }
         if (area == 'trees') {
-            var handle_map = lang_obj['Handle'];
-            var m_name = get_module_name(handle_map, aid);
+            var m_name = get_module_name(handle_map, parseInt(aid));
             if (aid != 0) {
                 tid = aid;
                 name = m_name;
@@ -1191,22 +1209,6 @@ function transliterator_word() {
     source = source.replace(/\n/g, "<br />");
     var target = transliterate_text(source);
     $('#TARGET').html(target);
-}
-
-function tree_transliterator_init() {
-    var url = 'language.json';
-    $.getJSON(url, function(lang_obj) {
-        window.tree_lang_data = lang_obj;
-        transliterator_init();
-    });
-
-    var input = document.getElementById('SOURCE');
-    input.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            transliterator_word();
-        }
-    });
 }
 
 /*
@@ -1420,16 +1422,16 @@ function load_menu_data() {
                    };
     var collection_list = { 'T' : 'Collections',
                             'items' : [ { 'N' : 'Name',   'A' : 'alphabetical', 'L' : 'A' },
-                                        { 'N' : 'Family', 'A' : 'family', 'L' : 'A' },
-                                        { 'N' : 'Genus',  'A' : 'genus', 'L' : 'A' }
+                                        { 'N' : 'Family', 'A' : 'family',       'L' : 'A' },
+                                        { 'N' : 'Genus',  'A' : 'genus',        'L' : 'A' }
                                       ]
                           };
     var category_list = { 'T' : 'Categories',
-                          'items' : [ { 'N' : 'Flower Color',  'A' : 'flowers' },
-                                      { 'N' : 'Flower Season', 'A' : 'season' },
-                                      { 'N' : 'Fruit Color',   'A' : 'fruits' },
-                                      { 'N' : 'Leaf Type',     'A' : 'leaves' },
-                                      { 'N' : 'Bark Color',    'A' : 'bark' }
+                          'items' : [ { 'N' : 'Flower Color',  'C' : 'Flower Color',  'A' : 'flowers' },
+                                      { 'N' : 'Flower Season', 'C' : 'Flower Season', 'A' : 'season' },
+                                      { 'N' : 'Fruit Color',   'C' : 'Fruit Color',   'A' : 'fruits' },
+                                      { 'N' : 'Leaf Type',     'C' : 'Leaf Type',     'A' : 'leaves' },
+                                      { 'N' : 'Bark Color',    'C' : 'Bark Color',    'A' : 'bark' }
                                     ]
                         };
     var region_list = { 'T' : 'Regions',
@@ -1473,6 +1475,7 @@ function load_content() {
     var url = 'language.json';
     $.getJSON(url, function(lang_obj) {
         window.tree_lang_data = lang_obj;
+        lang_name_init();
         transliterator_init();
         var tree_id = window.url_params['tid'];
         if (tree_id == undefined) {
