@@ -26,7 +26,7 @@ function lang_name_init() {
     var tree_lang_data = window.tree_lang_data;
     var english_name = tree_lang_data['English']['Name'];
     var lang_name = tree_lang_data[lang]['Name'];
-    for (var i = 0; i < tree_lang_data.length; i++) {
+    for (var i = 0; i < english_name.length; i++) {
         if (lang_name[i] == '') {
             lang_name[i] = english_name[i];
         }
