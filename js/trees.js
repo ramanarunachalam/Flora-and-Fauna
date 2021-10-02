@@ -540,8 +540,8 @@ function get_search_results(search_word, search_options, item_list, id_list) {
     var key_name = lang_map['Name'];
     var map_dict = lang_obj['Keys'];
     var handle_map = lang_obj['Handle'];
-    var park_map = lang_obj['Park'];
-    var ward_map = lang_obj['Ward'];
+    var park_map = lang_obj['Parks'];
+    var ward_map = lang_obj['Wards'];
     var search_engine = window.flora_fauna_search_engine;
     var results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
