@@ -263,7 +263,7 @@ function tree_intro_init(slider_data) {
     var slider_list = slider_info['items'];
     var new_slider_list = [];
     for (var i = 0; i < slider_list.length; i++) {
-        const tree_id = slider_list[i];
+        const [ tree_id, count ] = slider_list[i];
         const tree_handle = handle_map[tree_id];
         const href = get_handle_prefix(tree_handle);
         const part_name = get_part_name(tree_handle);
