@@ -924,54 +924,60 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     }
 
     var bounds = osm_map.getBounds();
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    const nw = bounds.getNorthWest();
+    const se = bounds.getSouthEast();
     var area_marker_list = [];
     var tree_dict = {};
     var grid_flora = window.GRID_FLORA;
-    for (var mesh_id in grid_flora) {
-        if (!grid_flora.hasOwnProperty(mesh_id)) {
+    // const start_time = Date.now();
+    let total_count = 0;
+    let visible_count = 0;
+    let matched_grid = 0;
+    const is_tree = (area == 'trees');
+    for (var i = 0; i < grid_flora.length; i++) {
+        const [ g_sw_lat, g_sw_long, g_ne_lat, g_ne_long, md_name, flora_list ] = grid_flora[i];
+        if (g_sw_long <= ne.lng && sw.lng <= g_ne_long && g_sw_lat <= ne.lat && sw.lat <= g_ne_lat) {
+            matched_grid++;
+        } else {
             continue;
         }
-        var mesh_latlong_dict = grid_flora[mesh_id];
-        for (var tree_id in mesh_latlong_dict) {
-            if (!mesh_latlong_dict.hasOwnProperty(tree_id)) {
-                continue;
-            }
-            if (area == 'trees' && aid != tree_id) {
-                continue;
-            }
+        for (var j = 0; j < flora_list.length; j++) {
+            var [ tree_id, latlong_list ] = flora_list[j];
+            tree_id = tree_id.toString();
+            if (is_tree && aid != tree_id) continue;
             const tree_handle = handle_map[tree_id];
             var blooming = tree_handle[H_BLOOM];
             var icon = get_needed_icon((s_id == tree_id), blooming);
-            var latlong_list = mesh_latlong_dict[tree_id];
             var count = 0;
-            for (var i = 0; i < latlong_list.length; i++) {
-                var latlong = latlong_list[i];
+            for (var k = 0; k < latlong_list.length; k++) {
+                var latlong = latlong_list[k];
                 var m_lat = parseFloat(latlong[0]);
                 var m_long = parseFloat(latlong[1]);
-                if (area == 'trees') {
-                    var visible = true;
-                } else {
-                    var visible = bounds.contains([m_lat, m_long]);
-                }
-                if (visible) {
-                    var marker = new L.marker([m_lat, m_long], {icon: icon});
-                    marker.tree_id = tree_id;
-                    marker.blooming = blooming;
-                    osm_map.addLayer(marker);
-                    marker.on('mouseover', marker_on_mouseover);
-                    marker.on('mouseout', marker_on_mouseout);
-                    marker.on('click', marker_on_click);
-                    marker.on('dblclick', marker_on_doubleclick);
-                    marker.on('contextmenu', marker_on_contextmenu);
-                    area_marker_list.push(marker);
-                    count += 1;
-                }
+                total_count++;
+                var visible = is_tree ? true : bounds.contains([m_lat, m_long]);
+                if (!visible) continue
+                visible_count++;
+                var marker = new L.marker([m_lat, m_long], {icon: icon});
+                marker.tree_id = tree_id;
+                marker.blooming = blooming;
+                osm_map.addLayer(marker);
+                marker.on('mouseover', marker_on_mouseover);
+                marker.on('mouseout', marker_on_mouseout);
+                marker.on('click', marker_on_click);
+                marker.on('dblclick', marker_on_doubleclick);
+                marker.on('contextmenu', marker_on_contextmenu);
+                area_marker_list.push(marker);
+                count += 1;
             }
             if (count > 0) {
                 tree_dict[tree_id] = (tree_dict[tree_id] || 0) + count;
             }
         }
     }
+    // const end_time = Date.now();
+    // console.log('Locations Scanned:', (end_time - start_time), total_count, visible_count, matched_grid, sw.lat, ne.lat, sw.lng, ne.lng, sw.distanceTo(ne), sw.distanceTo(nw));
 
     window.area_marker_list = area_marker_list;
 
@@ -1130,9 +1136,7 @@ function tree_area_init(area, aid, item_data) {
 
     var url = 'grid.json';
     $.getJSON(url, function(grid_obj) {
-        window.GRID_FLORA = grid_obj['grid flora'];
-        window.GRID_MESH = grid_obj['grid mesh'];
-        window.GRID_CENTRE = grid_obj['grid centre'];
+        window.GRID_FLORA = grid_obj;
         window.map_initialized = false;
 
         var tid = 0;
