@@ -553,11 +553,11 @@ function get_search_results(search_word, search_options, item_list, id_list) {
             var name = '';
             var href = '';
             if (item.category == 'Trees') {
-                const tree_handle = handle_map[name_id];
-                href = [ get_handle_prefix(tree_handle) ];
+                href = [ get_handle_prefix(handle_map[name_id]) ];
+                name = key_name[name_id];
             } else if (item.category == 'Maps') {
-                const tree_handle = handle_map[name_id];
-                href = [ 'trees', name_id, get_handle_prefix(tree_handle) ];
+                name = key_name[name_id];
+                href = [ 'trees', name_id, get_handle_prefix(handle_map[name_id]) ];
             } else if (item.category == 'Parks') {
                 name = park_map[name_id];
                 href = [ 'parks', name_id, name ];
