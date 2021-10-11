@@ -1424,7 +1424,10 @@ function get_lang_map(lang, n_dict) {
 function load_menu_data() {
     var lang = window.render_language;
     var map_dict = window.tree_lang_data['Keys'];
-    var LANG_LIST = [ 'English', 'Tamil', 'Kannada', 'Telugu', 'Malayalam', 'Hindi', 'Marathi', 'Gujarati', 'Bengali', 'Punjabi' ];
+    let LANG_LIST = [];
+    for (var l in MAP_LANG_DICT) {
+        LANG_LIST.push(MAP_LANG_DICT[l]);
+    }
     var lang_list = [];
     for (var i = 0; i < LANG_LIST.length; i++) {
         var l = LANG_LIST[i];
