@@ -567,7 +567,9 @@ function get_search_results(search_word, search_options, item_list, id_list) {
             }
             var category = get_lang_map_word(lang, map_dict, item.category);
             var href = get_search_href(item.category, href);
-            var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : item.pop };
+            var pop = ('P' in item) ? item.pop : 10.0;
+            if (item.category == 'Maps') pop -= 1;
+            var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop };
             if (item.category == 'Trees' || item.category == 'Maps') {
                 const tree_handle = handle_map[name_id];
                 r_item['G'] = tree_handle[H_GENUS];
