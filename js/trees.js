@@ -4,6 +4,7 @@ const BANGALORE_LAT_LONG = [ BANGALORE_LAT, BANGALORE_LONG ];
 const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
 
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
+const SEARCH_MAP_DICT = { 'c' : 's', 'p' : 'b' };
 
 
 function is_array(obj) {
@@ -454,6 +455,17 @@ function show_bigger_image() {
     $('#IMAGE_MODAL').modal();
 }
 
+function normalize_search_text(search_text) {
+    search_text = search_text.toLowerCase();
+    search_text = search_text.replace(/(e)\1+/g, 'i');
+    search_text = search_text.replace(/(o)\1+/g, 'u');
+    search_text = search_text.replace(/(.)\1+/g, '$1');
+    search_text = search_text.replace(/([bcdfgjklpst])h/g, '$1')
+    search_text = search_text.replace(/([sd])v/g, '$1w')
+    search_text = search_text.replace(/([ao])u/g, 'ow')
+    return search_text;
+}
+
 function search_load() {
     if (window.search_initialized) {
         return;
@@ -533,7 +545,7 @@ function get_search_href(category, arg_list) {
     return href
 }
 
-function get_search_results(search_word, search_options, item_list, id_list) {
+function get_search_results(search_word, search_options, item_list, id_list, base_pop) {
     var lang_obj = window.tree_lang_data;
     var lang = window.render_language;
     var lang_map = lang_obj[lang];
@@ -569,6 +581,7 @@ function get_search_results(search_word, search_options, item_list, id_list) {
             var href = get_search_href(item.category, href);
             var pop = ('P' in item) ? item.pop : 10.0;
             if (item.category == 'Maps') pop -= 1;
+            pop = base_pop + pop;
             var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop };
             if (item.category == 'Trees' || item.category == 'Maps') {
                 const tree_handle = handle_map[name_id];
@@ -584,19 +597,52 @@ function get_search_results(search_word, search_options, item_list, id_list) {
     }
 }
 
-function handle_search_word(search_word) {
-    var t_word = transliterate_text(search_word);
-    search_word = t_word;
-    const s_search_word = search_word.replace(/\s/g, '');
+function get_tamil_phonetic_word(word) {
+    var w_list = [];
+    var new_word = word.toLowerCase();
+    for (var i = 0; i < new_word.length; i++) {
+        var c = new_word[i];
+        w_list.push((c in SEARCH_MAP_DICT) ? SEARCH_MAP_DICT[c] : c);
+    }
+    return w_list.join('');
+}
+
+function load_search_part(search_word, non_english) {
+    var s_search_word = search_word.replace(/\s/g, '');
     var item_list = [];
     var id_list = new Set();
     var search_options = { prefix: true, combineWith: 'AND', fuzzy: term => term.length > 3 ? 0.1 : null };
-    get_search_results(search_word, search_options, item_list, id_list);
+    get_search_results(search_word, search_options, item_list, id_list, 4000);
     if (search_word != s_search_word) {
-        get_search_results(s_search_word, search_options, item_list, id_list);
+        get_search_results(s_search_word, search_options, item_list, id_list, 1000);
+    }
+    var n_search_word = '';
+    if (non_english) {
+        n_search_word = get_tamil_phonetic_word(search_word);
+        get_search_results(n_search_word, search_options, item_list, id_list, 5000);
+    }
+    if (search_word.length > 2) {
+        var search_options = { prefix: true, combineWith: 'AND', fuzzy: term => term.length > 3 ? 0.3 : null };
+        get_search_results(search_word, search_options, item_list, id_list, 0);
+        if (non_english && n_search_word) {
+            get_search_results(n_search_word, search_options, item_list, id_list, 0);
+        }
+        if (search_word != s_search_word) {
+            get_search_results(s_search_word, search_options, item_list, id_list, 0);
+        }
     }
     item_list.sort(function (a, b) { return b.P - a.P; });
     var new_item_list = item_list.slice(0, 25);
+    return new_item_list;
+}
+
+function handle_search_word(search_word) {
+    var c = search_word.charCodeAt(0);
+    if (c > 127) {
+        search_word = transliterate_text(search_word);
+    }
+    var non_english = (0x0B80 <= c && c <= 0x0BFF) ? true : false;
+    var new_item_list = load_search_part(search_word, non_english);
     var item_data = { "searchinfo" : { "results" : new_item_list } };
     render_template_data('#search-template', '#SECTION', item_data);
     window.scrollTo(0, 0);
