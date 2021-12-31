@@ -689,23 +689,29 @@ function create_osm_map(module, id_name, c_lat, c_long) {
     return osm_map;
 }
 
-const MAP_ICON_SIZE = [24, 24];
+const MAP_ICON_SIZE  = [24, 24];
+const MAP_ANCHOR_POS = [12, 24];
+
 function create_icons() {
     window.green_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_green.png',
-        iconSize: MAP_ICON_SIZE
+        iconSize: MAP_ICON_SIZE,
+        iconAnchor: MAP_ANCHOR_POS
     });
     window.green_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_green.png',
-        iconSize: MAP_ICON_SIZE
+        iconSize: MAP_ICON_SIZE,
+        iconAnchor: MAP_ANCHOR_POS
     });
     window.red_tree_icon = new L.icon({
         iconUrl: 'icons/marker_tree_red.png',
-        iconSize: MAP_ICON_SIZE
+        iconSize: MAP_ICON_SIZE,
+        iconAnchor: MAP_ANCHOR_POS
     });
     window.red_bloom_icon = new L.icon({
         iconUrl: 'icons/marker_bloom_red.png',
-        iconSize: MAP_ICON_SIZE
+        iconSize: MAP_ICON_SIZE,
+        iconAnchor: MAP_ANCHOR_POS
     });
 }
 
