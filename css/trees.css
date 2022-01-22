@@ -103,6 +103,14 @@ a {
     z-index: 100;
 }
 
+/* Bootstrap 5 tweak: do not underline links unless hovered over */
+a:not([class*="btn"]) {
+    text-decoration: none;
+}
+a:not([class*="btn"]):hover {
+    text-decoration: underline;
+}
+
 /*
     Carousel fading Effect
 */

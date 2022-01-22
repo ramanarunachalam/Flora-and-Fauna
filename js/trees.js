@@ -446,13 +446,17 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     set_grid_page(page_index, max_page);
 }
 
+function get_bs_modal(id) {
+    return new bootstrap.Modal(document.getElementById(id));
+}
+
 function show_bigger_image() {
     var image_src = arguments[0];
     var caption = arguments[1];
 
     $("#IMAGE_IN_MODAL").attr("src", image_src)
     $("#IMAGE_MODEL_LABEL").html(caption)
-    $('#IMAGE_MODAL').modal();
+    get_bs_modal('IMAGE_MODAL').show();
 }
 
 function normalize_search_text(search_text) {
@@ -1385,7 +1389,7 @@ function speech_start(event) {
 function load_keyboard(event) {
     var lang = window.render_language;
     set_input_keyboard(lang.toLowerCase());
-    $('#LANG_KBD').modal();
+    get_bs_modal('LANG_KBD').show();
     return;
 }
 
@@ -1530,9 +1534,10 @@ function load_menu_data() {
                     };
     render_template_data('#menu-template', '#MENU_DATA', menu_dict);
 
-    // $('#SEARCH_INFO').tooltip();
-    $('#MIC_IMAGE').tooltip();
-    $('#KBD_IMAGE').tooltip();
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
 
     speech_to_text_init();
 
