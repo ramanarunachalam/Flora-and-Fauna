@@ -660,6 +660,11 @@ function load_search_data() {
     handle_search_word(search_word);
 }
 
+function init_search_listener() {
+    var element = document.getElementById('SEARCH_WORD');
+    element.addEventListener('input', load_search_data);
+}
+
 function load_search_history(data) {
     var search_word = data['search'];
     document.getElementById('SEARCH_WORD').value = search_word;
@@ -1540,6 +1545,7 @@ function load_menu_data() {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     });
 
+    init_search_listener();
     speech_to_text_init();
 
     if (window.history_data == undefined) {
