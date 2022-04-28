@@ -46,7 +46,7 @@ function set_language(obj) {
 
 function render_template_data(template_name, id_name, data) {
     var ul_template = $(template_name).html();
-    var template_html = Mustache.to_html(ul_template, data);
+    var template_html = Mustache.render(ul_template, data);
     $(id_name).html(template_html);
 }
 
@@ -320,7 +320,7 @@ function load_intro_data(region) {
 
 function search_init() {
     window.flora_fauna_search_engine = new MiniSearch({
-        fields: [ 'aka' ], // fields to index for full-text search
+        fields: [ 'title', 'aka' ], // fields to index for full-text search
         storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop'] // fields to return with search results
     });
     window.search_initialized = false;
@@ -483,7 +483,9 @@ function search_load() {
             var data_list = search_obj[category];
             for (var i = 0; i < data_list.length; i++) {
                 const item = data_list[i];
-                var data_doc = { "id" : data_id, "category" : item.T, "name" : item.N, 'aka' : item.A, "href" : item.H, "pop" : item.P };
+                const t_list = item.A.slice(0, 4);
+                const a_list = item.A.slice(4);
+                var data_doc = { "id" : data_id, "category" : item.T, "name" : item.N, 'title' : t_list, 'aka' : a_list, "href" : item.H, "pop" : item.P };
                 search_engine.add(data_doc);
                 data_id += 1;
             }
@@ -587,7 +589,7 @@ function get_search_results(search_word, search_options, item_list, id_list, bas
             var pop = ('P' in item) ? item.pop : 10.0;
             if (item.category == 'Maps') pop -= 1;
             pop = base_pop + pop;
-            var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop };
+            var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score };
             if (item.category == 'Trees' || item.category == 'Maps') {
                 const tree_handle = handle_map[name_id];
                 r_item['G'] = tree_handle[H_GENUS];
@@ -612,11 +614,12 @@ function get_tamil_phonetic_word(word) {
     return w_list.join('');
 }
 
+var search_options = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
 function load_search_part(search_word, non_english) {
     var s_search_word = search_word.replace(/\s/g, '');
     var item_list = [];
     var id_list = new Set();
-    var search_options = { prefix: true, combineWith: 'AND', fuzzy: term => term.length > 3 ? 0.1 : null };
+    search_options.fuzzy = term => term.length > 3 ? 0.1 : null;
     get_search_results(search_word, search_options, item_list, id_list, 4000);
     if (search_word != s_search_word) {
         get_search_results(s_search_word, search_options, item_list, id_list, 1000);
@@ -627,7 +630,7 @@ function load_search_part(search_word, non_english) {
         get_search_results(n_search_word, search_options, item_list, id_list, 5000);
     }
     if (search_word.length > 2) {
-        var search_options = { prefix: true, combineWith: 'AND', fuzzy: term => term.length > 3 ? 0.3 : null };
+        search_options.fuzzy = term => term.length > 3 ? 0.3 : null;
         get_search_results(search_word, search_options, item_list, id_list, 0);
         if (non_english && n_search_word) {
             get_search_results(n_search_word, search_options, item_list, id_list, 0);
@@ -638,6 +641,7 @@ function load_search_part(search_word, non_english) {
     }
     item_list.sort(function (a, b) { return b.P - a.P; });
     var new_item_list = item_list.slice(0, 25);
+    // console.log('Search results:', new_item_list);
     return new_item_list;
 }
 
@@ -1500,8 +1504,9 @@ function load_menu_data() {
         var d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
         lang_list.push(d);
     }
-    var map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' }, { 'N' : 'Wards', 'A' : 'wards', 'I' : '' },
-                                               { 'N' : 'Trees', 'A' : 'trees', 'I' : 0 }, { 'N' : 'Explore', 'A' : 'current', 'I' : '' }
+    var map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' },
+                                               { 'N' : 'Wards', 'A' : 'wards', 'I' : '' },
+                                               { 'N' : 'Trees', 'A' : 'trees', 'I' : 0 }
                                              ]
                    };
     var collection_list = { 'T' : 'Collections',
