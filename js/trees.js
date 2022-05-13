@@ -1057,14 +1057,6 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     if (area == 'current') {
         var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
         var point_list = [ L.latLng(c_lat, c_long), L.latLng(latlong.lat, latlong.lng) ];
-        if (window.map_area_routing != undefined) {
-            var routing = window.map_area_routing;
-            osm_map.removeControl(routing);
-        }
-        var routing = new L.Routing.control({ geocoder: get_geocoder_nominatim() });
-        routing.addTo(osm_map);
-        routing.setWaypoints(point_list);
-        window.map_area_routing = routing;
     }
 
     var tree_stat_list = [];
