@@ -16,21 +16,67 @@ function capitalize_word(s) {
 }
 
 function get_url_params() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
-    function(m,key,value) {
-      vars[key] = value;
+    const args = {};
+    const parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+        function(m, key, value) {
+            args[key] = value;
     });
-    return vars;
+    return args;
+}
+
+async function fetch_url(url) {
+    let url_data = null;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.log('Fetch Error:', response.status);
+        }
+        url_data = await response.json();
+    } catch(error) {
+        console.log('Fetch Error:', error);
+    }
+    return url_data;
+}
+
+function plain_get_html_text(id) {
+    return document.getElementById(id).innerHTML;
+}
+
+function plain_set_html_text(id, text) {
+    document.getElementById(id).innerHTML = text;
+}
+
+function plain_get_attr(id, key) {
+    const element = document.getElementById(id);
+    return element.getAttribute(key);
+}
+
+function plain_set_attr(id, key, value) {
+    const element = document.getElementById(id);
+    element.setAttribute(key, value);
+}
+
+function plain_get_background_color(id) {
+    const element = document.getElementById(id);
+    return element.style.backgroundColor;
+}
+
+function plain_set_background_color(id, value) {
+    let element = document.getElementById(id);
+    element.style.backgroundColor = value;
+}
+
+function plain_get_query_selector(phrase) {
+    return document.querySelectorAll(phrase);
 }
 
 function lang_name_init() {
-    var lang = window.render_language;
+    const lang = window.render_language;
     if (lang == 'English') return;
-    var tree_lang_data = window.tree_lang_data;
-    var english_name = tree_lang_data['English']['Name'];
-    var lang_name = tree_lang_data[lang]['Name'];
-    for (var i = 0; i < english_name.length; i++) {
+    const tree_lang_data = window.tree_lang_data;
+    const english_name = tree_lang_data['English']['Name'];
+    const lang_name = tree_lang_data[lang]['Name'];
+    for (let i = 0; i < english_name.length; i++) {
         if (lang_name[i] == '') {
             lang_name[i] = english_name[i];
         }
@@ -45,13 +91,13 @@ function set_language(obj) {
 }
 
 function render_template_data(template_name, id_name, data) {
-    var ul_template = $(template_name).html();
-    var template_html = Mustache.render(ul_template, data);
-    $(id_name).html(template_html);
+    const ul_template = plain_get_html_text(template_name);
+    const template_html = Mustache.render(ul_template, data);
+    plain_set_html_text(id_name, template_html);
 }
 
 function set_key_map(d_obj, d_map, d_key) {
-    var d = d_obj[d_key];
+    const d = d_obj[d_key];
     if (d[0] == 1) {
         d_obj[d_key] = d_map[d[1]];
     } else {
@@ -60,10 +106,10 @@ function set_key_map(d_obj, d_map, d_key) {
 }
 
 function set_key_value_map(d_obj, d_map, lang_map, d_key) {
-    var d = d_obj[d_key];
+    const d = d_obj[d_key];
     if (d[0] == 1) {
-        var l_name = d_map[d[1]];
-        var l_map = lang_map[l_name];
+        const l_name = d_map[d[1]];
+        const l_map = lang_map[l_name];
         d_obj[d_key] = l_map[d[2]];
     } else {
         d_obj[d_key] = d[2];
@@ -71,12 +117,12 @@ function set_key_value_map(d_obj, d_map, lang_map, d_key) {
 }
 
 function get_tree_handle(tree_id) {
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var handle_map = lang_obj['Handle'];
-    var name = key_name[tree_id];
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const key_name = lang_map['Name'];
+    const handle_map = lang_obj['Handle'];
+    const name = key_name[tree_id];
     return [ name, handle_map ];
 }
 
@@ -91,12 +137,12 @@ function get_module_url(tree_id) {
 }
 
 function get_handle_image_url(tree_handle, part_name) {
-    var prefix = get_handle_prefix(tree_handle);
+    const prefix = get_handle_prefix(tree_handle);
     return `${prefix} - ${part_name}.jpg`;
 }
 
 function get_handle_thumbnail_url(tree_handle, part_name) {
-    var prefix = `${tree_handle[H_GENUS]} - ${tree_handle[H_NAME]}/Thumbnails/${tree_handle[H_NAME]}`;
+    const prefix = `${tree_handle[H_GENUS]} - ${tree_handle[H_NAME]}/Thumbnails/${tree_handle[H_NAME]}`;
     return `${prefix} - ${part_name}.thumbnail`;
 }
 
@@ -105,10 +151,10 @@ function get_handle_thumbnail_image_id_url(tree_handle, english_key_image, image
 }
 
 function get_part_name(tree_handle) {
-    var lang_obj = window.tree_lang_data;
-    var english_lang_map = lang_obj['English'];
-    var english_key_image = english_lang_map['Image'];
-    var image_id = tree_handle[H_PART];
+    const lang_obj = window.tree_lang_data;
+    const english_lang_map = lang_obj['English'];
+    const english_key_image = english_lang_map['Image'];
+    const image_id = tree_handle[H_PART];
     return english_key_image[image_id];
 }
 
@@ -133,17 +179,18 @@ function get_module_name(handle_map, tree_id) {
     return tree_handle[H_NAME];
 }
 
-function tree_module_init(file_name, data) {
+async function tree_module_init(file_name, data) {
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
-        var url = '../../language.json';
-        $.getJSON(url, function(lang_obj) {
+        const url = '../../language.json';
+        const lang_obj = await fetch_url(url);
+        if (lang_obj != null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
             lang_name_init();
             window.info_initialized = true;
             tree_module_init('', window.tree_card_data);
-        });
+        };
         return;
     }
 
@@ -151,70 +198,70 @@ function tree_module_init(file_name, data) {
     window.tree_map_data = data['mapinfo'];
     window.tree_box_data = data['mapregion'];
 
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var handle_map = lang_obj['Handle'];
-    var english_lang_map = lang_obj['English'];
-    var english_key_info = english_lang_map['Key Name'];
-    var key_group = lang_map['Key Group'];
-    var key_part = lang_map['Key Part'];
-    var key_image = lang_map['Image'];
-    var english_key_image = english_lang_map['Image'];
-    var key_name = lang_map['Name'];
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const handle_map = lang_obj['Handle'];
+    const english_lang_map = lang_obj['English'];
+    const english_key_info = english_lang_map['Key Name'];
+    const key_group = lang_map['Key Group'];
+    const key_part = lang_map['Key Part'];
+    const key_image = lang_map['Image'];
+    const english_key_image = english_lang_map['Image'];
+    const key_name = lang_map['Name'];
     if (key_name === undefined) {
         key_name = english_lang_map['Name']; 
     }
-    var card_data = window.tree_card_data;
-    var gallery_info = card_data['galleryinfo']
-    var tree_id = gallery_info['HID'];
+    const card_data = window.tree_card_data;
+    const gallery_info = card_data['galleryinfo']
+    const tree_id = gallery_info['HID'];
 
     const tree_handle = handle_map[tree_id];
     gallery_info['HH'] = key_group[gallery_info['HH']];
     gallery_info['HN'] = key_name[gallery_info['HN']];
-    var gallery_list = gallery_info['gallery'].split(',');
-    var new_gallery_list = [];
-    for (var i = 0; i < gallery_list.length; i++) {
-        var image_id = gallery_list[i];
-        var part_name = (image_id.length == 4) ? image_id : english_key_image[image_id];
+    const gallery_list = gallery_info['gallery'].split(',');
+    const new_gallery_list = [];
+    for (let i = 0; i < gallery_list.length; i++) {
+        const image_id = gallery_list[i];
+        const part_name = (image_id.length == 4) ? image_id : english_key_image[image_id];
         const caption = (image_id.length == 4) ? image_id : key_image[image_id];
         const image = get_handle_image_url(tree_handle, part_name);
-        var new_item = { 'IC': caption, 'IN': image };
+        const new_item = { 'IC': caption, 'IN': image };
         new_gallery_list.push(new_item);
     }
     gallery_info['gallery'] = new_gallery_list;
-    var info_list = card_data['cardinfo'];
-    for (var i = 0; i < info_list.length; i++) {
-        var cv_info = info_list[i];
+    const info_list = card_data['cardinfo'];
+    for (let i = 0; i < info_list.length; i++) {
+        const cv_info = info_list[i];
         cv_info['CN'] = key_group[cv_info['CN']];
-        var cv_list = cv_info['CV'];
-        for (var j = 0; j < cv_list.length; j++) {
-            var cv = cv_list[j];
+        const cv_list = cv_info['CV'];
+        for (let j = 0; j < cv_list.length; j++) {
+            const cv = cv_list[j];
             cv['N'] = key_part[cv['N']]; 
             set_key_value_map(cv, english_key_info, lang_map, 'V');
         } 
     }
-    render_template_data('#module-card-info-template', '#CARDINFO', card_data);
+    render_template_data('module-card-info-template', 'CARDINFO', card_data);
 }
 
 function tree_grid_init(type, data) {
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var english_lang_map = lang_obj['English'];
-    var english_key_info = english_lang_map['Key Name'];
-    var english_key_image = english_lang_map['Image'];
-    var handle_map = lang_obj['Handle'];
-    var card_list = data['cardinfo'];
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const key_name = lang_map['Name'];
+    const english_lang_map = lang_obj['English'];
+    const english_key_info = english_lang_map['Key Name'];
+    const english_key_image = english_lang_map['Image'];
+    const handle_map = lang_obj['Handle'];
+    const card_list = data['cardinfo'];
     const MAX_COL = 6;
-    for (var i = 0; i < card_list.length; i++) {
+    for (let i = 0; i < card_list.length; i++) {
         set_key_value_map(card_list[i], english_key_info, lang_map, 'N');
-        var card = card_list[i];
-        var new_row_list = [];
-        var new_col_list = [];
-        var row_list = card['ROW'];
-        for (var j = 0; j < row_list.length; j++) {
+        const card = card_list[i];
+        const new_row_list = [];
+        let new_col_list = [];
+        const row_list = card['ROW'];
+        for (let j = 0; j < row_list.length; j++) {
             const [ tree_id, image_id ] = row_list[j].split(',');
             const tree_handle = handle_map[tree_id];
             const href = get_handle_prefix(tree_handle);
@@ -231,39 +278,39 @@ function tree_grid_init(type, data) {
         }
         card['ROW'] = new_row_list;
     }
-    render_template_data('#grid-card-info-template', '#CARDINFO', data);
+    render_template_data('grid-card-info-template', 'CARDINFO', data);
 }
 
 function tree_simple_init(data) {
-    render_template_data('#simple-card-info-template', '#CARDINFO', data);
+    render_template_data('simple-card-info-template', 'CARDINFO', data);
 }
 
 function get_region_url(type) {
-    var region = window.tree_region;
+    const region = window.tree_region;
     return `Flora/trees_${region}_${type}.json`;
 }
 
 function tree_intro_init(slider_data) {
-    var lang = window.render_language;
+    const lang = window.render_language;
 
-    var stats_list = slider_data['statsinfo'];
-    var i_list = stats_list['items'];
-    for (var i = 0; i < i_list.length; i++) {
-        var i_dict = i_list[i];
+    const stats_list = slider_data['statsinfo'];
+    const i_list = stats_list['items'];
+    for (let i = 0; i < i_list.length; i++) {
+        const i_dict = i_list[i];
         if (i_dict['N'] == 'Updated') {
             i_dict['C'] = i_dict['C'].split(' ')[0];
         }
     }
     get_lang_map(lang, stats_list);
 
-    var lang_obj = window.tree_lang_data;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var handle_map = lang_obj['Handle'];
-    var slider_info = slider_data['sliderinfo'];
-    var slider_list = slider_info['items'];
-    var new_slider_list = [];
-    for (var i = 0; i < slider_list.length; i++) {
+    const lang_obj = window.tree_lang_data;
+    const lang_map = lang_obj[lang];
+    const key_name = lang_map['Name'];
+    const handle_map = lang_obj['Handle'];
+    const slider_info = slider_data['sliderinfo'];
+    const slider_list = slider_info['items'];
+    const new_slider_list = [];
+    for (let i = 0; i < slider_list.length; i++) {
         const [ tree_id, count ] = slider_list[i];
         const tree_handle = handle_map[tree_id];
         const href = get_handle_prefix(tree_handle);
@@ -274,48 +321,56 @@ function tree_intro_init(slider_data) {
         new_slider_list.push(item);
     }
     slider_info['items'] = new_slider_list;
-    render_template_data('#carousel-template', '#SLIDERINFO', slider_data);
+    render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
 
-    $('.carousel').carousel({
+    let element = document.querySelector('#INTRO_CAROUSEL');
+    let carousel = new bootstrap.Carousel(element, {
+          ride: "carousel",
           pause: "hover",
           interval: 3000
     });
 
-    $('.carousel').on('slide.bs.carousel', function(){
-        var $next = $('.active', this).next();
-        if ($next != undefined) {
-            $next = $('img', $next);
-            $next.attr('src', $next.attr('data_src'));
+    carousel = document.getElementById('INTRO_CAROUSEL');
+    carousel.addEventListener('slide.bs.carousel', function() {
+        let element = carousel.querySelector('.active');
+        element = element.nextElementSibling; 
+        if (element != undefined) {
+            const child = element.children[0];
+            const value = child.getAttribute('data_src');
+            child.setAttribute('src', value);
         }
     });
 
-    var start_tree_id = Math.floor((Math.random() * $('.carousel-item').length));
-    var $img = $('.carousel-item').eq(start_tree_id);
-    $img.addClass('active');
-    $img = $('img', $img);
-    $img.attr('src', $img.attr('data_src'));
+    let elements = carousel.querySelector('.carousel-inner').children;
+    const start_tree_id = Math.floor((Math.random() * elements.length));
+    element = elements[start_tree_id];
+    element.classList.add('active');
+    const child = element.children[0];
+    const value = child.getAttribute('data_src');
+    child.setAttribute('src', value);
 }
 
-function load_intro_data(region) {
+async function load_intro_data(region) {
     window.tree_region = region;
-    var lang = window.render_language;
-    var lang_obj = window.tree_lang_data;
-    var map_dict = lang_obj['Keys'];
-    var c_region = capitalize_word(region);
-    var intro_data = { 'N' : 'Tree', 'T' : 'Trees', 'P' : c_region,
-                       'I' : 'Keys To Identify', 'R' : 'References', 'B' : 'Books',
-                       'L' : 'Leaves', 'F' : 'Flowers', 'BA' : 'Bark', 'FR' : 'Fruits', 'FI' : 'Figs', 'PO' : 'Pods',
-                       'SP' : 'Spines', 'TW' : 'Branch', 'A' : 'Aerial Root', 'G' : 'Gall'
-                     };
-    for (var k in intro_data) {
+    const lang = window.render_language;
+    const lang_obj = window.tree_lang_data;
+    const map_dict = lang_obj['Keys'];
+    const c_region = capitalize_word(region);
+    const intro_data = { 'N' : 'Tree', 'T' : 'Trees', 'P' : c_region,
+                         'I' : 'Keys To Identify', 'R' : 'References', 'B' : 'Books',
+                         'L' : 'Leaves', 'F' : 'Flowers', 'BA' : 'Bark', 'FR' : 'Fruits', 'FI' : 'Figs', 'PO' : 'Pods',
+                         'SP' : 'Spines', 'TW' : 'Branch', 'A' : 'Aerial Root', 'G' : 'Gall'
+                       };
+    for (let k in intro_data) {
          intro_data[k] = get_lang_map_word(lang, map_dict, intro_data[k]);
     }
-    render_template_data('#intro-template', '#SECTION', intro_data);
-    var url = get_region_url('intro');
-    $.getJSON(url, function(slider_data) {
+    render_template_data('intro-template', 'SECTION', intro_data);
+    const url = get_region_url('intro');
+    const slider_data = await fetch_url(url);
+    if (slider_data != null) {
         tree_intro_init(slider_data);
         add_history('introduction', { 'region' : region });
-    });
+    };
 }
 
 function search_init() {
@@ -327,34 +382,27 @@ function search_init() {
     search_load();
 }
 
-var current_page = 1;
-var max_page = 100;
+let current_page = 1;
+let max_page = 100;
 
-function set_grid_page(current_page, max_page) {
-    if (current_page == '') {
-        current_page = 1;
+function set_grid_page(n_current_page, n_max_page) {
+    current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : parseInt(n_current_page);
+    const a_list = plain_get_query_selector('li.page-item.active');
+    for (let i = 0; i < a_list.length; i++) {
+        a_list[i].classList.remove('active');
     }
-    else {
-        current_page = parseInt(current_page);
-    }
-
-    $('.active').removeClass('active');
-    var id_str = 'top_' + current_page
-    $('li#' + id_str).addClass('active');
-    var id_str = 'bottom_' + current_page
-    $('li#' + id_str).addClass('active');
-
-    if (max_page == '') {
-        max_page = 100;
-    }
-    else {
-        max_page = parseInt(max_page);
-    }
+    let id_str = 'top_' + current_page;
+    let element = document.querySelector(`li#${id_str}`);
+    if (element) element.classList.add('active');
+    id_str = 'bottom_' + current_page;
+    element = document.querySelector(`li#${id_str}`);
+    if (element) element.classList.add('active');
+    max_page = (n_max_page == '' || n_max_page == undefined) ? 100 : parseInt(n_max_page);
 }
 
 function show_page(which, is_prev) {
-    var path_list = window.location.pathname.split('/');
-    var new_page = 1;
+    const path_list = window.location.pathname.split('/');
+    let new_page = 1;
     if (is_prev) {
         new_page = 1;
         if (current_page > 1) {
@@ -367,9 +415,13 @@ function show_page(which, is_prev) {
         }
     }
     current_page = new_page;
-    var id_str = which + '_' + new_page;
-    var href = $('li#' + id_str).children('a').attr('href');
-    window.open(href,'_self',false);
+    const id_str = which + '_' + new_page;
+    const element = document.querySelector('li#' + id_str);
+    if (element != undefined) {
+        const child = element.children[0];
+        const href = child.getAttribute('href');
+        window.open(href, '_self', false);
+    }
 }
 
 function show_top_prev_page() {
@@ -389,32 +441,32 @@ function show_bottom_next_page() {
 }
 
 function tree_collection_init(type, letter, page_index, max_page, full_data) {
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var english_lang_map = lang_obj['English'];
-    var english_key_image = english_lang_map['Image'];
-    var handle_map = lang_obj['Handle'];
-    var key_name = lang_map['Name'];
-    var data = full_data[type];
-    var image_data = full_data['Images'];
-    var letter_data = data['LETTER'];
-    var new_row_list = [];
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const english_lang_map = lang_obj['English'];
+    const english_key_image = english_lang_map['Image'];
+    const handle_map = lang_obj['Handle'];
+    const key_name = lang_map['Name'];
+    const data = full_data[type];
+    const image_data = full_data['Images'];
+    const letter_data = data['LETTER'];
+    const new_row_list = [];
     const row_list = letter_data[letter];
     const col_name = 'COL' + type[0].toUpperCase();
-    for (var i = 0; i < row_list.length; i++) {
+    for (let i = 0; i < row_list.length; i++) {
         const tree_id = row_list[i];
         const tree_handle = handle_map[tree_id];
-        var new_image_list = [];
-        var image_list = image_data[tree_id].split(',');
-        for (var k = 0; k < image_list.length; k++) {
-            var image_id = image_list[k];
+        const new_image_list = [];
+        const image_list = image_data[tree_id].split(',');
+        for (let k = 0; k < image_list.length; k++) {
+            const image_id = image_list[k];
             const href = get_handle_prefix(tree_handle);
             const caption = get_handle_thumbnail_image_id_url(tree_handle, english_key_image, image_id);
-            var new_item = { CI: caption, CH: href };
+            const new_item = { CI: caption, CH: href };
             new_image_list.push(new_item);
         }
-        var new_item = { COLIMAGE: new_image_list };
+        const new_item = { COLIMAGE: new_image_list };
         const href = get_handle_prefix(tree_handle);
         new_item[col_name] = { CC: (i + 1), CN: key_name[tree_id], CF: tree_handle[H_FAMILY],
                                CB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, CA: tree_handle[H_AUTH], CH: href
@@ -423,26 +475,30 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     }
     const [ group, max_pages, links ] = data['PAGES'];
     const link_list = links.split(',')
-    var new_link_list = [];
-    for (var i = 0; i < link_list.length; i++) {
+    const new_link_list = [];
+    for (let i = 0; i < link_list.length; i++) {
         const page = link_list[i];
         const page_id = i + 1;
         const item = { PL: page, PC: (i + 1), PH: `load_collection_data('${group}', '${page}', ${page_id}, ${max_pages})` };
         new_link_list.push(item);
     }
-    var page_data = { N: 'Page', links: new_link_list };
-    var new_data = { cardinfo: { N: letter, ROW: new_row_list }, pageinfo: page_data };
+    const page_data = { N: 'Page', links: new_link_list };
+    const new_data = { cardinfo: { N: letter, ROW: new_row_list }, pageinfo: page_data };
 
     new_data['pageinfo']['N'] = 'top';
-    render_template_data('#pagination-template', '#TOPPAGE', new_data);
+    render_template_data('pagination-template', 'TOPPAGE', new_data);
     new_data['pageinfo']['N'] = 'bottom';
-    render_template_data('#pagination-template', '#BOTTOMPAGE', new_data);
-    render_template_data('#collection-card-info-template', '#CARDINFO', new_data);
+    render_template_data('pagination-template', 'BOTTOMPAGE', new_data);
+    render_template_data('collection-card-info-template', 'CARDINFO', new_data);
 
-    $("#top-page-next").click(show_top_next_page);
-    $("#top-page-previous").click(show_top_prev_page);
-    $("#bottom-page-next").click(show_bottom_prev_page);
-    $("#bottom-page-previous").click(show_bottom_prev_page);
+    let element = document.getElementById('top-page-next');
+    element.addEventListener('click', show_top_next_page);
+    element = document.getElementById('top-page-previous');
+    element.addEventListener('click', show_top_prev_page);
+    element = document.getElementById('bottom-page-next');
+    element.addEventListener('click', show_bottom_next_page);
+    element = document.getElementById('bottom-page-previous');
+    element.addEventListener('click', show_bottom_prev_page);
 
     set_grid_page(page_index, max_page);
 }
@@ -452,11 +508,9 @@ function get_bs_modal(id) {
 }
 
 function show_bigger_image() {
-    var image_src = arguments[0];
-    var caption = arguments[1];
-
-    $("#IMAGE_IN_MODAL").attr("src", image_src)
-    $("#IMAGE_MODEL_LABEL").html(caption)
+    const [ image_src, caption ] = arguments;
+    plain_set_attr('IMAGE_IN_MODAL', 'src', image_src);
+    plain_set_html_text('IMAGE_MODEL_LABEL', caption);
     get_bs_modal('IMAGE_MODAL').show();
 }
 
@@ -471,35 +525,36 @@ function normalize_search_text(search_text) {
     return search_text;
 }
 
-function search_load() {
+async function search_load() {
     if (window.search_initialized) {
         return;
     }
-    var url = 'flora_index.json';
-    var search_engine = window.flora_fauna_search_engine;
-    $.getJSON(url, function(search_obj) {
-        var data_id = 0;
-        for (var category in search_obj) {
-            var data_list = search_obj[category];
-            for (var i = 0; i < data_list.length; i++) {
+    const url = 'flora_index.json';
+    const search_engine = window.flora_fauna_search_engine;
+    const search_obj = await fetch_url(url);
+    if (search_obj != null) {
+        let data_id = 0;
+        for (let category in search_obj) {
+            const data_list = search_obj[category];
+            for (let i = 0; i < data_list.length; i++) {
                 const item = data_list[i];
                 const t_list = item.A.slice(0, 4);
                 const a_list = item.A.slice(4);
-                var data_doc = { "id" : data_id, "category" : item.T, "name" : item.N, 'title' : t_list, 'aka' : a_list, "href" : item.H, "pop" : item.P };
+                const data_doc = { "id" : data_id, "category" : item.T, "name" : item.N, 'title' : t_list, 'aka' : a_list, "href" : item.H, "pop" : item.P };
                 search_engine.add(data_doc);
                 data_id += 1;
             }
         }
-    });
+    };
     window.search_initialized = true;
 }
 
 function transliterator_init() {
-    var lang_obj = window.tree_lang_data;
-    var char_map = lang_obj['Charmap'];
-    var key_list = [];
-    var max_len = 0;
-    for (var s in char_map) {
+    const lang_obj = window.tree_lang_data;
+    const char_map = lang_obj['Charmap'];
+    const key_list = [];
+    let max_len = 0;
+    for (let s in char_map) {
         key_list.push(s); 
         max_len = Math.max(max_len, s.length);
     }
@@ -508,21 +563,21 @@ function transliterator_init() {
 }
 
 function transliterate_text(word) {
-    var lang_obj = window.tree_lang_data;
-    var char_map = lang_obj['Charmap'];
+    const lang_obj = window.tree_lang_data;
+    const char_map = lang_obj['Charmap'];
 
-    var tokenset = window.char_map_key_list;
-    var maxlen = window.char_map_max_length;
-    var current = 0;
-    var tokenlist = [];
+    const tokenset = window.char_map_key_list;
+    const maxlen = window.char_map_max_length;
+    let current = 0;
+    const tokenlist = [];
     word = word.toString();
     while (current < word.length) {
-        var nextstr = word.slice(current, current+maxlen);
-        var p = nextstr[0];
-        var j = 1;
-        var i = maxlen;
+        const nextstr = word.slice(current, current+maxlen);
+        let p = nextstr[0];
+        let j = 1;
+        let i = maxlen;
         while (i > 0) {
-            var s = nextstr.slice(0, i);
+            let s = nextstr.slice(0, i);
             if (tokenset.has(s)) {
                 p = s;
                 j = i;
@@ -536,7 +591,7 @@ function transliterate_text(word) {
         tokenlist.push(p);
         current += j;
     }
-    var new_word = tokenlist.join('');
+    let new_word = tokenlist.join('');
     if (word != new_word) {
         new_word = new_word.replace(/_/g, '');
         new_word = new_word.replace(/G/g, 'n');
@@ -546,31 +601,31 @@ function transliterate_text(word) {
 }
 
 function get_search_href(category, arg_list) {
-    var func = (category == 'Trees') ? 'load_module_data' : 'load_area_data';
-    var args = arg_list.join("', '");
-    var href = `${func}('${args}')`;
+    const func = (category == 'Trees') ? 'load_module_data' : 'load_area_data';
+    const args = arg_list.join("', '");
+    const href = `${func}('${args}')`;
     return href
 }
 
 function get_search_results(search_word, search_options, item_list, id_list, base_pop) {
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var map_dict = lang_obj['Keys'];
-    var handle_map = lang_obj['Handle'];
-    var park_map = lang_obj['Parks'];
-    var ward_map = lang_obj['Wards'];
-    var search_engine = window.flora_fauna_search_engine;
-    var results = search_engine.search(search_word, search_options);
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const key_name = lang_map['Name'];
+    const map_dict = lang_obj['Keys'];
+    const handle_map = lang_obj['Handle'];
+    const park_map = lang_obj['Parks'];
+    const ward_map = lang_obj['Wards'];
+    const search_engine = window.flora_fauna_search_engine;
+    const results = search_engine.search(search_word, search_options);
     if (results.length > 0) {
-        var max_score = results[0].score;
-        for (var i = 0; i < results.length; i++) {
-            var item = results[i];
+        const max_score = results[0].score;
+        for (let i = 0; i < results.length; i++) {
+            const item = results[i];
             if (id_list.has(item.id)) continue;
-            var name_id = item.name;
-            var name = '';
-            var href = '';
+            const name_id = item.name;
+            let name = '';
+            let href = '';
             if (item.category == 'Trees') {
                 href = [ get_handle_prefix(handle_map[name_id]) ];
                 name = key_name[name_id];
@@ -584,12 +639,12 @@ function get_search_results(search_word, search_options, item_list, id_list, bas
                 name = ward_map[name_id];
                 href = [ 'wards', name_id, name ];
             }
-            var category = get_lang_map_word(lang, map_dict, item.category);
-            var href = get_search_href(item.category, href);
-            var pop = ('P' in item) ? item.pop : 10.0;
+            const category = get_lang_map_word(lang, map_dict, item.category);
+            href = get_search_href(item.category, href);
+            let pop = ('P' in item) ? item.pop : 10.0;
             if (item.category == 'Maps') pop -= 1;
             pop = base_pop + pop;
-            var r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score };
+            let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score };
             if (item.category == 'Trees' || item.category == 'Maps') {
                 const tree_handle = handle_map[name_id];
                 r_item['G'] = tree_handle[H_GENUS];
@@ -605,26 +660,26 @@ function get_search_results(search_word, search_options, item_list, id_list, bas
 }
 
 function get_tamil_phonetic_word(word) {
-    var w_list = [];
-    var new_word = word.toLowerCase();
-    for (var i = 0; i < new_word.length; i++) {
-        var c = new_word[i];
+    const w_list = [];
+    const new_word = word.toLowerCase();
+    for (let i = 0; i < new_word.length; i++) {
+        const c = new_word[i];
         w_list.push((c in SEARCH_MAP_DICT) ? SEARCH_MAP_DICT[c] : c);
     }
     return w_list.join('');
 }
 
-var search_options = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
+let search_options = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
 function load_search_part(search_word, non_english) {
-    var s_search_word = search_word.replace(/\s/g, '');
-    var item_list = [];
-    var id_list = new Set();
+    const s_search_word = search_word.replace(/\s/g, '');
+    const item_list = [];
+    const id_list = new Set();
     search_options.fuzzy = term => term.length > 3 ? 0.1 : null;
     get_search_results(search_word, search_options, item_list, id_list, 4000);
     if (search_word != s_search_word) {
         get_search_results(s_search_word, search_options, item_list, id_list, 1000);
     }
-    var n_search_word = '';
+    let n_search_word = '';
     if (non_english) {
         n_search_word = get_tamil_phonetic_word(search_word);
         get_search_results(n_search_word, search_options, item_list, id_list, 5000);
@@ -640,37 +695,37 @@ function load_search_part(search_word, non_english) {
         }
     }
     item_list.sort(function (a, b) { return b.P - a.P; });
-    var new_item_list = item_list.slice(0, 25);
+    const new_item_list = item_list.slice(0, 25);
     // console.log('Search results:', new_item_list);
     return new_item_list;
 }
 
 function handle_search_word(search_word) {
-    var c = search_word.charCodeAt(0);
+    const c = search_word.charCodeAt(0);
     if (c > 127) {
         search_word = transliterate_text(search_word);
     }
-    var non_english = (0x0B80 <= c && c <= 0x0BFF) ? true : false;
-    var new_item_list = load_search_part(search_word, non_english);
-    var item_data = { "searchinfo" : { "results" : new_item_list } };
-    render_template_data('#search-template', '#SECTION', item_data);
+    const non_english = (0x0B80 <= c && c <= 0x0BFF) ? true : false;
+    const new_item_list = load_search_part(search_word, non_english);
+    const item_data = { "searchinfo" : { "results" : new_item_list } };
+    render_template_data('search-template', 'SECTION', item_data);
     window.scrollTo(0, 0);
     add_history('search', { 'search' : search_word });
 }
 
 function load_search_data() {
-    var search_word = document.getElementById('SEARCH_WORD').value;
-    var search_word = decodeURI(search_word);
+    let search_word = document.getElementById('SEARCH_WORD').value;
+    search_word = decodeURI(search_word);
     handle_search_word(search_word);
 }
 
 function init_search_listener() {
-    var element = document.getElementById('SEARCH_WORD');
+    const element = document.getElementById('SEARCH_WORD');
     element.addEventListener('input', load_search_data);
 }
 
 function load_search_history(data) {
-    var search_word = data['search'];
+    const search_word = data['search'];
     document.getElementById('SEARCH_WORD').value = search_word;
     handle_search_word(search_word);
 }
@@ -682,24 +737,21 @@ function get_geocoder_nominatim() {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long) {
-    var osm_map = new L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 16, maxZoom: 21 });
+    const osm_map = new L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 16, maxZoom: 21 });
     osm_map.on('zoomend dragend', draw_map_on_move);
 
-    var tile_layer = new L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const tile_layer = new L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       subdomains: ['a', 'b', 'c'],
       maxNativeZoom: 18,
       maxZoom: 21 
     });
     tile_layer.addTo(osm_map);
-    var geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
+    const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
     if (module == 'area') {
         geocoder.on('finishgeocode', handle_geocoder_mark);
     }
-
-    init_context_menu();
-
     return osm_map;
 }
 
@@ -733,12 +785,12 @@ function get_url_info(tree_id, level) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
     const tree_handle = handle_map[tree_id];
     const [ url, image_url ] = get_image_url(tree_handle, level);
-    var m_url = `javascript:load_module_data('${url}');`;
-    var a_url = `javascript:load_area_data('trees', '${tree_id}');`;
-    var image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
-    var img_html = `<a href="${m_url}" align="center"><div class="thumbnail" align="center"><img ${image_style} src="${image_url}" class="shadow-box"></a>`;
-    var name_html = `<a href="${a_url}"><p align="center"> ${name} </p></div></a>`;
-    var html = img_html + name_html;
+    const m_url = `javascript:load_module_data('${url}');`;
+    const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
+    const image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
+    const img_html = `<a href="${m_url}" align="center"><div class="thumbnail" align="center"><img ${image_style} src="${image_url}" class="shadow-box"></a>`;
+    const name_html = `<a href="${a_url}"><p align="center"> ${name} </p></div></a>`;
+    const html = img_html + name_html;
     return html;
 }
 
@@ -750,47 +802,24 @@ function get_needed_icon(selected, blooming) {
 }
 
 function set_chosen_image(tree_id) {
-    var tooltip_html = get_url_info(tree_id, 'tooltip');
-    $('#IMAGEINFO').html(tooltip_html);
+    const tooltip_html = get_url_info(tree_id, 'tooltip');
+    plain_set_html_text('IMAGEINFO', tooltip_html);
 }
 
-function init_context_menu() {
-    $.contextMenu({
-      selector: 'img.leaflet-marker-icon',
-      callback: function(key, options) {
-          var marker = window.TREE_CONTEXT_MARKER;
-          var tree_id = marker.tree_id;
-          var pos = marker.getLatLng();
-          if (key == 'info') {
-              const m_url = get_module_url(tree_id);
-              load_module_data(m_url);
-          } else if (key == 'tmap') {
-              load_area_data('trees', tree_id);
-          } else if (key == 'gmap') {
-              var url = `http://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
-              window.open(url, '');
-          }
-      },
-      items: {
-          "info": {
-              name: "Tree Info",
-              icon: "info"
-          },
-          "tmap": {
-              name: "Tree Map",
-              icon: "map"
-          },
-          "gmap": {
-              name: "Google Map",
-              icon: "gmap"
-          },
-          "sep1": "---------",
-          "quit": {
-              name: "Quit",
-              icon: "quit"
-          }
-      }
-    });
+function handle_context_menu(key) {
+    const marker = window.TREE_CONTEXT_MARKER;
+    const tree_id = marker.tree_id;
+    const pos = marker.getLatLng();
+    if (key == 'info') {
+        const m_url = get_module_url(tree_id);
+        load_module_data(m_url);
+    } else if (key == 'tmap') {
+        load_area_data('trees', tree_id);
+    } else if (key == 'gmap') {
+        const url = `http://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
+        window.open(url, '');
+    }
+    get_bs_modal('CONTEXT_MODAL').hide();
 }
 
 function marker_on_mouseover() {
@@ -804,12 +833,12 @@ function marker_on_mouseout() {
 }
 
 function marker_on_click(e) {
-    var tree_id = e.target.tree_id;
+    const tree_id = e.target.tree_id;
     window.map_tree_id = tree_id;
-    var area_marker_list = window.area_marker_list;
-    for (var i = 0; i < area_marker_list.length; i++) {
-        var marker = area_marker_list[i];
-        var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
+    const area_marker_list = window.area_marker_list;
+    for (let i = 0; i < area_marker_list.length; i++) {
+        const marker = area_marker_list[i];
+        const icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
         marker.setIcon(icon);
     }
     find_area_carousel_tree(tree_id);
@@ -822,20 +851,24 @@ function load_module_data_with_id(tree_id) {
 }
 
 function marker_on_doubleclick(e) {
-    var tree_id = e.target.tree_id;
+    const tree_id = e.target.tree_id;
     load_module_data_with_id(tree_id);
 }
 
 function marker_on_contextmenu(e) {
-    window.TREE_CONTEXT_MARKER = this;
+    const marker = this;
+    window.TREE_CONTEXT_MARKER = marker;
+    const [ name, handle_map ] = get_tree_handle(marker.tree_id);
+    plain_set_html_text('CONTEXT_MODEL_LABEL', name);
+    get_bs_modal('CONTEXT_MODAL').show();
 }
 
 function draw_map_on_move(ev) {
-    var osm_map = window.map_osm_map;
-    var a_name = window.map_area_name;
-    var aid = window.map_area_id;
-    var tid = window.map_tree_id;
-    var latlong = osm_map.getCenter();
+    const osm_map = window.map_osm_map;
+    const a_name = window.map_area_name;
+    const aid = window.map_area_id;
+    const tid = window.map_tree_id;
+    const latlong = osm_map.getCenter();
     window.map_area_move = true;
     show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
     window.map_area_move = false;
@@ -845,8 +878,8 @@ function get_area_centre() {
     if (window.map_osm_map == undefined) {
         return [];
     }
-    var latlong = window.map_osm_map.getCenter();
-    var area_latlong = [ latlong.lat, latlong.lng ];
+    const latlong = window.map_osm_map.getCenter();
+    const area_latlong = [ latlong.lat, latlong.lng ];
     return area_latlong;
 }
 
@@ -856,10 +889,10 @@ function handle_geocoder_mark(ev) {
 }
 
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
-    var lang = window.render_language;
-    var map_dict = window.tree_lang_data['Keys'];
-    var area = window.area_type;
-    var old_a_name = window.map_area_name;
+    const lang = window.render_language;
+    const map_dict = window.tree_lang_data['Keys'];
+    const area = window.area_type;
+    const old_a_name = window.map_area_name;
     window.map_area_name = a_name;
     window.map_area_id = aid;
     if (tid == 0 && window.map_tree_id != undefined) {
@@ -867,26 +900,27 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     window.map_tree_id = tid;
 
+    let n_name = ''
     if (area == 'trees') {
-        var n_name = get_module_name(null, tid);
+        n_name = get_module_name(null, tid);
     } else {
-        var n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
+        n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
         if (aid != '') {
             n_name = aid + '. ' + n_name;
         }
     }
-    $('#TITLE_HEADER').html(n_name);
+    plain_set_html_text('TITLE_HEADER', n_name);
 
+    let osm_map;
     if (window.map_initialized) {
-        var osm_map = window.map_osm_map;
-        var area_marker_list = window.area_marker_list;
-        for (var i = 0; i < area_marker_list.length; i++) {
+        osm_map = window.map_osm_map;
+        const area_marker_list = window.area_marker_list;
+        for (let i = 0; i < area_marker_list.length; i++) {
             osm_map.removeLayer(area_marker_list[i]);
         }
         osm_map.setView([c_lat, c_long]);
     } else {
-        var id_name = 'MAPINFO';
-        var osm_map = create_osm_map('area', id_name, c_lat, c_long);
+        osm_map = create_osm_map('area', 'MAPINFO', c_lat, c_long);
         window.map_osm_map = osm_map;
         window.map_area_move = false;
         window.map_initialized = true;
@@ -908,11 +942,12 @@ function load_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 }
 
 function find_area_carousel_tree(tree_id) {
-    var tree_image_list = window.tree_image_list;
-    for (var i = 0; i < tree_image_list.length; i++) {
-        var l_tree_id = tree_image_list[i]['TID'];
+    const tree_image_list = window.tree_image_list;
+    for (let i = 0; i < tree_image_list.length; i++) {
+        const l_tree_id = tree_image_list[i]['TID'];
         if (l_tree_id == tree_id) {
-            $('#AREA_CAROUSEL').carousel((i - 1) % tree_image_list.length);
+            const swiper = document.querySelector('#AREA_CAROUSEL').swiper;
+            swiper.slideTo(i % tree_image_list.length);
             return i;
         }
     }
@@ -921,113 +956,104 @@ function find_area_carousel_tree(tree_id) {
 
 function area_chosen_tree(tree_id) {
     window.map_tree_id = tree_id;
-    var area_marker_list = window.area_marker_list;
-    for (var i = 0; i < area_marker_list.length; i++) {
-        var marker = area_marker_list[i];
-        var icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
+    const area_marker_list = window.area_marker_list;
+    for (let i = 0; i < area_marker_list.length; i++) {
+        const marker = area_marker_list[i];
+        const icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
         marker.setIcon(icon);
     }
     set_chosen_image(tree_id);
 }
 
 function area_highlight_tree(tree_id) {
-    var tree_image_list = window.tree_image_list;
-    var tree_index = tree_id % tree_image_list.length;
-    var tree_id = tree_image_list[tree_index]['TID'];
+    const tree_image_list = window.tree_image_list;
+    const tree_index = tree_id % tree_image_list.length;
+    tree_id = tree_image_list[tree_index]['TID'];
     area_chosen_tree(tree_id);
 }
 
 function area_click_tree(tree_id) {
-    var tree_index = find_area_carousel_tree(tree_id);
+    const tree_index = find_area_carousel_tree(tree_id);
     area_chosen_tree(tree_id);
     window.scrollTo(0, 0);
 }
 
 function area_carousel_init(tree_image_list) {
     window.tree_image_list = tree_image_list;
-    $('#AREA_CAROUSEL').carousel({ interval: 0 });
 
-    var start_id = tree_image_list.length - 1;
-    var $img = $('.carousel-item').eq(start_id);
-    $img.addClass('active');
-
-    $('.carousel .carousel-item').each(function() {
-      var next = $(this).next();
-      if (!next.length) {
-        next = $(this).siblings(':first');
-      }
-      next.children(':first-child').clone().appendTo($(this));
-
-      if (next.next().length>0) {
-        next.next().children(':first-child').clone().appendTo($(this));
-      }
-      else {
-        $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
-      }
+    const swiper = new Swiper('#AREA_CAROUSEL', {
+        centeredSlides: true,
+        preLoadImages: true,
+        slidesPerView: 3,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
     });
 
-    $('.carousel').on('slide.bs.carousel', function(ev) {
-        area_highlight_tree(ev.to + 1);
+    let start_id = tree_image_list.length - 1;
+    swiper.on('slideChange', function (ev) {
+        area_highlight_tree(ev.activeIndex);
     });
 
-    var tree_id = window.map_tree_id;
-    var start_id = find_area_carousel_tree(tree_id);
+    const tree_id = window.map_tree_id;
+    start_id = find_area_carousel_tree(tree_id);
     area_highlight_tree(start_id);
 }
 
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
-    var osm_map = window.map_osm_map;
-    var area = window.area_type;
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var handle_map = lang_obj['Handle'];
+    const osm_map = window.map_osm_map;
+    const area = window.area_type;
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const key_name = lang_map['Name'];
+    const handle_map = lang_obj['Handle'];
 
-    var s_id = 0;
+    let s_id = 0;
     if (area == 'trees') {
         s_id = aid;
     } else if (tid != 0) {
         s_id = tid;
     }
 
-    var bounds = osm_map.getBounds();
+    const bounds = osm_map.getBounds();
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
     const nw = bounds.getNorthWest();
     const se = bounds.getSouthEast();
-    var area_marker_list = [];
-    var tree_dict = {};
-    var grid_flora = window.GRID_FLORA;
+    const area_marker_list = [];
+    const tree_dict = {};
+    const grid_flora = window.GRID_FLORA;
     // const start_time = Date.now();
     let total_count = 0;
     let visible_count = 0;
     let matched_grid = 0;
     const is_tree = (area == 'trees');
-    for (var i = 0; i < grid_flora.length; i++) {
+    for (let i = 0; i < grid_flora.length; i++) {
         const [ g_sw_lat, g_sw_long, g_ne_lat, g_ne_long, md_name, flora_list ] = grid_flora[i];
         if (g_sw_long <= ne.lng && sw.lng <= g_ne_long && g_sw_lat <= ne.lat && sw.lat <= g_ne_lat) {
             matched_grid++;
         } else {
             continue;
         }
-        for (var j = 0; j < flora_list.length; j++) {
-            var [ tree_id, latlong_list ] = flora_list[j];
+        for (let j = 0; j < flora_list.length; j++) {
+            let [ tree_id, latlong_list ] = flora_list[j];
             tree_id = tree_id.toString();
             if (is_tree && aid != tree_id) continue;
             const tree_handle = handle_map[tree_id];
-            var blooming = tree_handle[H_BLOOM];
-            var icon = get_needed_icon((s_id == tree_id), blooming);
-            var count = 0;
-            for (var k = 0; k < latlong_list.length; k++) {
-                var latlong = latlong_list[k];
-                var m_lat = parseFloat(latlong[0]);
-                var m_long = parseFloat(latlong[1]);
+            const blooming = tree_handle[H_BLOOM];
+            const icon = get_needed_icon((s_id == tree_id), blooming);
+            let count = 0;
+            for (let k = 0; k < latlong_list.length; k++) {
+                const latlong = latlong_list[k];
+                const m_lat = parseFloat(latlong[0]);
+                const m_long = parseFloat(latlong[1]);
                 total_count++;
-                var visible = is_tree ? true : bounds.contains([m_lat, m_long]);
+                const visible = is_tree ? true : bounds.contains([m_lat, m_long]);
                 if (!visible) continue
                 visible_count++;
-                var marker = new L.marker([m_lat, m_long], {icon: icon});
+                const marker = new L.marker([m_lat, m_long], {icon: icon});
                 marker.tree_id = tree_id;
                 marker.blooming = blooming;
                 osm_map.addLayer(marker);
@@ -1050,25 +1076,25 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     window.area_marker_list = area_marker_list;
 
     if (area == 'trees' && !window.map_area_move && area_marker_list.length > 0) {
-        var layer = new L.featureGroup(area_marker_list);
+        const layer = new L.featureGroup(area_marker_list);
         osm_map.fitBounds(layer.getBounds());
     }
 
     if (area == 'current') {
-        var latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
-        var point_list = [ L.latLng(c_lat, c_long), L.latLng(latlong.lat, latlong.lng) ];
+        const latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
+        const point_list = [ L.latLng(c_lat, c_long), L.latLng(latlong.lat, latlong.lng) ];
     }
 
-    var tree_stat_list = [];
-    var tree_image_list = [];
-    for (var tid in tree_dict) {
+    const tree_stat_list = [];
+    const tree_image_list = [];
+    for (let tid in tree_dict) {
         if (!tree_dict.hasOwnProperty(tid)) {
             continue;
         }
-        var t_name = key_name[tid];
+        const t_name = key_name[tid];
         const tree_handle = handle_map[tid];
-        var blooming = tree_handle[H_BLOOM];
-        var icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
+        const blooming = tree_handle[H_BLOOM];
+        const icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
         tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
 
         if (area != 'trees') {
@@ -1078,26 +1104,26 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     }
     if (tree_stat_list.length > 0) {
         tree_stat_list.sort(function (a, b) { return b.TC - a.TC; });
-        var tin = 1;
-        var tcount = 0;
-        for (var i = 0; i < tree_stat_list.length; i++) {
-            var info = tree_stat_list[i];
+        let tin = 1;
+        let tcount = 0;
+        for (let i = 0; i < tree_stat_list.length; i++) {
+            let info = tree_stat_list[i];
             info['TIN'] = tin;
             tin += 1;
             tcount += info['TC'];
         }
         if (area != 'trees') {
             tin -= 1;
-            var n_title = `${n_name} (<font color=brown>${tin} / ${tcount}</font>)`;
-            $('#TITLE_HEADER').html(n_title);
+            let n_title = `${n_name} (<font color=brown>${tin} / ${tcount}</font>)`;
+            plain_set_html_text('TITLE_HEADER', n_title);
         }
-        var data = { 'trees' : tree_stat_list };
-        render_template_data('#tree-stats-template', '#STATINFO', data);
+        let data = { 'trees' : tree_stat_list };
+        render_template_data('tree-stats-template', 'STATINFO', data);
         tree_image_list.sort(function (a, b) { return b.SC - a.SC; });
-        var data = { 'sliderinfo' : { 'items' : tree_image_list } };
-        render_template_data('#tree-carousel-template', '#SLIDERINFO', data);
+        data = { 'sliderinfo' : { 'items' : tree_image_list } };
+        render_template_data('tree-carousel-template', 'MAP_SLIDER', data);
         if (area == 'trees') {
-            $('#SLIDERINFO').html('');
+            plain_set_html_text('MAP_SLIDER', '');
         } else {
             area_carousel_init(tree_image_list);
         }
@@ -1105,14 +1131,14 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     window.scrollTo(0, 0);
 }
 
-function tree_area_init(area, aid, item_data) {
+async function tree_area_init(area, aid, item_data) {
     if (window.green_tree_icon == undefined) {
         create_icons();
     }
 
     if (area == undefined) {
-        var area = window.area_type;
-        var aid = window.area_id;
+        area = window.area_type;
+        aid = window.area_id;
     }
     window.area_type = area;
     window.area_id = aid;
@@ -1120,40 +1146,41 @@ function tree_area_init(area, aid, item_data) {
 
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
-        var url = 'language.json';
-        $.getJSON(url, function(lang_obj) {
+        const url = 'language.json';
+        const lang_obj = await fetch_url(url);
+        if (lang_obj != null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
             window.info_initialized = true;
             lang_name_init();
             create_icons();
             tree_area_init(undefined, undefined, window.area_data);
-        });
+        };
         return;
     }
 
-    var lang_obj = window.tree_lang_data;
-    var lang = window.render_language;
-    var lang_map = lang_obj[lang];
-    var key_name = lang_map['Name'];
-    var handle_map = lang_obj['Handle'];
+    const lang_obj = window.tree_lang_data;
+    const lang = window.render_language;
+    const lang_map = lang_obj[lang];
+    const key_name = lang_map['Name'];
+    const handle_map = lang_obj['Handle'];
 
-    var lat_long = BANGALORE_LAT_LONG;
+    let lat_long = BANGALORE_LAT_LONG;
     if (window.area_latlong == undefined) {
         window.area_latlong = [];
     }
     if (window.area_latlong.length > 0) {
         lat_long = window.area_latlong;
     }
-    var name = capitalize_word(area);
+    let name = capitalize_word(area);
     if (area == 'parks') {
-        var data = item_data['parks'];
+        const data = item_data['parks'];
         if (aid != '') {
-            var area_list = data['parkinfo'];
-            for (var i = 0; i < area_list.length; i++) {
-                var park_list = area_list[i]['parks'];
-                for (var j = 0; j < park_list.length; j++) {
-                    var park = park_list[j];
+            const area_list = data['parkinfo'];
+            for (let i = 0; i < area_list.length; i++) {
+                const park_list = area_list[i]['parks'];
+                for (let j = 0; j < park_list.length; j++) {
+                    const park = park_list[j];
                     if (park['PID'] == aid) {
                         name = park['PN'];
                         lat_long = [ parseFloat(park['PLAT']), parseFloat(park['PLONG']) ];
@@ -1161,50 +1188,51 @@ function tree_area_init(area, aid, item_data) {
                 }
             }
         }
-        render_template_data('#sidenav-template', '#NAVINFO', data);
-        render_template_data('#stats-template', '#STATINFO', data);
+        render_template_data('sidenav-template', 'NAVINFO', data);
+        render_template_data('stats-template', 'STATINFO', data);
     } else if (area == 'wards') {
-        var data = item_data['wards'];
+        const data = item_data['wards'];
         if (aid != '') {
-            var ward_list = data['wardinfo'];
-            for (var i = 0; i < ward_list.length; i++) {
-                var ward = ward_list[i];
+            const ward_list = data['wardinfo'];
+            for (let i = 0; i < ward_list.length; i++) {
+                const ward = ward_list[i];
                 if (ward['AID'] == aid) {
                     name = ward['AN'];
                     lat_long = [ parseFloat(ward['ALAT']), parseFloat(ward['ALONG']) ];
                 }
             }
         }
-        render_template_data('#sidenav-template', '#NAVINFO', data);
-        render_template_data('#stats-template', '#STATINFO', data);
+        render_template_data('sidenav-template', 'NAVINFO', data);
+        render_template_data('stats-template', 'STATINFO', data);
     } else if (area == 'trees') {
-        var data = item_data['maps'];
-        var tree_list = data['mapinfo'];
-        for (var i = 0; i < tree_list.length; i++) {
-            var an = tree_list[i];
-            var tree_id = an['AN'];
+        const data = item_data['maps'];
+        const tree_list = data['mapinfo'];
+        for (let i = 0; i < tree_list.length; i++) {
+            const an = tree_list[i];
+            const tree_id = an['AN'];
             an['AN'] = key_name[tree_id];
             if (tree_id == aid) {
                 lat_long = [ parseFloat(an['ALAT']), parseFloat(an['ALONG']) ];
             }
         }
-        render_template_data('#sidenav-template', '#NAVINFO', data);
+        render_template_data('sidenav-template', 'NAVINFO', data);
     } else if (area == 'current') {
     } else {
         return;
     }
 
-    var url = 'grid.json';
-    $.getJSON(url, function(grid_obj) {
+    const url = 'grid.json';
+    const grid_obj = await fetch_url(url);
+    if (grid_obj != null) {
         window.GRID_FLORA = grid_obj;
         window.map_initialized = false;
 
-        var tid = 0;
+        let tid = 0;
         if (window.map_tree_id != undefined) {
             tid = window.map_tree_id;
         }
         if (area == 'trees') {
-            var m_name = get_module_name(handle_map, aid);
+            const m_name = get_module_name(handle_map, aid);
             if (aid != 0) {
                 tid = aid;
                 name = m_name;
@@ -1212,7 +1240,7 @@ function tree_area_init(area, aid, item_data) {
                 aid = tid;
                 name = m_name;
             } else if (aid == 0 || aid == '0') {
-                var tree_list = Object.keys(handle_map);
+                const tree_list = Object.keys(handle_map);
                 aid = tree_list[Math.floor(Math.random() * tree_list.length)];
                 name = m_name;
             } else {
@@ -1224,68 +1252,73 @@ function tree_area_init(area, aid, item_data) {
             }
         }
         show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
-    });
+    };
 }
 
-function load_area_data(area_type, area_id) {
-    var lang = window.render_language;
-    var map_dict = window.tree_lang_data['Keys'];
-    var area_data = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
-                      'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
-                    };
-    render_template_data('#area-template', '#SECTION', area_data);
-    var url = 'area.json';
-    $.getJSON(url, function(item_data) {
+async function load_area_data(area_type, area_id) {
+    const lang = window.render_language;
+    const map_dict = window.tree_lang_data['Keys'];
+    const area_data = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
+                        'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
+                      };
+    render_template_data('area-template', 'SECTION', area_data);
+    const url = 'area.json';
+    const item_data = await fetch_url(url);
+    if (item_data != null) {
         tree_area_init(area_type, area_id, item_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
-    });
+    };
 }
 
-function load_collection_data(type, letter, page_index, page_max) {
-    var collection_data = {};
-    render_template_data('#page-template', '#SECTION', collection_data);
-    var url = get_region_url('page');
-    $.getJSON(url, function(item_data) {
+async function load_collection_data(type, letter, page_index, page_max) {
+    const collection_data = {};
+    render_template_data('page-template', 'SECTION', collection_data);
+    const url = get_region_url('page');
+    const item_data = await fetch_url(url);
+    if (item_data != null) {
         tree_collection_init(type, letter, page_index, page_max, item_data);
         add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max });
-    });
+    };
 }
 
-function load_category_data(type) {
-    var grid_data = {};
-    render_template_data('#grid-template', '#SECTION', grid_data);
-    var url = get_region_url('grid');
-    $.getJSON(url, function(item_data) {
+async function load_category_data(type) {
+    const grid_data = {};
+    render_template_data('grid-template', 'SECTION', grid_data);
+    const url = get_region_url('grid');
+    const item_data = await fetch_url(url);
+    if (item_data != null) {
         tree_grid_init(type, item_data[type]);
         add_history('categories', { 'type' : type });
-    });
+    };
 }
 
-function load_simple_data() {
-    var simple_data = {};
-    render_template_data('#simple-template', '#SECTION', simple_data);
-    var url = get_region_url('simple');
-    $.getJSON(url, function(item_data) {
+async function load_simple_data() {
+    const simple_data = {};
+    render_template_data('simple-template', 'SECTION', simple_data);
+    const url = get_region_url('simple');
+    const item_data = await fetch_url(url);
+    if (item_data != null) {
         tree_simple_init(item_data);
         add_history('alphabetical', { 'region' : window.tree_region });
-    });
+    };
 }
 
-function load_module_data(file_name) {
-    var module_data = {};
-    render_template_data('#module-template', '#SECTION', module_data);
-    var url = `Flora/${file_name}.json`;
-    $.getJSON(url, function(item_data) {
+async function load_module_data(file_name) {
+    const module_data = {};
+    render_template_data('module-template', 'SECTION', module_data);
+    const url = `Flora/${file_name}.json`;
+    const item_data = await fetch_url(url);
+    if (item_data != null) {
         tree_module_init(file_name, item_data);
         add_history('trees', { 'module' : file_name });
-    });
+    };
 }
 
 function transliterator_word() {
-    var source = $('#SOURCE').val();
+    const source = document.getElementById('SOURCE').value;
     source = source.replace(/\n/g, "<br />");
-    var target = transliterate_text(source);
-    $('#TARGET').html(target);
+    const target = transliterate_text(source);
+    plain_set_html_text('TARGET', target);
 }
 
 /*
@@ -1342,9 +1375,9 @@ function speech_to_text_init() {
         };
 
         window.speech_recognition.onresult = function(event) {
-            var interim_transcript = '';
+            const interim_transcript = '';
             /*
-            for (var i = event.resultIndex; i < event.results.length; ++i) {
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                     window.speech_final_transcript += event.results[i][0].transcript;
                 } else {
@@ -1361,7 +1394,7 @@ function speech_to_text_init() {
             }
             if (window.speech_final_transcript || interim_transcript) {
                 window.speech_recognition.stop();
-                $('#MIC_IMAGE').attr('src', 'icons/mic-mute.svg');
+                plain_set_attr('MIC_IMAGE', 'src', 'icons/mic-mute.svg');
                 document.getElementById('SEARCH_WORD').value = window.speech_final_transcript;
                 // console.log('Speech Final: ' + window.speech_final_transcript);
                 load_search_data();
@@ -1378,25 +1411,25 @@ function speech_start(event) {
         window.speech_recognition.stop();
         return;
     }
-    var lang = window.render_language;
-    var s_lang = MAP_ISO_DICT[lang];
+    const lang = window.render_language;
+    const s_lang = MAP_ISO_DICT[lang];
     window.speech_final_transcript = '';
     window.speech_recognition.lang = s_lang;
     window.speech_recognition.start();
     window.speech_ignore_onend = false;
     window.speech_start_timestamp = event.timeStamp;
-    $('#MIC_IMAGE').attr('src', 'icons/mic.svg');
+    plain_set_attr('MIC_IMAGE', 'src', 'icons/mic.svg');
 }
 
 function load_keyboard(event) {
-    var lang = window.render_language;
+    const lang = window.render_language;
     set_input_keyboard(lang.toLowerCase());
     get_bs_modal('LANG_KBD').show();
     return;
 }
 
 function handle_history_context(data) {
-    var context = data['context'];
+    const context = data['context'];
     if (context == 'introduction') {
         load_intro_data(data['region']);
     } else if (context == 'collections') {
@@ -1417,7 +1450,7 @@ function handle_history_context(data) {
 }
 
 function handle_popstate(e) {
-    var data = e.state;
+    const data = e.state;
     if (data == null || data == undefined) {
         return;
     }
@@ -1427,10 +1460,10 @@ function handle_popstate(e) {
 }
 
 function add_history(context, data) {
-    var url = 'trees.html';
+    const url = 'trees.html';
     if (!window.tree_popstate) {
         data['context'] = context;
-        var title = capitalize_word(context);
+        let title = capitalize_word(context);
         if (context == 'introduction') {
             title += ' ' + capitalize_word(data['region']);
         } else if (context == 'collections') {
@@ -1457,7 +1490,7 @@ function get_lang_map_word(lang, map_dict, n) {
    if (map_dict == undefined) {
        return n;
    }
-   var t = map_dict[n];
+   let t = map_dict[n];
    if (t == undefined) {
        return n;
    }
@@ -1472,42 +1505,42 @@ function get_lang_map(lang, n_dict) {
     if (lang == 'English') {
         return;
     }
-    var map_dict = window.tree_lang_data['Keys'];
+    const map_dict = window.tree_lang_data['Keys'];
     n_dict['T'] = get_lang_map_word(lang, map_dict, n_dict['T']);
-    var i_list = n_dict['items'];
-    for (var i = 0; i < i_list.length; i++) {
-        var i_dict = i_list[i];
+    const i_list = n_dict['items'];
+    for (let i = 0; i < i_list.length; i++) {
+        const i_dict = i_list[i];
         i_dict['N'] = get_lang_map_word(lang, map_dict, i_dict['N']);
     }
 }
 
 function load_menu_data() {
-    var lang = window.render_language;
-    var map_dict = window.tree_lang_data['Keys'];
-    let LANG_LIST = [];
-    for (var l in MAP_LANG_DICT) {
+    const lang = window.render_language;
+    const map_dict = window.tree_lang_data['Keys'];
+    const LANG_LIST = [];
+    for (let l in MAP_LANG_DICT) {
         LANG_LIST.push(MAP_LANG_DICT[l]);
     }
-    var lang_list = [];
-    for (var i = 0; i < LANG_LIST.length; i++) {
-        var l = LANG_LIST[i];
-        var t = get_lang_map_word(lang, map_dict, l);
-        var t = REVERSE_LANG_DICT[l];
-        var d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
+    const lang_list = [];
+    for (let i = 0; i < LANG_LIST.length; i++) {
+        const l = LANG_LIST[i];
+        let t = get_lang_map_word(lang, map_dict, l);
+        t = REVERSE_LANG_DICT[l];
+        let d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
         lang_list.push(d);
     }
-    var map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' },
+    let map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' },
                                                { 'N' : 'Wards', 'A' : 'wards', 'I' : '' },
                                                { 'N' : 'Trees', 'A' : 'trees', 'I' : 0 }
                                              ]
                    };
-    var collection_list = { 'T' : 'Collections',
+    let collection_list = { 'T' : 'Collections',
                             'items' : [ { 'N' : 'Name',   'A' : 'alphabetical', 'L' : 'A' },
                                         { 'N' : 'Family', 'A' : 'family',       'L' : 'A' },
                                         { 'N' : 'Genus',  'A' : 'genus',        'L' : 'A' }
                                       ]
                           };
-    var category_list = { 'T' : 'Categories',
+    let category_list = { 'T' : 'Categories',
                           'items' : [ { 'N' : 'Flower Color',  'C' : 'Flower Color',  'A' : 'flowers' },
                                       { 'N' : 'Flower Season', 'C' : 'Flower Season', 'A' : 'season' },
                                       { 'N' : 'Fruit Color',   'C' : 'Fruit Color',   'A' : 'fruits' },
@@ -1515,7 +1548,7 @@ function load_menu_data() {
                                       { 'N' : 'Bark Color',    'C' : 'Bark Color',    'A' : 'bark' }
                                     ]
                         };
-    var region_list = { 'T' : 'Regions',
+    let region_list = { 'T' : 'Regions',
                           'items' : [ { 'N' : 'Bangalore', 'R' : 'bangalore' },
                                       { 'N' : 'India',     'R' : 'india' }
                                     ]
@@ -1525,7 +1558,7 @@ function load_menu_data() {
     get_lang_map(lang, collection_list);
     get_lang_map(lang, category_list);
     get_lang_map(lang, region_list);
-    var menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word(lang, map_dict, 'Trees'),
+    let menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word(lang, map_dict, 'Trees'),
                                   'SEARCH' : get_lang_map_word(lang, map_dict, 'Search'),
                                   'ALPHABETICAL' : get_lang_map_word(lang, map_dict, 'Alphabetical'),
                                   'languages' : lang_list,
@@ -1535,10 +1568,10 @@ function load_menu_data() {
                                   'regions' : region_list
                                 }
                     };
-    render_template_data('#menu-template', '#MENU_DATA', menu_dict);
+    render_template_data('menu-template', 'MENU_DATA', menu_dict);
 
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     });
 
@@ -1554,19 +1587,20 @@ function load_menu_data() {
     }
 }
 
-function load_content() {
-    var url = 'language.json';
-    $.getJSON(url, function(lang_obj) {
+async function load_content() {
+    const url = 'language.json';
+    const lang_obj = await fetch_url(url);
+    if (lang_obj != null) {
         window.tree_lang_data = lang_obj;
         lang_name_init();
         transliterator_init();
-        var tree_id = window.url_params['tid'];
+        const tree_id = window.url_params['tid'];
         if (tree_id == undefined) {
             load_intro_data(window.tree_region);
         } else {
             load_module_data_with_id(tree_id);
         }
-    });
+    };
     search_init();
 }
 
@@ -1584,10 +1618,6 @@ function tree_main_init() {
     window.map_initialized = false;
     window.tree_popstate = false;
     window.url_params = get_url_params();
-
-    $('.nav li').bind('click', function() {
-       $(this).addClass('active').siblings().removeClass('active');
-    });
 
     window.addEventListener('popstate', handle_popstate);
     window.onload = load_content;
