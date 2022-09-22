@@ -248,3 +248,15 @@ td.keycol:hover {
     background-color:var(--black-300)
 }
 
+.swiper {
+  position: relative;
+}
+.swiper-wrapper {
+  width: 80%;
+}
+.swiper-button-next {
+  right: 0px;
+}
+.swiper-button-prev {
+  left: 0px;
+}

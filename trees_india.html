@@ -428,26 +428,26 @@
     
   <script type="text/html" id="tree-carousel-template">
       {{#sliderinfo}}
-      <div id="AREA_CAROUSEL" class="swiper">
-        <div class="swiper-wrapper">
-          {{#items}}
-          <div class="swiper-slide">
-            <div class="d-flex">
-              <div class="d-block p-2">
-                <a href="javascript:load_area_data('trees', '{{TID}}', '{{SN}}');">
-                    <em>{{SN}}</em>
-                </a>
-                <a href="javascript:load_module_data('{{SH}}');">
-                    <img class="d-block" src="{{SI}}" alt="{{SN}}" />
-                </a>
+        <div id="AREA_CAROUSEL" class="swiper">
+          <div class="swiper-wrapper">
+            {{#items}}
+            <div class="swiper-slide">
+              <div class="d-flex">
+                <div class="d-block p-2">
+                  <a href="javascript:load_area_data('trees', '{{TID}}', '{{SN}}');">
+                      <em>{{SN}}</em>
+                  </a>
+                  <a href="javascript:load_module_data('{{SH}}');">
+                      <img class="d-block" src="{{SI}}" alt="{{SN}}" />
+                  </a>
+                </div>
               </div>
             </div>
+            {{/items}}
           </div>
-          {{/items}}
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
         </div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
       {{/sliderinfo}}
   </script>
 

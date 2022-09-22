@@ -982,9 +982,11 @@ function area_carousel_init(tree_image_list) {
     window.tree_image_list = tree_image_list;
 
     const swiper = new Swiper('#AREA_CAROUSEL', {
+        direction: 'horizontal',
         centeredSlides: true,
         preLoadImages: true,
         slidesPerView: 3,
+        spaceBetween: 0,
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
