@@ -160,7 +160,7 @@ a:not([class*="btn"]):hover {
 }
 
 #MAPINFO {
-    width: 800px;
+    width: 60vw;
     height: 640px;
 }
 
@@ -250,9 +250,6 @@ td.keycol:hover {
 
 .swiper {
   position: relative;
-}
-.swiper-wrapper {
-  width: 80%;
 }
 .swiper-button-next {
   right: 0px;
