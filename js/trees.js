@@ -376,7 +376,7 @@ async function load_intro_data(region) {
 function search_init() {
     window.flora_fauna_search_engine = new MiniSearch({
         fields: [ 'title', 'aka' ], // fields to index for full-text search
-        storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop'] // fields to return with search results
+        storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop', 'count'] // fields to return with search results
     });
     window.search_initialized = false;
     search_load();
@@ -526,9 +526,7 @@ function normalize_search_text(search_text) {
 }
 
 async function search_load() {
-    if (window.search_initialized) {
-        return;
-    }
+    if (window.search_initialized) return;
     const url = 'flora_index.json';
     const search_engine = window.flora_fauna_search_engine;
     const search_obj = await fetch_url(url);
@@ -540,7 +538,11 @@ async function search_load() {
                 const item = data_list[i];
                 const t_list = item.A.slice(0, 4);
                 const a_list = item.A.slice(4);
-                const data_doc = { "id" : data_id, "category" : item.T, "name" : item.N, 'title' : t_list, 'aka' : a_list, "href" : item.H, "pop" : item.P };
+                const pop = (item.P != undefined) ? item.P : -1;
+                const count = (item.C != undefined) ? item.C : 0;
+                const data_doc = { id: data_id, category: item.T, name: item.N, title: t_list, aka: a_list,
+                                   href: item.H, pop: pop, count: count
+                                 };
                 search_engine.add(data_doc);
                 data_id += 1;
             }
@@ -641,8 +643,11 @@ function get_search_results(search_word, search_options, item_list, id_list, bas
             }
             const category = get_lang_map_word(lang, map_dict, item.category);
             href = get_search_href(item.category, href);
-            let pop = ('P' in item) ? item.pop : 10.0;
-            if (item.category == 'Maps') pop -= 1;
+            let pop = (item.pop >= 0) ? item.pop : 10.0;
+            if (item.category == 'Maps') {
+                if (item.count <= 0) continue;
+                pop -= 1;
+            }
             pop = base_pop + pop;
             let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score };
             if (item.category == 'Trees' || item.category == 'Maps') {
