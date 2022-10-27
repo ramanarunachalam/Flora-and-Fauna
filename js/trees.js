@@ -6,6 +6,29 @@ const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
 const SEARCH_MAP_DICT = { 'c' : 's', 'p' : 'b' };
 
+const TREE_ZOOM   = 12;
+const MIN_ZOOM    = 16;
+const NATIVE_ZOOM = 18;
+const MAX_ZOOM    = 21;
+
+const MAP_ICON_SIZE  = [24, 24];
+const MAP_ANCHOR_POS = [12, 24];
+
+const SEARCH_OPTIONS = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
+
+const MAX_PAGES   = 100;
+const TREE_COUNT  = 200;
+const SPEECH_TIME = 100; 
+
+const SEARCH_BASE_0 = 0;
+const SEARCH_BASE_1 = 1000;
+const SEARCH_BASE_2 = 4000;
+const SEARCH_BASE_3 = 5000;
+const MAX_RESULTS   = 25;
+
+let current_page = 1;
+let max_page = MAX_PAGES;
+
 
 function is_array(obj) {
   return Object.prototype.toString.call(obj) === '[object Array]';
@@ -312,6 +335,7 @@ function tree_intro_init(slider_data) {
     const new_slider_list = [];
     for (let i = 0; i < slider_list.length; i++) {
         const [ tree_id, count ] = slider_list[i];
+        window.tree_count_data[tree_id] = count;
         const tree_handle = handle_map[tree_id];
         const href = get_handle_prefix(tree_handle);
         const part_name = get_part_name(tree_handle);
@@ -325,9 +349,9 @@ function tree_intro_init(slider_data) {
 
     let element = document.querySelector('#INTRO_CAROUSEL');
     let carousel = new bootstrap.Carousel(element, {
-          ride: "carousel",
-          pause: "hover",
-          interval: 3000
+        ride: "carousel",
+        pause: "hover",
+        interval: 3000
     });
 
     carousel = document.getElementById('INTRO_CAROUSEL');
@@ -382,9 +406,6 @@ function search_init() {
     search_load();
 }
 
-let current_page = 1;
-let max_page = 100;
-
 function set_grid_page(n_current_page, n_max_page) {
     current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : parseInt(n_current_page);
     const a_list = plain_get_query_selector('li.page-item.active');
@@ -397,7 +418,7 @@ function set_grid_page(n_current_page, n_max_page) {
     id_str = 'bottom_' + current_page;
     element = document.querySelector(`li#${id_str}`);
     if (element) element.classList.add('active');
-    max_page = (n_max_page == '' || n_max_page == undefined) ? 100 : parseInt(n_max_page);
+    max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : parseInt(n_max_page);
 }
 
 function show_page(which, is_prev) {
@@ -609,7 +630,7 @@ function get_search_href(category, arg_list) {
     return href
 }
 
-function get_search_results(search_word, search_options, item_list, id_list, base_pop) {
+function get_search_results(search_word, item_list, id_list, base_pop) {
     const lang_obj = window.tree_lang_data;
     const lang = window.render_language;
     const lang_map = lang_obj[lang];
@@ -619,48 +640,49 @@ function get_search_results(search_word, search_options, item_list, id_list, bas
     const park_map = lang_obj['Parks'];
     const ward_map = lang_obj['Wards'];
     const search_engine = window.flora_fauna_search_engine;
-    const results = search_engine.search(search_word, search_options);
-    if (results.length > 0) {
-        const max_score = results[0].score;
-        for (let i = 0; i < results.length; i++) {
-            const item = results[i];
-            if (id_list.has(item.id)) continue;
-            const name_id = item.name;
-            let name = '';
-            let href = '';
-            if (item.category == 'Trees') {
-                href = [ get_handle_prefix(handle_map[name_id]) ];
-                name = key_name[name_id];
-            } else if (item.category == 'Maps') {
-                name = key_name[name_id];
-                href = [ 'trees', name_id, get_handle_prefix(handle_map[name_id]) ];
-            } else if (item.category == 'Parks') {
-                name = park_map[name_id];
-                href = [ 'parks', name_id, name ];
-            } else if (item.category == 'Wards') {
-                name = ward_map[name_id];
-                href = [ 'wards', name_id, name ];
-            }
-            const category = get_lang_map_word(lang, map_dict, item.category);
-            href = get_search_href(item.category, href);
-            let pop = (item.pop >= 0) ? item.pop : 10.0;
-            if (item.category == 'Maps') {
-                if (item.count <= 0) continue;
-                pop -= 1;
-            }
-            pop = base_pop + pop;
-            let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score };
-            if (item.category == 'Trees' || item.category == 'Maps') {
-                const tree_handle = handle_map[name_id];
-                r_item['G'] = tree_handle[H_GENUS];
-                r_item['S'] = tree_handle[H_SPECIES];
-            }
-            if (name_id != '') {
-                r_item['I'] = name_id;
-            }
-            item_list.push(r_item);
-            id_list.add(item.id);
+    const results = search_engine.search(search_word, SEARCH_OPTIONS);
+    if (results.length <= 0) return;
+    const max_score = results[0].score;
+    const score_ratio = 400 / results[0].score;
+    const pop_ratio = 0.6;
+    const calculate_pop = search_word.length > 3;
+    for (let i = 0; i < results.length; i++) {
+        const item = results[i];
+        if (id_list.has(item.id)) continue;
+        if (item.category == 'Maps' && item.count <= 0) continue;
+        const name_id = item.name;
+        let name = '';
+        let href = '';
+        if (item.category == 'Trees') {
+            href = [ get_handle_prefix(handle_map[name_id]) ];
+            name = key_name[name_id];
+        } else if (item.category == 'Maps') {
+            name = key_name[name_id];
+            href = [ 'trees', name_id, get_handle_prefix(handle_map[name_id]) ];
+        } else if (item.category == 'Parks') {
+            name = park_map[name_id];
+            href = [ 'parks', name_id, name ];
+        } else if (item.category == 'Wards') {
+            name = ward_map[name_id];
+            href = [ 'wards', name_id, name ];
         }
+        const category = get_lang_map_word(lang, map_dict, item.category);
+        href = get_search_href(item.category, href);
+        const new_pop = (score_ratio * item.score) + (pop_ratio * item.pop);
+        let pop = (calculate_pop) ? new_pop : item.pop;
+        if (item.category == 'Maps') pop -= 1;
+        pop = base_pop + pop;
+        let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score };
+        if (item.category == 'Trees' || item.category == 'Maps') {
+            const tree_handle = handle_map[name_id];
+            r_item['G'] = tree_handle[H_GENUS];
+            r_item['S'] = tree_handle[H_SPECIES];
+        }
+        if (name_id != '') {
+            r_item['I'] = name_id;
+        }
+        item_list.push(r_item);
+        id_list.add(item.id);
     }
 }
 
@@ -674,33 +696,32 @@ function get_tamil_phonetic_word(word) {
     return w_list.join('');
 }
 
-let search_options = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
 function load_search_part(search_word, non_english) {
     const s_search_word = search_word.replace(/\s/g, '');
     const item_list = [];
     const id_list = new Set();
-    search_options.fuzzy = term => term.length > 3 ? 0.1 : null;
-    get_search_results(search_word, search_options, item_list, id_list, 4000);
+    SEARCH_OPTIONS.fuzzy = term => term.length > 3 ? 0.1 : null;
+    get_search_results(search_word, item_list, id_list, SEARCH_BASE_2);
     if (search_word != s_search_word) {
-        get_search_results(s_search_word, search_options, item_list, id_list, 1000);
+        get_search_results(s_search_word, item_list, id_list, SEARCH_BASE_1);
     }
     let n_search_word = '';
     if (non_english) {
         n_search_word = get_tamil_phonetic_word(search_word);
-        get_search_results(n_search_word, search_options, item_list, id_list, 5000);
+        get_search_results(n_search_word, item_list, id_list, SEARCH_BASE_3);
     }
     if (search_word.length > 2) {
-        search_options.fuzzy = term => term.length > 3 ? 0.3 : null;
-        get_search_results(search_word, search_options, item_list, id_list, 0);
+        SEARCH_OPTIONS.fuzzy = term => term.length > 3 ? 0.3 : null;
+        get_search_results(search_word, item_list, id_list, SEARCH_BASE_0);
         if (non_english && n_search_word) {
-            get_search_results(n_search_word, search_options, item_list, id_list, 0);
+            get_search_results(n_search_word, item_list, id_list, SEARCH_BASE_0);
         }
         if (search_word != s_search_word) {
-            get_search_results(s_search_word, search_options, item_list, id_list, 0);
+            get_search_results(s_search_word, item_list, id_list, SEARCH_BASE_0);
         }
     }
     item_list.sort(function (a, b) { return b.P - a.P; });
-    const new_item_list = item_list.slice(0, 25);
+    const new_item_list = item_list.slice(0, MAX_RESULTS);
     // console.log('Search results:', new_item_list);
     return new_item_list;
 }
@@ -737,19 +758,38 @@ function load_search_history(data) {
 
 function get_geocoder_nominatim() {
     return L.Control.Geocoder.nominatim({
-            geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
+               geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
            });
 }
 
-function create_osm_map(module, id_name, c_lat, c_long) {
-    const osm_map = new L.map(id_name, { center: [c_lat, c_long], zoom: 18, minZoom: 16, maxZoom: 21 });
+function get_tree_zoom(tid, zoom) {
+    const count = window.tree_count_data[tid];
+    return (!window.map_area_move && count < TREE_COUNT) ? TREE_ZOOM : zoom;
+}
+
+function get_create_zoom(tid) {
+    return (window.area_type == 'trees') ? get_tree_zoom(tid, NATIVE_ZOOM) : NATIVE_ZOOM;
+}
+
+function get_view_zoom(osm_map, tid) {
+    const zoom = osm_map.getZoom()
+    return (window.area_type == 'trees') ? get_tree_zoom(tid, zoom) : zoom;
+}
+
+function create_osm_map(module, id_name, c_lat, c_long, tid) {
+    const map_options = { center: [ c_lat, c_long ],
+                          zoom: get_create_zoom(tid),
+                          minZoom: (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM,
+                          maxZoom: MAX_ZOOM
+                        }
+    const osm_map = new L.map(id_name, map_options);
     osm_map.on('zoomend dragend', draw_map_on_move);
 
     const tile_layer = new L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      subdomains: ['a', 'b', 'c'],
-      maxNativeZoom: 18,
-      maxZoom: 21 
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: ['a', 'b', 'c'],
+        maxNativeZoom: NATIVE_ZOOM,
+        maxZoom: MAX_ZOOM
     });
     tile_layer.addTo(osm_map);
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
@@ -759,9 +799,6 @@ function create_osm_map(module, id_name, c_lat, c_long) {
     }
     return osm_map;
 }
-
-const MAP_ICON_SIZE  = [24, 24];
-const MAP_ANCHOR_POS = [12, 24];
 
 function create_icons() {
     window.green_tree_icon = new L.icon({
@@ -868,17 +905,6 @@ function marker_on_contextmenu(e) {
     get_bs_modal('CONTEXT_MODAL').show();
 }
 
-function draw_map_on_move(ev) {
-    const osm_map = window.map_osm_map;
-    const a_name = window.map_area_name;
-    const aid = window.map_area_id;
-    const tid = window.map_tree_id;
-    const latlong = osm_map.getCenter();
-    window.map_area_move = true;
-    show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
-    window.map_area_move = false;
-}
-
 function get_area_centre() {
     if (window.map_osm_map == undefined) {
         return [];
@@ -923,9 +949,10 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         for (let i = 0; i < area_marker_list.length; i++) {
             osm_map.removeLayer(area_marker_list[i]);
         }
-        osm_map.setView([c_lat, c_long]);
+        const zoom = get_view_zoom(osm_map, tid);
+        osm_map.setView([c_lat, c_long], zoom);
     } else {
-        osm_map = create_osm_map('area', 'MAPINFO', c_lat, c_long);
+        osm_map = create_osm_map('area', 'MAPINFO', c_lat, c_long, tid);
         window.map_osm_map = osm_map;
         window.map_area_move = false;
         window.map_initialized = true;
@@ -933,15 +960,25 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     if (tid != undefined && tid != 0) {
         set_chosen_image(tid);
     }
-    if (area == 'trees') {
-        osm_map.options.minZoom = 12;
-    }
+    if (area == 'trees') osm_map.options.minZoom = TREE_ZOOM;
     draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long);
     window.area_latlong = [];
 }
 
+function draw_map_on_move(ev) {
+    const osm_map = window.map_osm_map;
+    const a_name = window.map_area_name;
+    const aid = window.map_area_id;
+    const tid = window.map_tree_id;
+    const latlong = osm_map.getCenter();
+    window.map_area_move = true;
+    show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
+    window.map_area_move = false;
+}
+
 function load_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     window.area_latlong = [];
+    window.map_area_move = false;
     show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
     add_history('maps', { 'type' : window.area_type, 'id' : aid });
 }
@@ -1182,16 +1219,16 @@ async function tree_area_init(area, aid, item_data) {
     let name = capitalize_word(area);
     if (area == 'parks') {
         const data = item_data['parks'];
-        if (aid != '') {
-            const area_list = data['parkinfo'];
-            for (let i = 0; i < area_list.length; i++) {
-                const park_list = area_list[i]['parks'];
-                for (let j = 0; j < park_list.length; j++) {
-                    const park = park_list[j];
-                    if (park['PID'] == aid) {
-                        name = park['PN'];
-                        lat_long = [ parseFloat(park['PLAT']), parseFloat(park['PLONG']) ];
-                    }
+        const area_list = data['parkinfo'];
+        for (let i = 0; i < area_list.length; i++) {
+            const park_area = area_list[i];
+            park_area['SN'] = i + 1;
+            const park_list = park_area['parks'];
+            for (let j = 0; j < park_list.length; j++) {
+                const park = park_list[j];
+                if (aid != '' && park['PID'] == aid) {
+                    name = park['PN'];
+                    lat_long = [ parseFloat(park['PLAT']), parseFloat(park['PLONG']) ];
                 }
             }
         }
@@ -1199,14 +1236,13 @@ async function tree_area_init(area, aid, item_data) {
         render_template_data('stats-template', 'STATINFO', data);
     } else if (area == 'wards') {
         const data = item_data['wards'];
-        if (aid != '') {
-            const ward_list = data['wardinfo'];
-            for (let i = 0; i < ward_list.length; i++) {
-                const ward = ward_list[i];
-                if (ward['AID'] == aid) {
-                    name = ward['AN'];
-                    lat_long = [ parseFloat(ward['ALAT']), parseFloat(ward['ALONG']) ];
-                }
+        const ward_list = data['wardinfo'];
+        for (let i = 0; i < ward_list.length; i++) {
+            const ward = ward_list[i];
+            ward['SN'] = i + 1;
+            if (aid != '' && ward['AID'] == aid) {
+                name = ward['AN'];
+                lat_long = [ parseFloat(ward['ALAT']), parseFloat(ward['ALONG']) ];
             }
         }
         render_template_data('sidenav-template', 'NAVINFO', data);
@@ -1218,6 +1254,7 @@ async function tree_area_init(area, aid, item_data) {
             const an = tree_list[i];
             const tree_id = an['AN'];
             an['AN'] = key_name[tree_id];
+            an['SN'] = i + 1;
             if (tree_id == aid) {
                 lat_long = [ parseFloat(an['ALAT']), parseFloat(an['ALONG']) ];
             }
@@ -1360,7 +1397,7 @@ function speech_to_text_init() {
               window.speech_ignore_onend = true;
             }
             if (event.error == 'not-allowed') {
-                if (event.timeStamp - window.speech_start_timestamp < 100) {
+                if (event.timeStamp - window.speech_start_timestamp < SPEECH_TIME) {
                     console.log('Speech Error: Info Blocked');
                 } else {
                     console.log('Speech Error: Info Denied');
@@ -1616,6 +1653,7 @@ function tree_main_init() {
     window.render_language = 'English';
     window.history_data = undefined;
     window.tree_lang_data = {};
+    window.tree_count_data = {};
     window.tree_region = 'bangalore';
     window.search_initialized = false;
     window.area_marker_list = [];

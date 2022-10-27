@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 70,000+ trees marked in 160+ parks (including Lalbagh, and Cubbon Park), and many BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 71,000+ trees marked in 160+ parks (including Lalbagh, and Cubbon Park), and many BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
@@ -180,18 +180,18 @@
   <script type="text/html" id="area-template">
     <div class="col-3">
         <div>
-            <h3>{{T}}</h3>
+          <h3>{{T}}</h3>
         </div>
         <div id="IMAGEINFO">
         </div>
         <nav class="navbar navbar-light bg-light">
-            <div id="NAVINFO">
-            </div>
+          <div id="NAVINFO" class="eside-scroll">
+          </div>
         </nav>
     </div>
     <div class="col-9 d-flex flex-column">
         <div class="p-2">
-            <center><h3 id="TITLE_HEADER">{{H}}</h3></center>
+          <center><h3 id="TITLE_HEADER">{{H}}</h3></center>
         </div>
         <div id="MAPINFO" class="p-2">
         </div>
@@ -355,36 +355,39 @@
   </script>
 
   <script type="text/html" id="sidenav-template">
-  {{#parkinfo}}
+      {{#parkinfo}}
       <ul class="navbar-nav">
-         <li class="nav-item">{{AN}} (<em><font color="brown">{{AC}}</font></em>)
-             <ul>
-                 {{#parks}}
-                 <li class="nav-item">
-                     <a href="javascript:load_area_latlong_in_osm('{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
-                        {{PID}}. {{PN}}
-                     </a>
-                 </li>
-                 {{/parks}}
-             </ul>
+         <li class="nav-item">{{SN}}. {{AN}} (<em><font color="brown">{{AC}}</font></em>)
+           <ul>
+             {{#parks}}
+               <li class="nav-item">
+                 {{PID}}. 
+                 <a href="javascript:load_area_latlong_in_osm('{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
+                   {{PN}}
+                 </a>
+               </li>
+             {{/parks}}
+           </ul>
          </li>
       </ul>
       {{/parkinfo}}
       {{#wardinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">
-             <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
-                {{AN}} : {{AID}} (<em><font color="brown">{{AC}}</font></em>)
-             </a>
+           {{SN}}. 
+           <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
+              {{AN}} : {{AID}} (<em><font color="brown">{{AC}}</font></em>)
+           </a>
          </li>
       </ul>
       {{/wardinfo}}
       {{#mapinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">
-             <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
-                {{AN}} (<em><font color="brown">{{AC}}</font></em>)
-             </a>
+           {{SN}}. 
+           <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
+              {{AN}} (<em><font color="brown">{{AC}}</font></em>)
+           </a>
          </li>
       </ul>
       {{/mapinfo}}
@@ -394,10 +397,10 @@
       <table border="0" cellpadding="4" class="table table-striped table-condensed" >
       <tbody>
         {{#parkinfo}}
-            <tr><td><b><strong>{{AN}}</strong></b></td><td><em>{{{AC}}}</em></td></tr>
+          <tr><td><b><strong>{{AN}}</strong></b></td><td><em>{{{AC}}}</em></td></tr>
         {{/parkinfo}}
         {{#wardinfo}}
-            <tr><td><b><strong>{{AN}}</strong></b></td><td><em>{{{AC}}}</em></td></tr>
+          <tr><td><b><strong>{{AN}}</strong></b></td><td><em>{{{AC}}}</em></td></tr>
         {{/wardinfo}}
     </tbody>
     </table>
@@ -405,24 +408,22 @@
 
   <script type="text/html" id="tree-stats-template">
       <table border="0" cellpadding="4" class="table table-striped table-condensed" >
-      <tbody>
+        <tbody>
           {{#trees}}
            <tr>
-               <td>
-                 <em>{{TIN}}.</em>
-               </td>
-               <td>
-                 <img class="ICON" src="{{TI}}" alt="{{TN}}" />
-                 <a href="javascript:area_click_tree({{TID}});">
-                    <b><strong>{{TN}}</strong></b>
-                 </a>
-               </td>
-               <td>
-                 <em><font color="brown">{{{TC}}}</font></em>
-               </td>
+             <td>
+               <em>{{TIN}}.</em>
+               <a href="javascript:area_click_tree({{TID}});">
+                  <b><strong>{{TN}}</strong></b>
+               </a>
+               <img class="ICON" src="{{TI}}" alt="{{TN}}" />
+             </td>
+             <td>
+               <em><font color="brown">{{{TC}}}</font></em>
+             </td>
            </tr>
           {{/trees}}
-      </tbody>
+        </tbody>
       </table>
   </script>
     
@@ -435,10 +436,10 @@
               <div class="d-flex">
                 <div class="d-block p-2">
                   <a href="javascript:load_area_data('trees', '{{TID}}', '{{SN}}');">
-                      <em>{{SN}}</em>
+                    <em>{{SN}}</em>
                   </a>
                   <a href="javascript:load_module_data('{{SH}}');">
-                      <img class="d-block" src="{{SI}}" alt="{{SN}}" />
+                    <img class="d-block" src="{{SI}}" alt="{{SN}}" />
                   </a>
                 </div>
               </div>
@@ -459,10 +460,10 @@
   <script type="text/html" id="module-card-info-template">
     {{#galleryinfo}}
     <h2>
-        <mark>{{HN}}</mark> : <em><small>{{HB}}</small></em>
-        <a href="javascript:load_area_data('trees', '{{HID}}', '{{HN}}');">
-           <img class="ICON" src="icons/geo-alt.svg">
-        </a>
+      <mark>{{HN}}</mark> : <em><small>{{HB}}</small></em>
+      <a href="javascript:load_area_data('trees', '{{HID}}', '{{HN}}');">
+         <img class="ICON" src="icons/geo-alt.svg">
+      </a>
     </h2>
     <br/>
     <div id="PHOTO_GALLERY" class="card">
@@ -515,13 +516,13 @@
       {{#statsinfo}}
       <div class="row">
         <div class="col-3">
-            <table style="margin-top: 0" border="0" cellpadding="4" class="table table-striped table-condensed" >
+          <table style="margin-top: 0" border="0" cellpadding="4" class="table table-striped table-condensed" >
             <tbody>
               {{#items}}
                 <tr><td><strong>{{N}}</strong></td><td><em>{{C}}</em></td></tr>
               {{/items}}
             </tbody>
-            </table>
+          </table>
         </div>
         {{/statsinfo}}
         {{#sliderinfo}}
@@ -545,15 +546,15 @@
 
   <script type="text/html" id="lang-key-template">
       <div id="LANGKBD" class="d-inline-block col-lg-6" tabindex="0" ready="1">
-          <table class="langkbd table table-fit">
+        <table class="langkbd table table-fit">
           {{#row}}
           <tr class="keyrow d_flex justify-content-center">
-              {{#col}}
-              <td id="key_{{I}}" {{{C}}} class="keycol flex-fill text-center border rounded" onclick="on_key_click()">{{{N}}}</td>
-              {{/col}}
+            {{#col}}
+            <td id="key_{{I}}" {{{C}}} class="keycol flex-fill text-center border rounded" onclick="on_key_click()">{{{N}}}</td>
+            {{/col}}
           </tr>
           {{/row}}
-          </table>
+        </table>
      </div>
   </script>
 
