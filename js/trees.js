@@ -14,17 +14,23 @@ const MAX_ZOOM    = 21;
 const MAP_ICON_SIZE  = [24, 24];
 const MAP_ANCHOR_POS = [12, 24];
 
-const SEARCH_OPTIONS = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
-
-const MAX_PAGES   = 100;
-const TREE_COUNT  = 200;
-const SPEECH_TIME = 100; 
+const SEARCH_OPTIONS  = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
+const SEARCH_END_CHAR = '.';
 
 const SEARCH_BASE_0 = 0;
 const SEARCH_BASE_1 = 1000;
 const SEARCH_BASE_2 = 4000;
 const SEARCH_BASE_3 = 5000;
 const MAX_RESULTS   = 25;
+
+const TREE_COUNT  = 200;
+const SPEECH_TIME = 100; 
+const MAX_PAGES   = 100;
+
+const LANGUAGE_URL = 'language.json';
+const SEARCH_URL   = 'flora_index.json';
+const AREA_URL     = 'area.json';
+const GRID_URL     = 'grid.json';
 
 let current_page = 1;
 let max_page = MAX_PAGES;
@@ -205,7 +211,7 @@ function get_module_name(handle_map, tree_id) {
 async function tree_module_init(file_name, data) {
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
-        const url = '../../language.json';
+        const url = `../../${LANGUAGE_URL}`;
         const lang_obj = await fetch_url(url);
         if (lang_obj != null) {
             window.tree_lang_data = lang_obj;
@@ -309,8 +315,7 @@ function tree_simple_init(data) {
 }
 
 function get_region_url(type) {
-    const region = window.tree_region;
-    return `Flora/trees_${region}_${type}.json`;
+    return `Flora/trees_${window.tree_region}_${type}.json`;
 }
 
 function tree_intro_init(slider_data) {
@@ -548,9 +553,8 @@ function normalize_search_text(search_text) {
 
 async function search_load() {
     if (window.search_initialized) return;
-    const url = 'flora_index.json';
     const search_engine = window.flora_fauna_search_engine;
-    const search_obj = await fetch_url(url);
+    const search_obj = await fetch_url(SEARCH_URL);
     if (search_obj != null) {
         let data_id = 0;
         for (let category in search_obj) {
@@ -739,10 +743,47 @@ function handle_search_word(search_word) {
     add_history('search', { 'search' : search_word });
 }
 
+function get_geocoder_nominatim() {
+    const nominatim =  L.Control.Geocoder.nominatim({
+              geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
+          });
+    window.geocoder_nominatim = nominatim;
+    return nominatim;
+}
+
+function get_geocoder_search_results(search_word) {
+    if (window.geocoder_nominati == undefined) {
+        window.geocoder_nominatim = get_geocoder_nominatim();
+    }
+    window.geocoder_nominatim.geocode(search_word, handle_geocoder_search_results, search_word);
+}
+
+function handle_geocoder_search_results(results, context) {
+    console.log('handle_geocoder_search_results:', results, context);
+    const search_items = [];
+    for (let i = 0; i < results.length; i++) {
+        const item = results[i];
+        const name = item.name.split(',').slice(0, 3).join(',');
+        const ll = item.center;
+        const latlong = `${ll.lat},${ll.lng}`;
+        const href = get_search_href('parks', [ 'parks', name, latlong ]);
+        const new_item = { I: i, T: 'Geocoder', N: name, H: href, P: i, SC: i };
+        search_items.push(new_item);
+    }
+    const item_data = { "searchinfo" : { "results" : search_items } };
+    render_template_data('search-template', 'SECTION', item_data);
+    window.scrollTo(0, 0);
+}
+
 function load_search_data() {
     let search_word = document.getElementById('SEARCH_WORD').value;
     search_word = decodeURI(search_word);
-    handle_search_word(search_word);
+    const search_len = search_word.length;
+    if (search_len > 1 && search_word[search_len - 1] == SEARCH_END_CHAR) {
+        get_geocoder_search_results(search_word.slice(0, search_len - 1))
+    } else {
+        handle_search_word(search_word);
+    }
 }
 
 function init_search_listener() {
@@ -754,12 +795,6 @@ function load_search_history(data) {
     const search_word = data['search'];
     document.getElementById('SEARCH_WORD').value = search_word;
     handle_search_word(search_word);
-}
-
-function get_geocoder_nominatim() {
-    return L.Control.Geocoder.nominatim({
-               geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
-           });
 }
 
 function get_tree_zoom(tid, zoom) {
@@ -1190,8 +1225,7 @@ async function tree_area_init(area, aid, item_data) {
 
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
-        const url = 'language.json';
-        const lang_obj = await fetch_url(url);
+        const lang_obj = await fetch_url(LANGUAGE_URL);
         if (lang_obj != null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
@@ -1265,8 +1299,7 @@ async function tree_area_init(area, aid, item_data) {
         return;
     }
 
-    const url = 'grid.json';
-    const grid_obj = await fetch_url(url);
+    const grid_obj = await fetch_url(GRID_URL);
     if (grid_obj != null) {
         window.GRID_FLORA = grid_obj;
         window.map_initialized = false;
@@ -1299,15 +1332,15 @@ async function tree_area_init(area, aid, item_data) {
     };
 }
 
-async function load_area_data(area_type, area_id) {
+async function load_area_data(area_type, area_id, area_latlong) {
     const lang = window.render_language;
     const map_dict = window.tree_lang_data['Keys'];
     const area_data = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
                         'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
                       };
     render_template_data('area-template', 'SECTION', area_data);
-    const url = 'area.json';
-    const item_data = await fetch_url(url);
+    if (area_latlong != undefined) window.area_latlong = area_latlong.split(',');
+    const item_data = await fetch_url(AREA_URL);
     if (item_data != null) {
         tree_area_init(area_type, area_id, item_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
@@ -1632,8 +1665,7 @@ function load_menu_data() {
 }
 
 async function load_content() {
-    const url = 'language.json';
-    const lang_obj = await fetch_url(url);
+    const lang_obj = await fetch_url(LANGUAGE_URL);
     if (lang_obj != null) {
         window.tree_lang_data = lang_obj;
         lang_name_init();
@@ -1663,6 +1695,7 @@ function tree_main_init() {
     window.map_initialized = false;
     window.tree_popstate = false;
     window.url_params = get_url_params();
+    window.geocoder_nominatim = undefined;
 
     window.addEventListener('popstate', handle_popstate);
     window.onload = load_content;
