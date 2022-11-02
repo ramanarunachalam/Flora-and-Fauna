@@ -665,7 +665,7 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
             href = [ 'trees', name_id, get_handle_prefix(handle_map[name_id]) ];
         } else if (item.category == 'Parks') {
             name = park_map[name_id];
-            href = [ 'parks', name_id, name ];
+            href = [ 'parks', name_id, name.replace("'", "") ];
         } else if (item.category == 'Wards') {
             name = ward_map[name_id];
             href = [ 'wards', name_id, name ];
@@ -745,28 +745,28 @@ function handle_search_word(search_word) {
 
 function get_geocoder_nominatim() {
     const nominatim =  L.Control.Geocoder.nominatim({
-              geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
-          });
+        geocodingQueryParams: { viewbox: BANGALORE_BBOX, countrycodes: 'in', bounded: 1 }
+    });
     window.geocoder_nominatim = nominatim;
     return nominatim;
 }
 
 function get_geocoder_search_results(search_word) {
-    if (window.geocoder_nominati == undefined) {
+    if (window.geocoder_nominatim == null || window.geocoder_nominatim == undefined) {
         window.geocoder_nominatim = get_geocoder_nominatim();
     }
     window.geocoder_nominatim.geocode(search_word, handle_geocoder_search_results, search_word);
 }
 
 function handle_geocoder_search_results(results, context) {
-    console.log('handle_geocoder_search_results:', results, context);
+    // console.log('handle_geocoder_search_results:', results, context);
     const search_items = [];
     for (let i = 0; i < results.length; i++) {
         const item = results[i];
         const name = item.name.split(',').slice(0, 3).join(',');
         const ll = item.center;
         const latlong = `${ll.lat},${ll.lng}`;
-        const href = get_search_href('parks', [ 'parks', name, latlong ]);
+        const href = get_search_href('parks', [ 'parks', name.replace("'", ""), latlong ]);
         const new_item = { I: i, T: 'Geocoder', N: name, H: href, P: i, SC: i };
         search_items.push(new_item);
     }
@@ -803,7 +803,7 @@ function get_tree_zoom(tid, zoom) {
 }
 
 function get_create_zoom(tid) {
-    return (window.area_type == 'trees') ? get_tree_zoom(tid, NATIVE_ZOOM) : NATIVE_ZOOM;
+    return (window.area_type == 'trees') ? get_tree_zoom(tid, MIN_ZOOM) : NATIVE_ZOOM;
 }
 
 function get_view_zoom(osm_map, tid) {
@@ -835,27 +835,15 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
     return osm_map;
 }
 
+function create_marker_icon(file_name) {
+    return new L.icon({ iconUrl: `icons/${file_name}`, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
+}
+
 function create_icons() {
-    window.green_tree_icon = new L.icon({
-        iconUrl: 'icons/marker_tree_green.png',
-        iconSize: MAP_ICON_SIZE,
-        iconAnchor: MAP_ANCHOR_POS
-    });
-    window.green_bloom_icon = new L.icon({
-        iconUrl: 'icons/marker_bloom_green.png',
-        iconSize: MAP_ICON_SIZE,
-        iconAnchor: MAP_ANCHOR_POS
-    });
-    window.red_tree_icon = new L.icon({
-        iconUrl: 'icons/marker_tree_red.png',
-        iconSize: MAP_ICON_SIZE,
-        iconAnchor: MAP_ANCHOR_POS
-    });
-    window.red_bloom_icon = new L.icon({
-        iconUrl: 'icons/marker_bloom_red.png',
-        iconSize: MAP_ICON_SIZE,
-        iconAnchor: MAP_ANCHOR_POS
-    });
+    window.green_tree_icon = create_marker_icon('marker_tree_green.png');
+    window.green_bloom_icon = create_marker_icon('marker_bloom_green.png');
+    window.red_tree_icon = create_marker_icon('marker_tree_red.png');
+    window.red_bloom_icon = create_marker_icon('marker_bloom_red.png');
 }
 
 function get_url_info(tree_id, level) {
@@ -954,6 +942,20 @@ function handle_geocoder_mark(ev) {
     add_history('maps', { 'type' : window.area_type, 'id' : window.parent.map_area_id });
 }
 
+async function fetch_area_data() {
+    if (window.area_data == null) {
+        window.area_data = await fetch_url(AREA_URL);
+    }
+    return window.area_data;
+}
+
+async function fetch_grid_data() {
+    if (window.grid_data == null) {
+        window.grid_data = await fetch_url(GRID_URL);
+    }
+    return window.grid_data;
+}
+
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     const lang = window.render_language;
     const map_dict = window.tree_lang_data['Keys'];
@@ -966,13 +968,13 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     window.map_tree_id = tid;
 
-    let n_name = ''
+    let n_name = '';
     if (area == 'trees') {
         n_name = get_module_name(null, tid);
     } else {
         n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
         if (aid != '') {
-            n_name = aid + '. ' + n_name;
+            n_name = isFinite(aid) ? `${aid}. ${n_name}` : aid;
         }
     }
     plain_set_html_text('TITLE_HEADER', n_name);
@@ -1299,7 +1301,7 @@ async function tree_area_init(area, aid, item_data) {
         return;
     }
 
-    const grid_obj = await fetch_url(GRID_URL);
+    const grid_obj = await fetch_grid_data();
     if (grid_obj != null) {
         window.GRID_FLORA = grid_obj;
         window.map_initialized = false;
@@ -1335,14 +1337,14 @@ async function tree_area_init(area, aid, item_data) {
 async function load_area_data(area_type, area_id, area_latlong) {
     const lang = window.render_language;
     const map_dict = window.tree_lang_data['Keys'];
-    const area_data = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
+    const area_info = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
                         'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
                       };
-    render_template_data('area-template', 'SECTION', area_data);
+    render_template_data('area-template', 'SECTION', area_info);
     if (area_latlong != undefined) window.area_latlong = area_latlong.split(',');
-    const item_data = await fetch_url(AREA_URL);
-    if (item_data != null) {
-        tree_area_init(area_type, area_id, item_data);
+    const area_data = await fetch_area_data();
+    if (area_data != null) {
+        tree_area_init(area_type, area_id, area_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
     };
 }
@@ -1359,8 +1361,8 @@ async function load_collection_data(type, letter, page_index, page_max) {
 }
 
 async function load_category_data(type) {
-    const grid_data = {};
-    render_template_data('grid-template', 'SECTION', grid_data);
+    const category_grid_data = {};
+    render_template_data('grid-template', 'SECTION', category_grid_data);
     const url = get_region_url('grid');
     const item_data = await fetch_url(url);
     if (item_data != null) {
@@ -1528,9 +1530,7 @@ function handle_history_context(data) {
 
 function handle_popstate(e) {
     const data = e.state;
-    if (data == null || data == undefined) {
-        return;
-    }
+    if (data == null || data == undefined) return;
     // console.log('POP: ', e);
     window.tree_popstate = true;
     handle_history_context(data);
@@ -1649,13 +1649,13 @@ function load_menu_data() {
 
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
+        return new bootstrap.Tooltip(tooltipTriggerEl)
     });
 
     init_search_listener();
     speech_to_text_init();
 
-    if (window.history_data == undefined) {
+    if (window.history_data == null || window.history_data == undefined) {
         if (Object.keys(window.tree_lang_data).length != 0) {
             load_intro_data(window.tree_region);
         }
@@ -1681,22 +1681,24 @@ async function load_content() {
 }
 
 function tree_main_init() {
-    window.info_initialized = true;
     window.render_language = 'English';
-    window.history_data = undefined;
-    window.tree_lang_data = {};
-    window.tree_count_data = {};
     window.tree_region = 'bangalore';
+    window.info_initialized = true;
     window.search_initialized = false;
+    window.map_initialized = false;
+    window.tree_popstate = false;
     window.area_marker_list = [];
     window.area_popup_list = [];
     window.area_tooltip_list = [];
     window.area_latlong = [];
-    window.map_initialized = false;
-    window.tree_popstate = false;
-    window.url_params = get_url_params();
-    window.geocoder_nominatim = undefined;
+    window.tree_lang_data = {};
+    window.tree_count_data = {};
+    window.area_data = null;
+    window.grid_data = null;
+    window.history_data = null;
+    window.geocoder_nominatim = null;
 
+    window.url_params = get_url_params();
     window.addEventListener('popstate', handle_popstate);
     window.onload = load_content;
 
