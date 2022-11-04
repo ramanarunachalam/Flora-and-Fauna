@@ -147,11 +147,11 @@ a:not([class*="btn"]):hover {
 }
 
 .carousel-item>div>img {
-    display:block;
+    display: block;
     box-shadow: 0px 0 4px rgba(0, 0, 0, 0.4);
     background-color: black;
-    border:10px solid white;
-    position:relative;
+    border: 10px solid white;
+    position: relative;
 }
 
 .carousel-caption
@@ -248,9 +248,6 @@ td.keycol:hover {
     background-color:var(--black-300)
 }
 
-.swiper {
-    position: relative;
-}
 .swiper-button-next {
     right: 0px;
 }
