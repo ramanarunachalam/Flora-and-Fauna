@@ -1288,7 +1288,7 @@ async function tree_area_init(area, aid, item_data) {
         const tree_list = data['mapinfo'];
         for (let i = 0; i < tree_list.length; i++) {
             const an = tree_list[i];
-            const tree_id = an['AN'];
+            const tree_id = parseInt(an['AN']);
             an['AN'] = key_name[tree_id];
             an['SN'] = i + 1;
             if (tree_id == aid) {
