@@ -812,26 +812,40 @@ function get_view_zoom(osm_map, tid) {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
-    const map_options = { center: [ c_lat, c_long ],
-                          zoom: get_create_zoom(tid),
-                          minZoom: (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM,
-                          maxZoom: MAX_ZOOM
-                        }
+    const OSM_TILE_URL     = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const OSM_BUILDING_URL = 'https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json';
+    const OSM_ATTRIBUTION  = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+    const map_options  = { center: [ c_lat, c_long ],
+                           rotate: true,
+                           touchRotate: true,
+                           zoom: get_create_zoom(tid),
+                           minZoom: (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM,
+                           maxZoom: MAX_ZOOM
+                         };
+    const tile_options = { attribution: OSM_ATTRIBUTION,
+                           subdomains: ['a', 'b', 'c'],
+                           maxNativeZoom: NATIVE_ZOOM,
+                           maxZoom: MAX_ZOOM
+                         };
+
     const osm_map = new L.map(id_name, map_options);
     osm_map.on('zoomend dragend', draw_map_on_move);
 
-    const tile_layer = new L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        subdomains: ['a', 'b', 'c'],
-        maxNativeZoom: NATIVE_ZOOM,
-        maxZoom: MAX_ZOOM
-    });
+    const tile_layer = new L.tileLayer(OSM_TILE_URL, tile_options);
     tile_layer.addTo(osm_map);
+
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
     if (module == 'area') {
         geocoder.on('finishgeocode', handle_geocoder_mark);
     }
+
+    /*
+  <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
+    const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
+    */
+
     return osm_map;
 }
 
