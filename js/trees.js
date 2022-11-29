@@ -1079,7 +1079,7 @@ function area_carousel_init(tree_image_list) {
         centeredSlides: true,
         preLoadImages: true,
         slidesPerView: 3,
-        spaceBetween: 0,
+        spaceBetween: 5,
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
