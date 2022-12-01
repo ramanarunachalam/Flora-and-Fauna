@@ -185,48 +185,6 @@ a:not([class*="btn"]):hover {
     background-image: url("../icons/geo.svg");
 }
 
-.area-carousel {
-}
-
-#AREA_CAROUSEL {
-    width: 80%;
-    height: 120px;
-    margin: 0 auto;
-}
-
-#AREA_CAROUSEL .carousel-inner {
-    margin-left: 50px;
-}
-
-#AREA_CAROUSEL .carousel-inner .carousel-item-right.active,
-#AREA_CAROUSEL .carousel-inner .carousel-item-next {
-    transform: translateX(33.33%);
-}
-
-#AREA_CAROUSEL .carousel-inner .carousel-item-left.active,
-#AREA_CAROUSEL .carousel-inner .carousel-item-prev {
-    transform: translateX(-33.33%)
-}
-
-#AREA_CAROUSEL .carousel-inner .carousel-item-right,
-#AREA_CAROUSEL .carousel-inner .carousel-item-left {
-    transform: translateX(0);
-}
-
-#AREA_CAROUSEL .carousel-control-next,
-#AREA_CAROUSEL .carousel-control-prev {
-    width: 20px;
-    height: 20px;
-    filter: invert(100%);
-}
-
-/*
-#AREA_CAROUSEL .carousel-control-prev {
-    left: unset;
-    right: 30px;
-}
-*/
-
 :root {
     --black-100: #d6d9dc;
     --black-300: #9fa6ad;
