@@ -72,7 +72,10 @@ function plain_get_html_text(id) {
 }
 
 function plain_set_html_text(id, text) {
-    document.getElementById(id).innerHTML = text;
+    const element = document.getElementById(id);
+    if (element != null) {
+        element.innerHTML = text;
+    }
 }
 
 function plain_get_attr(id, key) {
@@ -1706,6 +1709,7 @@ function tree_main_init() {
     window.area_popup_list = [];
     window.area_tooltip_list = [];
     window.area_latlong = [];
+    window.tree_image_list = [];
     window.tree_lang_data = {};
     window.tree_count_data = {};
     window.area_data = null;
