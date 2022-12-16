@@ -348,38 +348,23 @@ function tree_intro_init(slider_data) {
         const href = get_handle_prefix(tree_handle);
         const part_name = get_part_name(tree_handle);
         const item = { SB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, SA: tree_handle[H_AUTH], SH: href,
-                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name)
+                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name), SC: count
                      }
         new_slider_list.push(item);
     }
-    slider_info['items'] = new_slider_list;
+    const start_id = Math.floor(Math.random() * new_slider_list.length);
+    const start_items = new_slider_list.splice(0, start_id);
+    const new_slide_items = new_slider_list.concat(start_items);
+
+    slider_info['items'] = new_slide_items;
     render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
 
-    let element = document.querySelector('#INTRO_CAROUSEL');
-    let carousel = new bootstrap.Carousel(element, {
-        ride: "carousel",
-        pause: "hover",
-        interval: 3000
+    const swiper = new Swiper('#INTRO_CAROUSEL', {
+        direction: 'horizontal',
+        preLoadImages: false,
+        lazy: { loadPrevNext: true },
+        autoplay: { delay: 5000, disableOnInteraction: false }
     });
-
-    carousel = document.getElementById('INTRO_CAROUSEL');
-    carousel.addEventListener('slide.bs.carousel', function() {
-        let element = carousel.querySelector('.active');
-        element = element.nextElementSibling; 
-        if (element != undefined) {
-            const child = element.children[0];
-            const value = child.getAttribute('data_src');
-            child.setAttribute('src', value);
-        }
-    });
-
-    let elements = carousel.querySelector('.carousel-inner').children;
-    const start_tree_id = Math.floor((Math.random() * elements.length));
-    element = elements[start_tree_id];
-    element.classList.add('active');
-    const child = element.children[0];
-    const value = child.getAttribute('data_src');
-    child.setAttribute('src', value);
 }
 
 async function load_intro_data(region) {

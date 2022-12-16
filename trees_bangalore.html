@@ -529,21 +529,23 @@
         {{/statsinfo}}
         {{#sliderinfo}}
         <div class="col-9">
-          <div id="INTRO_CAROUSEL" class="carousel slide carousel-fade" data-bs-ride="carousel">
-            <div class="carousel-inner">
+          <div id="INTRO_CAROUSEL" class="swiper">
+            <div class="swiper-wrapper">
               {{#items}}
-              <div class="carousel-item">
-                <img class="d-block TREE_SLIDER" data_src="Flora/{{SI}}" alt="{{SN}}" />
-                <div class="carousel-caption d-none d-md-block">
-                  <h4><em>{{SN}}</em><br/><small>{{SB}}</small><br/><em><small>{{SA}}</small></em></h4>
+              <div class="swiper-slide">
+                <div class="d-flex">
+                  <div class="d-block p-2">
+                    <h4><em>{{SN}}</em>&nbsp;({{SC}})&nbsp; - &nbsp;<small>{{SB}}</small>&nbsp; - &nbsp;<small>{{SA}}</small></h4>
+                    <img class="swiper-lazy" src="Flora/{{SI}}" alt="{{SN}}" />
+                    <div class="swiper-lazy-preloader"></div>
+                  </div>
                 </div>
               </div>
               {{/items}}
             </div>
           </div>
         </div>
-      </div>
-      {{/sliderinfo}}
+        {{/sliderinfo}}
   </script>
 
   <script type="text/html" id="lang-key-template">
