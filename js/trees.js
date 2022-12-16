@@ -325,13 +325,6 @@ function tree_intro_init(slider_data) {
     const lang = window.render_language;
 
     const stats_list = slider_data['statsinfo'];
-    const i_list = stats_list['items'];
-    for (let i = 0; i < i_list.length; i++) {
-        const i_dict = i_list[i];
-        if (i_dict['N'] == 'Updated') {
-            i_dict['C'] = i_dict['C'].split(' ')[0];
-        }
-    }
     get_lang_map(lang, stats_list);
 
     const lang_obj = window.tree_lang_data;
@@ -348,7 +341,7 @@ function tree_intro_init(slider_data) {
         const href = get_handle_prefix(tree_handle);
         const part_name = get_part_name(tree_handle);
         const item = { SB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, SA: tree_handle[H_AUTH], SH: href,
-                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name), SC: count
+                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name), SD: tree_id, SC: count
                      }
         new_slider_list.push(item);
     }
@@ -875,6 +868,8 @@ function set_chosen_image(tree_id) {
 }
 
 function handle_context_menu(key) {
+    bootstrap.Modal.getInstance(document.getElementById('CONTEXT_MODAL')).hide();
+
     const marker = window.TREE_CONTEXT_MARKER;
     const tree_id = marker.tree_id;
     const pos = marker.getLatLng();
@@ -887,7 +882,6 @@ function handle_context_menu(key) {
         const url = `http://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
         window.open(url, '');
     }
-    get_bs_modal('CONTEXT_MODAL').hide();
 }
 
 function marker_on_mouseover() {
