@@ -801,7 +801,7 @@ function get_view_zoom(osm_map, tid) {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
-    const OSM_TILE_URL     = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const OSM_TILE_URL     = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const OSM_BUILDING_URL = 'https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json';
     const OSM_ATTRIBUTION  = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
@@ -886,7 +886,7 @@ function handle_context_menu(key) {
     } else if (key == 'tmap') {
         load_area_data('trees', tree_id);
     } else if (key == 'gmap') {
-        const url = `http://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
+        const url = `https://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
         window.open(url, '');
     }
 }
