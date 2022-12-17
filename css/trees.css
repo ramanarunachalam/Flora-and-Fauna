@@ -2,25 +2,6 @@
 body {
     background-color: #F2F2F2;
     height: 900px;
-    /*
-    background-image: url("Trees of Bangalore/Dillenia - Elephant Apple Tree/Elephant Apple Tree - Flower.jpg");
-    background-repeat: no-repeat;
-    background-position: left bottom;
-    */
-}
-
-div#DIV_BODY {
-    border: 1px solid grey;
-}
-
-section#CONTENT {
-    width: 100%;
-    height: 92%;
-}
-
-iframe#FRAME_CONTENT {
-    width: 100%;
-    height: 100%;
 }
 
 table {
@@ -50,6 +31,14 @@ a {
     color: blue;
 }
 
+/* Bootstrap 5 tweak: do not underline links unless hovered over */
+a:not([class*="btn"]) {
+    text-decoration: none;
+}
+a:not([class*="btn"]):hover {
+    text-decoration: underline;
+}
+
 .ICON {
     width: 24px;
     height: 24px;
@@ -69,9 +58,6 @@ a {
     list-style-type: decimal-leading-zero;
 }
 
-.SIMPLE_UL {
-}
-
 .H_LIST ul {
     list-style: none;
  }
@@ -79,12 +65,6 @@ a {
 .H_LIST ol {
     list-style: none;
  }
-
-.IMAGE_ONLY {
-}
-
-.TEXT_ONLY {
-}
 
 .shadow-box {
     -moz-border-radius: 12px;
@@ -96,21 +76,6 @@ a {
     box-shadow: 4px 4px 14px #000; 
 }
 
-#introCarousel {
-}
-
-#statsCarousel {
-    z-index: 100;
-}
-
-/* Bootstrap 5 tweak: do not underline links unless hovered over */
-a:not([class*="btn"]) {
-    text-decoration: none;
-}
-a:not([class*="btn"]):hover {
-    text-decoration: underline;
-}
-
 #MAPINFO {
     width: 60vw;
     height: 640px;
@@ -119,6 +84,18 @@ a:not([class*="btn"]):hover {
 #IMAGE_MODAL .modal-content {
     width: 680px;
     height: 680px;
+}
+
+.swiper-button-next {
+    right: 0px;
+}
+.swiper-button-prev {
+    left: 0px;
+}
+
+.side-scroll {
+    height: 70vh;
+    overflow-y: scroll;
 }
 
 :root {
@@ -140,16 +117,4 @@ td.keycol {
 
 td.keycol:hover {
     background-color:var(--black-300)
-}
-
-.swiper-button-next {
-    right: 0px;
-}
-.swiper-button-prev {
-    left: 0px;
-}
-
-.side-scroll {
-    height: 70vh;
-    overflow-y: scroll;
 }

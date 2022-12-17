@@ -355,8 +355,15 @@ function tree_intro_init(slider_data) {
     const swiper = new Swiper('#INTRO_CAROUSEL', {
         direction: 'horizontal',
         preLoadImages: false,
-        lazy: { loadPrevNext: true },
-        autoplay: { delay: 5000, disableOnInteraction: false }
+        lazy: { loadOnTransitionStart: true },
+        effect: 'fade',
+        fadeEffect: {
+            crossFade: true
+        },
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false
+        }
     });
 }
 
