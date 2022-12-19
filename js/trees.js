@@ -6,11 +6,6 @@ const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
 const SEARCH_MAP_DICT = { 'c' : 's', 'p' : 'b' };
 
-const TREE_ZOOM   = 12;
-const MIN_ZOOM    = 16;
-const NATIVE_ZOOM = 18;
-const MAX_ZOOM    = 21;
-
 const MAP_ICON_SIZE  = [24, 24];
 const MAP_ANCHOR_POS = [12, 24];
 
@@ -31,6 +26,22 @@ const LANGUAGE_URL = 'language.json';
 const SEARCH_URL   = 'flora_index.json';
 const AREA_URL     = 'area.json';
 const GRID_URL     = 'grid.json';
+
+const OSM_TILE_URL     = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const OSM_BUILDING_URL = 'https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json';
+const OSM_ATTR_URL     = 'https://www.openstreetmap.org/copyright';
+const OSM_ATTRIBUTION  = `&copy; <a href="${OSM_ATTR_URL}">OpenStreetMap</a>`;
+
+const TREE_ZOOM   = 12;
+const MIN_ZOOM    = 16;
+const NATIVE_ZOOM = 18;
+const MAX_ZOOM    = 21;
+
+const TILE_OPTIONS = { attribution: OSM_ATTRIBUTION,
+                       subdomains: ['a', 'b', 'c'],
+                       maxNativeZoom: NATIVE_ZOOM,
+                       maxZoom: MAX_ZOOM
+                     };
 
 let current_page = 1;
 let max_page = MAX_PAGES;
@@ -340,8 +351,9 @@ function tree_intro_init(slider_data) {
         const tree_handle = handle_map[tree_id];
         const href = get_handle_prefix(tree_handle);
         const part_name = get_part_name(tree_handle);
-        const item = { SB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, SA: tree_handle[H_AUTH], SH: href,
-                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name), SD: tree_id, SC: count
+        const item = { SD: tree_id, SC: count,
+                       SB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, SA: tree_handle[H_AUTH], SH: href,
+                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name)
                      }
         new_slider_list.push(item);
     }
@@ -352,19 +364,21 @@ function tree_intro_init(slider_data) {
     slider_info['items'] = new_slide_items;
     render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
 
-    const swiper = new Swiper('#INTRO_CAROUSEL', {
-        direction: 'horizontal',
-        preLoadImages: false,
-        lazy: { loadOnTransitionStart: true },
-        effect: 'fade',
-        fadeEffect: {
-            crossFade: true
-        },
-        autoplay: {
-            delay: 5000,
-            disableOnInteraction: false
-        }
-    });
+    setTimeout(() => {
+        const swiper = new Swiper('#INTRO_CAROUSEL', {
+            direction: 'horizontal',
+            preLoadImages: false,
+            lazy: { loadOnTransitionStart: true },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false
+            }
+        });
+    }, 0);
 }
 
 async function load_intro_data(region) {
@@ -801,10 +815,6 @@ function get_view_zoom(osm_map, tid) {
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
-    const OSM_TILE_URL     = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    const OSM_BUILDING_URL = 'https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json';
-    const OSM_ATTRIBUTION  = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-
     const map_options  = { center: [ c_lat, c_long ],
                            rotate: true,
                            touchRotate: true,
@@ -812,16 +822,10 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
                            minZoom: (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM,
                            maxZoom: MAX_ZOOM
                          };
-    const tile_options = { attribution: OSM_ATTRIBUTION,
-                           subdomains: ['a', 'b', 'c'],
-                           maxNativeZoom: NATIVE_ZOOM,
-                           maxZoom: MAX_ZOOM
-                         };
-
     const osm_map = new L.map(id_name, map_options);
     osm_map.on('zoomend dragend', draw_map_on_move);
 
-    const tile_layer = new L.tileLayer(OSM_TILE_URL, tile_options);
+    const tile_layer = new L.tileLayer(OSM_TILE_URL, TILE_OPTIONS);
     tile_layer.addTo(osm_map);
 
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
