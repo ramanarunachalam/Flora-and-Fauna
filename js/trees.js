@@ -18,7 +18,6 @@ const SEARCH_BASE_2 = 4000;
 const SEARCH_BASE_3 = 5000;
 const MAX_RESULTS   = 25;
 
-const TREE_COUNT  = 200;
 const SPEECH_TIME = 100; 
 const MAX_PAGES   = 100;
 
@@ -31,6 +30,9 @@ const OSM_TILE_URL     = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const OSM_BUILDING_URL = 'https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json';
 const OSM_ATTR_URL     = 'https://www.openstreetmap.org/copyright';
 const OSM_ATTRIBUTION  = `&copy; <a href="${OSM_ATTR_URL}">OpenStreetMap</a>`;
+
+const TREE_MIN_COUNT = 200;
+const TREE_MAX_COUNT = 750;
 
 const TREE_ZOOM   = 12;
 const MIN_ZOOM    = 16;
@@ -368,15 +370,10 @@ function tree_intro_init(slider_data) {
         const swiper = new Swiper('#INTRO_CAROUSEL', {
             direction: 'horizontal',
             preLoadImages: false,
-            lazy: { loadOnTransitionStart: true },
+            lazy: { loadPrevNext: true },
             effect: 'fade',
-            fadeEffect: {
-                crossFade: true
-            },
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false
-            }
+            fadeEffect: { crossFade: true },
+            autoplay: { delay: 5000, disableOnInteraction: false }
         });
     }, 0);
 }
@@ -414,7 +411,7 @@ function search_init() {
 }
 
 function set_grid_page(n_current_page, n_max_page) {
-    current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : parseInt(n_current_page);
+    current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : +n_current_page;
     const a_list = plain_get_query_selector('li.page-item.active');
     for (let i = 0; i < a_list.length; i++) {
         a_list[i].classList.remove('active');
@@ -425,7 +422,7 @@ function set_grid_page(n_current_page, n_max_page) {
     id_str = 'bottom_' + current_page;
     element = document.querySelector(`li#${id_str}`);
     if (element) element.classList.add('active');
-    max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : parseInt(n_max_page);
+    max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : +n_max_page;
 }
 
 function show_page(which, is_prev) {
@@ -434,12 +431,12 @@ function show_page(which, is_prev) {
     if (is_prev) {
         new_page = 1;
         if (current_page > 1) {
-            new_page = parseInt(current_page) - 1;
+            new_page = +current_page - 1;
         }
     } else {
         new_page = max_page;
         if (current_page < max_page) {
-            new_page = parseInt(current_page) + 1;
+            new_page = +current_page + 1;
         }
     }
     current_page = new_page;
@@ -800,25 +797,25 @@ function load_search_history(data) {
     handle_search_word(search_word);
 }
 
-function get_tree_zoom(tid, zoom) {
-    const count = window.tree_count_data[tid];
-    return (!window.map_area_move && count < TREE_COUNT) ? TREE_ZOOM : zoom;
-}
-
-function get_create_zoom(tid) {
-    return (window.area_type == 'trees') ? get_tree_zoom(tid, MIN_ZOOM) : NATIVE_ZOOM;
-}
-
-function get_view_zoom(osm_map, tid) {
-    const zoom = osm_map.getZoom()
-    return (window.area_type == 'trees') ? get_tree_zoom(tid, zoom) : zoom;
+function get_zoom(osm_map, tid) {
+    let zoom = (osm_map != null) ? osm_map.getZoom() : NATIVE_ZOOM;
+    if (window.area_type == 'Trees') {
+        const count = window.tree_count_data[tid];
+        if (osm_map != null) {
+            zoom = (!window.map_area_move && zoom <= TREE_ZOOM) ? TREE_ZOOM : zoom;
+            zoom = (!window.map_area_move && count >= TREE_MAX_COUNT) ? MIN_ZOOM : zoom;
+        } else {
+            zoom = (count < TREE_MIN_COUNT) ? TREE_ZOOM : MIN_ZOOM;
+        }
+    }
+    return zoom;
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
     const map_options  = { center: [ c_lat, c_long ],
                            rotate: true,
                            touchRotate: true,
-                           zoom: get_create_zoom(tid),
+                           zoom: get_zoom(null, tid),
                            minZoom: (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM,
                            maxZoom: MAX_ZOOM
                          };
@@ -957,11 +954,45 @@ async function fetch_area_data() {
     return window.area_data;
 }
 
-async function fetch_grid_data() {
-    if (window.grid_data == null) {
-        window.grid_data = await fetch_url(GRID_URL);
+function create_quad_tree(grid_flora) {
+    const quad_tree = d3.quadtree();
+    for (let i = 0; i < grid_flora.length; i++) {
+        const [ g_sw_lat, g_sw_long, g_ne_lat, g_ne_long, md_name, flora_list ] = grid_flora[i];
+        for (let j = 0; j < flora_list.length; j++) {
+            let [ tree_id, latlong_list ] = flora_list[j];
+            for (let k = 0; k < latlong_list.length; k++) {
+                const latlong = latlong_list[k];
+                quad_tree.add([+latlong[0], +latlong[1], +tree_id]);
+            }
+        }
     }
-    return window.grid_data;
+    // console.log(`Quad Tree Size: ${quad_tree.size()}`);
+    return quad_tree;
+}
+
+function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
+    const results = [];
+    quad_tree.visit((node, x1, y1, x2, y2) => {
+        if (!node.length) {
+            do {
+                let d = node.data;
+                if (tree_id > 0 && d[2] == tree_id) {
+                    results.push(d);
+                } else if (tree_id <= 0 && (d[0] >= xmin && d[0] < xmax && d[1] >= ymin && d[1] < ymax)) {
+                    results.push(d);
+                }
+            } while (node = node.next);
+        }
+        return tree_id <= 0 && (x1 >= xmax || y1 >= ymax || x2 < xmin || y2 < ymin);
+    });
+    return results;
+}
+
+async function fetch_grid_data() {
+    if (window.quad_tree == null) {
+        const grid_data = await fetch_url(GRID_URL);
+        window.quad_tree = create_quad_tree(grid_data);
+    }
 }
 
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
@@ -994,7 +1025,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         for (let i = 0; i < area_marker_list.length; i++) {
             osm_map.removeLayer(area_marker_list[i]);
         }
-        const zoom = get_view_zoom(osm_map, tid);
+        const zoom = get_zoom(osm_map, tid);
         osm_map.setView([c_lat, c_long], zoom);
     } else {
         osm_map = create_osm_map('area', 'MAPINFO', c_lat, c_long, tid);
@@ -1099,94 +1130,50 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const key_name = lang_map['Name'];
     const handle_map = lang_obj['Handle'];
 
-    let s_id = 0;
-    if (area == 'trees') {
-        s_id = aid;
-    } else if (tid != 0) {
-        s_id = tid;
-    }
-
     const bounds = osm_map.getBounds();
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
-    const nw = bounds.getNorthWest();
-    const se = bounds.getSouthEast();
     const area_marker_list = [];
     const tree_dict = {};
-    const grid_flora = window.GRID_FLORA;
-    // const start_time = Date.now();
-    let total_count = 0;
-    let visible_count = 0;
-    let matched_grid = 0;
     const is_tree = (area == 'trees');
-    for (let i = 0; i < grid_flora.length; i++) {
-        const [ g_sw_lat, g_sw_long, g_ne_lat, g_ne_long, md_name, flora_list ] = grid_flora[i];
-        if (g_sw_long <= ne.lng && sw.lng <= g_ne_long && g_sw_lat <= ne.lat && sw.lat <= g_ne_lat) {
-            matched_grid++;
-        } else {
-            continue;
-        }
-        for (let j = 0; j < flora_list.length; j++) {
-            let [ tree_id, latlong_list ] = flora_list[j];
-            tree_id = tree_id.toString();
-            if (is_tree && aid != tree_id) continue;
-            const tree_handle = handle_map[tree_id];
-            const blooming = tree_handle[H_BLOOM];
-            const icon = get_needed_icon((s_id == tree_id), blooming);
-            let count = 0;
-            for (let k = 0; k < latlong_list.length; k++) {
-                const latlong = latlong_list[k];
-                const m_lat = parseFloat(latlong[0]);
-                const m_long = parseFloat(latlong[1]);
-                total_count++;
-                const visible = is_tree ? true : bounds.contains([m_lat, m_long]);
-                if (!visible) continue
-                visible_count++;
-                const marker = new L.marker([m_lat, m_long], {icon: icon});
-                marker.tree_id = tree_id;
-                marker.blooming = blooming;
-                osm_map.addLayer(marker);
-                marker.on('mouseover', marker_on_mouseover);
-                marker.on('mouseout', marker_on_mouseout);
-                marker.on('click', marker_on_click);
-                marker.on('dblclick', marker_on_doubleclick);
-                marker.on('contextmenu', marker_on_contextmenu);
-                area_marker_list.push(marker);
-                count += 1;
-            }
-            if (count > 0) {
-                tree_dict[tree_id] = (tree_dict[tree_id] || 0) + count;
-            }
-        }
+    const c_tree_id = is_tree ? +aid : ((tid != 0) ? +tid : 0);
+    const points = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, (area == 'trees') ? c_tree_id : 0);
+    for (let i = 0; i < points.length; i++) {
+        const [ m_lat, m_long, i_tree_id ] = points[i];
+        tree_id = i_tree_id.toString();
+        const tree_handle = handle_map[tree_id];
+        const blooming = tree_handle[H_BLOOM];
+        const icon = get_needed_icon((c_tree_id == i_tree_id), blooming);
+        const marker = new L.marker([m_lat, m_long], {icon: icon});
+        marker.tree_id = tree_id;
+        marker.blooming = blooming;
+        osm_map.addLayer(marker);
+        marker.on('mouseover', marker_on_mouseover);
+        marker.on('mouseout', marker_on_mouseout);
+        marker.on('click', marker_on_click);
+        marker.on('dblclick', marker_on_doubleclick);
+        marker.on('contextmenu', marker_on_contextmenu);
+        area_marker_list.push(marker);
+        tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
-    // const end_time = Date.now();
-    // console.log('Locations Scanned:', (end_time - start_time), total_count, visible_count, matched_grid, sw.lat, ne.lat, sw.lng, ne.lng, sw.distanceTo(ne), sw.distanceTo(nw));
-
     window.area_marker_list = area_marker_list;
-
-    if (area == 'trees' && !window.map_area_move && area_marker_list.length > 0) {
+    if (is_tree && !window.map_area_move && area_marker_list.length > 0 && area_marker_list.length < TREE_MIN_COUNT) {
         const layer = new L.featureGroup(area_marker_list);
         osm_map.fitBounds(layer.getBounds());
-    }
-
-    if (area == 'current') {
-        const latlong = area_marker_list[area_marker_list.length - 1].getLatLng();
-        const point_list = [ L.latLng(c_lat, c_long), L.latLng(latlong.lat, latlong.lng) ];
     }
 
     const tree_stat_list = [];
     const tree_image_list = [];
     for (let tid in tree_dict) {
-        if (!tree_dict.hasOwnProperty(tid)) {
-            continue;
-        }
+        if (!tree_dict.hasOwnProperty(tid)) continue;
         const t_name = key_name[tid];
         const tree_handle = handle_map[tid];
         const blooming = tree_handle[H_BLOOM];
         const icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
-        tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long })
-
-        if (area != 'trees') {
+        tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid,
+                              'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long
+                           })
+        if (!is_tree) {
             const [ m_url, image_url ] = get_image_url(tree_handle, 'thumbnail');
             tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'SH' : m_url, 'TID' : tid, 'SC' : tree_dict[tid] })
         }
@@ -1201,7 +1188,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
             tin += 1;
             tcount += info['TC'];
         }
-        if (area != 'trees') {
+        if (!is_tree) {
             tin -= 1;
             let n_title = `${n_name} (<font color=brown>${tin} / ${tcount}</font>)`;
             plain_set_html_text('TITLE_HEADER', n_title);
@@ -1211,7 +1198,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_image_list.sort(function (a, b) { return b.SC - a.SC; });
         data = { 'sliderinfo' : { 'items' : tree_image_list } };
         render_template_data('tree-carousel-template', 'MAP_SLIDER', data);
-        if (area == 'trees') {
+        if (is_tree) {
             plain_set_html_text('MAP_SLIDER', '');
         } else {
             area_carousel_init(tree_image_list);
@@ -1272,7 +1259,7 @@ async function tree_area_init(area, aid, item_data) {
                 const park = park_list[j];
                 if (aid != '' && park['PID'] == aid) {
                     name = park['PN'];
-                    lat_long = [ parseFloat(park['PLAT']), parseFloat(park['PLONG']) ];
+                    lat_long = [ +park['PLAT'], +park['PLONG'] ];
                 }
             }
         }
@@ -1286,7 +1273,7 @@ async function tree_area_init(area, aid, item_data) {
             ward['SN'] = i + 1;
             if (aid != '' && ward['AID'] == aid) {
                 name = ward['AN'];
-                lat_long = [ parseFloat(ward['ALAT']), parseFloat(ward['ALONG']) ];
+                lat_long = [ +ward['ALAT'], +ward['ALONG'] ];
             }
         }
         render_template_data('sidenav-template', 'NAVINFO', data);
@@ -1296,50 +1283,44 @@ async function tree_area_init(area, aid, item_data) {
         const tree_list = data['mapinfo'];
         for (let i = 0; i < tree_list.length; i++) {
             const an = tree_list[i];
-            const tree_id = parseInt(an['AID']);
+            const tree_id = +an['AID'];
             an['AN'] = key_name[tree_id];
             an['SN'] = i + 1;
             if (tree_id == aid) {
-                lat_long = [ parseFloat(an['ALAT']), parseFloat(an['ALONG']) ];
+                lat_long = [ +an['ALAT'], +an['ALONG'] ];
             }
         }
         render_template_data('sidenav-template', 'NAVINFO', data);
-    } else if (area == 'current') {
     } else {
         return;
     }
 
-    const grid_obj = await fetch_grid_data();
-    if (grid_obj != null) {
-        window.GRID_FLORA = grid_obj;
-        window.map_initialized = false;
+    await fetch_grid_data();
+    if (window.quad_tree == null) return;
+    window.map_initialized = false;
 
-        let tid = 0;
-        if (window.map_tree_id != undefined) {
-            tid = window.map_tree_id;
+    let tid = (window.map_tree_id != undefined) ? window.map_tree_id : 0;
+    if (area == 'trees') {
+        const m_name = get_module_name(handle_map, aid);
+        if (aid != 0) {
+            tid = aid;
+            name = m_name;
+        } else if (tid != 0) {
+            aid = tid;
+            name = m_name;
+        } else if (aid == 0 || aid == '0') {
+            const tree_list = Object.keys(handle_map);
+            aid = tree_list[Math.floor(Math.random() * tree_list.length)];
+            name = m_name;
+        } else {
+            name = params.getValue('name');
+            name = name.replace(/%20/g, ' ');
         }
-        if (area == 'trees') {
-            const m_name = get_module_name(handle_map, aid);
-            if (aid != 0) {
-                tid = aid;
-                name = m_name;
-            } else if (tid != 0) {
-                aid = tid;
-                name = m_name;
-            } else if (aid == 0 || aid == '0') {
-                const tree_list = Object.keys(handle_map);
-                aid = tree_list[Math.floor(Math.random() * tree_list.length)];
-                name = m_name;
-            } else {
-                name = params.getValue('name');
-                name = name.replace(/%20/g, ' ');
-            }
-            if (tid == 0) {
-                tid = aid;
-            }
+        if (tid == 0) {
+            tid = aid;
         }
-        show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
     }
+    show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
 }
 
 async function load_area_data(area_type, area_id, area_latlong) {
@@ -1703,7 +1684,7 @@ function tree_main_init() {
     window.tree_lang_data = {};
     window.tree_count_data = {};
     window.area_data = null;
-    window.grid_data = null;
+    window.quad_tree = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
 
