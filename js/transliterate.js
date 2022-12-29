@@ -94,8 +94,8 @@ function replace_keys(key_dict, vowel_size, key) {
     for (let i = 0; i < vowel_size; i++) {
         const c_key = combo_list[i];
         const c = (key == '' || c_key == 0) ? key_dict[i]['N'] : key + c_key;
-        const col_id = 'key_' + (i + 1);
-        plain_set_html_text(col_id, c);
+        const col_id = '#key_' + (i + 1);
+        d3.select(col_id).html(c);
     }
 }
 

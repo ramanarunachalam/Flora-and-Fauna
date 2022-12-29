@@ -49,10 +49,6 @@ let current_page = 1;
 let max_page = MAX_PAGES;
 
 
-function is_array(obj) {
-  return Object.prototype.toString.call(obj) === '[object Array]';
-}
-
 function capitalize_word(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -60,59 +56,8 @@ function capitalize_word(s) {
 function get_url_params() {
     const args = {};
     const parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
-        function(m, key, value) {
-            args[key] = value;
-    });
+        function(m, key, value) { args[key] = value; });
     return args;
-}
-
-async function fetch_url(url) {
-    let url_data = null;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.log('Fetch Error:', response.status);
-        }
-        url_data = await response.json();
-    } catch(error) {
-        console.log('Fetch Error:', error);
-    }
-    return url_data;
-}
-
-function plain_get_html_text(id) {
-    return document.getElementById(id).innerHTML;
-}
-
-function plain_set_html_text(id, text) {
-    const element = document.getElementById(id);
-    if (element != null) {
-        element.innerHTML = text;
-    }
-}
-
-function plain_get_attr(id, key) {
-    const element = document.getElementById(id);
-    return element.getAttribute(key);
-}
-
-function plain_set_attr(id, key, value) {
-    const element = document.getElementById(id);
-    element.setAttribute(key, value);
-}
-
-function plain_get_background_color(id) {
-    const element = document.getElementById(id);
-    return element.style.backgroundColor;
-}
-
-function plain_set_background_color(id, value) {
-    let element = document.getElementById(id);
-    element.style.backgroundColor = value;
-}
-
-function plain_get_query_selector(phrase) {
-    return document.querySelectorAll(phrase);
 }
 
 function lang_name_init() {
@@ -136,9 +81,9 @@ function set_language(obj) {
 }
 
 function render_template_data(template_name, id_name, data) {
-    const ul_template = plain_get_html_text(template_name);
+    const ul_template = d3.select('#' + template_name).html();
     const template_html = Mustache.render(ul_template, data);
-    plain_set_html_text(id_name, template_html);
+    d3.select('#' + id_name).html(template_html);
 }
 
 function set_key_map(d_obj, d_map, d_key) {
@@ -215,7 +160,6 @@ function get_image_url(tree_handle, level) {
 
 function get_module_name(handle_map, tree_id) {
     if (tree_id == 0) return '';
-
     if (handle_map == null) {
         const [ p_name, p_handle_map ] = get_tree_handle(tree_id);
         handle_map = p_handle_map; 
@@ -228,7 +172,7 @@ async function tree_module_init(file_name, data) {
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
         const url = `../../${LANGUAGE_URL}`;
-        const lang_obj = await fetch_url(url);
+        const lang_obj = await d3.json(url);
         if (lang_obj != null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
@@ -394,7 +338,7 @@ async function load_intro_data(region) {
     }
     render_template_data('intro-template', 'SECTION', intro_data);
     const url = get_region_url('intro');
-    const slider_data = await fetch_url(url);
+    const slider_data = await d3.json(url);
     if (slider_data != null) {
         tree_intro_init(slider_data);
         add_history('introduction', { 'region' : region });
@@ -412,16 +356,9 @@ function search_init() {
 
 function set_grid_page(n_current_page, n_max_page) {
     current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : +n_current_page;
-    const a_list = plain_get_query_selector('li.page-item.active');
-    for (let i = 0; i < a_list.length; i++) {
-        a_list[i].classList.remove('active');
-    }
-    let id_str = 'top_' + current_page;
-    let element = document.querySelector(`li#${id_str}`);
-    if (element) element.classList.add('active');
-    id_str = 'bottom_' + current_page;
-    element = document.querySelector(`li#${id_str}`);
-    if (element) element.classList.add('active');
+    d3.selectAll('li.page-item.active').classed('active', false);
+    d3.select(`li#top_${current_page}`).classed('active', true);
+    d3.select(`li#bottom_${current_page}`).classed('active', true);
     max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : +n_max_page;
 }
 
@@ -440,13 +377,8 @@ function show_page(which, is_prev) {
         }
     }
     current_page = new_page;
-    const id_str = which + '_' + new_page;
-    const element = document.querySelector('li#' + id_str);
-    if (element != undefined) {
-        const child = element.children[0];
-        const href = child.getAttribute('href');
-        window.open(href, '_self', false);
-    }
+    const href = d3.select(`li#${which}_${new_page} a`).attr('href');
+    window.open(href, '_self', false);
 }
 
 function show_top_prev_page() {
@@ -516,44 +448,42 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     render_template_data('pagination-template', 'BOTTOMPAGE', new_data);
     render_template_data('collection-card-info-template', 'CARDINFO', new_data);
 
-    let element = document.getElementById('top-page-next');
-    element.addEventListener('click', show_top_next_page);
-    element = document.getElementById('top-page-previous');
-    element.addEventListener('click', show_top_prev_page);
-    element = document.getElementById('bottom-page-next');
-    element.addEventListener('click', show_bottom_next_page);
-    element = document.getElementById('bottom-page-previous');
-    element.addEventListener('click', show_bottom_prev_page);
+    d3.select('#top-page-next').on('click', show_top_next_page);
+    d3.select('#top-page-previous').on('click', show_top_prev_page);
+    d3.select('#bottom-page-next').on('click', show_bottom_next_page);
+    d3.select('#bottom-page-previous').on('click', show_bottom_prev_page);
 
     set_grid_page(page_index, max_page);
 }
 
 function get_bs_modal(id) {
-    return new bootstrap.Modal(document.getElementById(id));
+    return new bootstrap.Modal(d3.select(id).node());
 }
 
 function show_bigger_image() {
     const [ image_src, caption ] = arguments;
-    plain_set_attr('IMAGE_IN_MODAL', 'src', image_src);
-    plain_set_html_text('IMAGE_MODEL_LABEL', caption);
-    get_bs_modal('IMAGE_MODAL').show();
+    d3.select('#IMAGE_IN_MODAL').attr('src', image_src);
+    d3.select('#IMAGE_MODEL_LABEL').html(caption);
+    get_bs_modal('#IMAGE_MODAL').show();
 }
+
+const NORMALIZE_LIST = [ [ /(e)\1+/g, 'i' ], [ /(o)\1+/g, 'u' ], [ /(.)\1+/g, '$1' ],
+                         [ /([bcdfgjklpst])h/g, '$1' ], [ /([sd])v/g, '$1w' ], [ /([ao])u/g, 'ow' ]
+                       ];
 
 function normalize_search_text(search_text) {
     search_text = search_text.toLowerCase();
-    search_text = search_text.replace(/(e)\1+/g, 'i');
-    search_text = search_text.replace(/(o)\1+/g, 'u');
-    search_text = search_text.replace(/(.)\1+/g, '$1');
-    search_text = search_text.replace(/([bcdfgjklpst])h/g, '$1')
-    search_text = search_text.replace(/([sd])v/g, '$1w')
-    search_text = search_text.replace(/([ao])u/g, 'ow')
+    for (let i = 0; i < NORMALIZE_LIST.length; i++) {
+        const expr = NORMALIZE_LIST[i];
+        search_text = search_text.replace(expr[0], expr[1]);
+    }
     return search_text;
 }
 
 async function search_load() {
     if (window.search_initialized) return;
     const search_engine = window.flora_fauna_search_engine;
-    const search_obj = await fetch_url(SEARCH_URL);
+    const search_obj = await d3.json(SEARCH_URL);
     if (search_obj != null) {
         let data_id = 0;
         for (let category in search_obj) {
@@ -575,17 +505,17 @@ async function search_load() {
     window.search_initialized = true;
 }
 
+const REPLACE_LIST = [ [ /_/g, '' ], [ /G/g, 'n' ], [ /J/g, 'n' ] ];
+
 function transliterator_init() {
     const lang_obj = window.tree_lang_data;
     const char_map = lang_obj['Charmap'];
-    const key_list = [];
-    let max_len = 0;
+    const key_list = new Set();
     for (let s in char_map) {
-        key_list.push(s); 
-        max_len = Math.max(max_len, s.length);
+        key_list.add(s); 
     }
-    window.char_map_max_length = max_len;
-    window.char_map_key_list = new Set(key_list);
+    window.char_map_key_list = key_list;
+    window.char_map_max_length = d3.max(key_list, d => d.length);
 }
 
 function transliterate_text(word) {
@@ -619,9 +549,10 @@ function transliterate_text(word) {
     }
     let new_word = tokenlist.join('');
     if (word != new_word) {
-        new_word = new_word.replace(/_/g, '');
-        new_word = new_word.replace(/G/g, 'n');
-        new_word = new_word.replace(/J/g, 'n');
+        for (let i = 0; i < REPLACE_LIST.length; i++) {
+            const expr = REPLACE_LIST[i];
+            new_word = new_word.replace(expr[0], expr[1]);
+        }
     }
     return new_word;
 }
@@ -776,7 +707,7 @@ function handle_geocoder_search_results(results, context) {
 }
 
 function load_search_data() {
-    let search_word = document.getElementById('SEARCH_WORD').value;
+    let search_word = d3.select('#SEARCH_WORD').property('value');
     search_word = decodeURI(search_word);
     const search_len = search_word.length;
     if (search_len > 1 && search_word[search_len - 1] == SEARCH_END_CHAR) {
@@ -787,13 +718,12 @@ function load_search_data() {
 }
 
 function init_search_listener() {
-    const element = document.getElementById('SEARCH_WORD');
-    element.addEventListener('input', load_search_data);
+    d3.select('#SEARCH_WORD').on('input', load_search_data);
 }
 
 function load_search_history(data) {
     const search_word = data['search'];
-    document.getElementById('SEARCH_WORD').value = search_word;
+    d3.select('#SEARCH_WORD').property('value', search_word);
     handle_search_word(search_word);
 }
 
@@ -832,7 +762,7 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
     }
 
     /*
-  <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
+    <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
     const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
     */
 
@@ -872,11 +802,11 @@ function get_needed_icon(selected, blooming) {
 
 function set_chosen_image(tree_id) {
     const tooltip_html = get_url_info(tree_id, 'tooltip');
-    plain_set_html_text('IMAGEINFO', tooltip_html);
+    d3.select('#IMAGEINFO').html(tooltip_html);
 }
 
 function handle_context_menu(key) {
-    bootstrap.Modal.getInstance(document.getElementById('CONTEXT_MODAL')).hide();
+    bootstrap.Modal.getInstance(d3.select('#CONTEXT_MODAL').node()).hide();
 
     const marker = window.TREE_CONTEXT_MARKER;
     const tree_id = marker.tree_id;
@@ -929,8 +859,8 @@ function marker_on_contextmenu(e) {
     const marker = this;
     window.TREE_CONTEXT_MARKER = marker;
     const [ name, handle_map ] = get_tree_handle(marker.tree_id);
-    plain_set_html_text('CONTEXT_MODEL_LABEL', name);
-    get_bs_modal('CONTEXT_MODAL').show();
+    d3.select('#CONTEXT_MODEL_LABEL').html(name);
+    get_bs_modal('#CONTEXT_MODAL').show();
 }
 
 function get_area_centre() {
@@ -949,7 +879,7 @@ function handle_geocoder_mark(ev) {
 
 async function fetch_area_data() {
     if (window.area_data == null) {
-        window.area_data = await fetch_url(AREA_URL);
+        window.area_data = await d3.json(AREA_URL);
     }
     return window.area_data;
 }
@@ -990,7 +920,7 @@ function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
 
 async function fetch_grid_data() {
     if (window.quad_tree == null) {
-        const grid_data = await fetch_url(GRID_URL);
+        const grid_data = await d3.json(GRID_URL);
         window.quad_tree = create_quad_tree(grid_data);
     }
 }
@@ -1016,7 +946,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             n_name = isFinite(aid) ? `${aid}. ${n_name}` : aid;
         }
     }
-    plain_set_html_text('TITLE_HEADER', n_name);
+    d3.select('#TITLE_HEADER').html(n_name);
 
     let osm_map;
     if (window.map_initialized) {
@@ -1064,7 +994,7 @@ function find_area_carousel_tree(tree_id) {
     for (let i = 0; i < tree_image_list.length; i++) {
         const l_tree_id = tree_image_list[i]['TID'];
         if (l_tree_id == tree_id) {
-            const swiper = document.querySelector('#AREA_CAROUSEL').swiper;
+            const swiper = d3.select('#AREA_CAROUSEL').node().swiper;
             swiper.slideTo(i % tree_image_list.length);
             return i;
         }
@@ -1157,7 +1087,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
     window.area_marker_list = area_marker_list;
-    if (is_tree && !window.map_area_move && area_marker_list.length > 0 && area_marker_list.length < TREE_MIN_COUNT) {
+    if (is_tree && !window.map_area_move && 0 < area_marker_list.length && area_marker_list.length < TREE_MIN_COUNT) {
         const layer = new L.featureGroup(area_marker_list);
         osm_map.fitBounds(layer.getBounds());
     }
@@ -1191,7 +1121,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         if (!is_tree) {
             tin -= 1;
             let n_title = `${n_name} (<font color=brown>${tin} / ${tcount}</font>)`;
-            plain_set_html_text('TITLE_HEADER', n_title);
+            d3.select('#TITLE_HEADER').html(n_title);
         }
         let data = { 'trees' : tree_stat_list };
         render_template_data('tree-stats-template', 'STATINFO', data);
@@ -1199,7 +1129,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         data = { 'sliderinfo' : { 'items' : tree_image_list } };
         render_template_data('tree-carousel-template', 'MAP_SLIDER', data);
         if (is_tree) {
-            plain_set_html_text('MAP_SLIDER', '');
+            d3.select('#MAP_SLIDER').html('');
         } else {
             area_carousel_init(tree_image_list);
         }
@@ -1222,7 +1152,7 @@ async function tree_area_init(area, aid, item_data) {
 
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
-        const lang_obj = await fetch_url(LANGUAGE_URL);
+        const lang_obj = await d3.json(LANGUAGE_URL);
         if (lang_obj != null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
@@ -1342,7 +1272,7 @@ async function load_collection_data(type, letter, page_index, page_max) {
     const collection_data = {};
     render_template_data('page-template', 'SECTION', collection_data);
     const url = get_region_url('page');
-    const item_data = await fetch_url(url);
+    const item_data = await d3.json(url);
     if (item_data != null) {
         tree_collection_init(type, letter, page_index, page_max, item_data);
         add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max });
@@ -1353,7 +1283,7 @@ async function load_category_data(type) {
     const category_grid_data = {};
     render_template_data('grid-template', 'SECTION', category_grid_data);
     const url = get_region_url('grid');
-    const item_data = await fetch_url(url);
+    const item_data = await d3.json(url);
     if (item_data != null) {
         tree_grid_init(type, item_data[type]);
         add_history('categories', { 'type' : type });
@@ -1364,7 +1294,7 @@ async function load_simple_data() {
     const simple_data = {};
     render_template_data('simple-template', 'SECTION', simple_data);
     const url = get_region_url('simple');
-    const item_data = await fetch_url(url);
+    const item_data = await d3.json(url);
     if (item_data != null) {
         tree_simple_init(item_data);
         add_history('alphabetical', { 'region' : window.tree_region });
@@ -1375,7 +1305,7 @@ async function load_module_data(tree_id, file_name) {
     const module_data = {};
     render_template_data('module-template', 'SECTION', module_data);
     const url = `Flora/${file_name}.json`;
-    const item_data = await fetch_url(url);
+    const item_data = await d3.json(url);
     if (item_data != null) {
         tree_module_init(file_name, item_data);
         add_history('trees', { 'module' : file_name, 'id' : tree_id });
@@ -1383,10 +1313,10 @@ async function load_module_data(tree_id, file_name) {
 }
 
 function transliterator_word() {
-    const source = document.getElementById('SOURCE').value;
+    let source = d3.select('#SOURCE').property('value');
     source = source.replace(/\n/g, "<br />");
     const target = transliterate_text(source);
-    plain_set_html_text('TARGET', target);
+    d3.select('#TARGET').html(target);
 }
 
 /*
@@ -1462,8 +1392,8 @@ function speech_to_text_init() {
             }
             if (window.speech_final_transcript || interim_transcript) {
                 window.speech_recognition.stop();
-                plain_set_attr('MIC_IMAGE', 'src', 'icons/mic-mute.svg');
-                document.getElementById('SEARCH_WORD').value = window.speech_final_transcript;
+                d3.select('#MIC_IMAGE').attr('src', 'icons/mic-mute.svg');
+                d3.select('#SEARCH_WORD').property('value', window.speech_final_transcript);
                 // console.log('Speech Final: ' + window.speech_final_transcript);
                 load_search_data();
             }
@@ -1486,13 +1416,13 @@ function speech_start(event) {
     window.speech_recognition.start();
     window.speech_ignore_onend = false;
     window.speech_start_timestamp = event.timeStamp;
-    plain_set_attr('MIC_IMAGE', 'src', 'icons/mic.svg');
+    d3.select('#MIC_IMAGE').attr('src', 'icons/mic.svg');
 }
 
 function load_keyboard(event) {
     const lang = window.render_language;
     set_input_keyboard(lang.toLowerCase());
-    get_bs_modal('LANG_KBD').show();
+    get_bs_modal('#LANG_KBD').show();
     return;
 }
 
@@ -1636,7 +1566,7 @@ function load_menu_data() {
                     };
     render_template_data('menu-template', 'MENU_DATA', menu_dict);
 
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipTriggerList = [].slice.call(d3.selectAll('[data-bs-toggle="tooltip"]').nodes())
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     });
@@ -1654,7 +1584,7 @@ function load_menu_data() {
 }
 
 async function load_content() {
-    const lang_obj = await fetch_url(LANGUAGE_URL);
+    const lang_obj = await d3.json(LANGUAGE_URL);
     if (lang_obj != null) {
         window.tree_lang_data = lang_obj;
         lang_name_init();
