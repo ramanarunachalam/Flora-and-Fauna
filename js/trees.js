@@ -116,45 +116,43 @@ function get_tree_handle(tree_id) {
     return [ name, handle_map ];
 }
 
-function get_handle_prefix(tree_handle) {
-    return `${tree_handle[H_GENUS]} - ${tree_handle[H_NAME]}/${tree_handle[H_NAME]}`;
+function get_handle_prefix(h) {
+    return `${h[H_GENUS]} - ${h[H_NAME]}/${h[H_NAME]}`;
 }
 
 function get_module_url(tree_id) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
-    const tree_handle = handle_map[tree_id];
-    return get_handle_prefix(tree_handle);
+    return get_handle_prefix(handle_map[tree_id]);
 }
 
-function get_handle_image_url(tree_handle, part_name) {
-    const prefix = get_handle_prefix(tree_handle);
+function get_handle_image_url(h, part_name) {
+    const prefix = get_handle_prefix(h);
     return `${prefix} - ${part_name}.jpg`;
 }
 
-function get_handle_thumbnail_url(tree_handle, part_name) {
-    const prefix = `${tree_handle[H_GENUS]} - ${tree_handle[H_NAME]}/Thumbnails/${tree_handle[H_NAME]}`;
-    return `${prefix} - ${part_name}.thumbnail`;
+function get_handle_thumbnail_url(h, part_name) {
+    return `${h[H_GENUS]} - ${h[H_NAME]}/Thumbnails/${h[H_NAME]} - ${part_name}.thumbnail`;
 }
 
-function get_handle_thumbnail_image_id_url(tree_handle, english_key_image, image_id) {
-    return (image_id == '') ? 'empty.thumbnail' : get_handle_thumbnail_url(tree_handle, english_key_image[image_id]);
+function get_handle_thumbnail_image_id_url(h, english_key_image, image_id) {
+    return (image_id == '') ? 'empty.thumbnail' : get_handle_thumbnail_url(h, english_key_image[image_id]);
 }
 
-function get_part_name(tree_handle) {
+function get_part_name(h) {
     const lang_obj = window.tree_lang_data;
     const english_lang_map = lang_obj['English'];
     const english_key_image = english_lang_map['Image'];
-    const image_id = tree_handle[H_PART];
+    const image_id = h[H_PART];
     return english_key_image[image_id];
 }
 
-function get_image_url(tree_handle, level) {
+function get_image_url(h, level) {
     const base = 'Flora';
-    const part_name = get_part_name(tree_handle);
-    const image_url = get_handle_image_url(tree_handle, part_name);
-    const thumbnail_url = get_handle_thumbnail_url(tree_handle, part_name);
-    const i_url = (level == 'popup') ? `Flora/${image_url}` : `Flora/${thumbnail_url}`;
-    const m_url = get_handle_prefix(tree_handle);
+    const part_name = get_part_name(h);
+    const image_url = get_handle_image_url(h, part_name);
+    const thumbnail_url = get_handle_thumbnail_url(h, part_name);
+    const i_url = (level == 'popup') ? `${base}/${image_url}` : `${base}/${thumbnail_url}`;
+    const m_url = get_handle_prefix(h);
     return [ m_url, i_url ];
 }
 
@@ -164,8 +162,8 @@ function get_module_name(handle_map, tree_id) {
         const [ p_name, p_handle_map ] = get_tree_handle(tree_id);
         handle_map = p_handle_map; 
     }
-    const tree_handle = handle_map[tree_id];
-    return tree_handle[H_NAME];
+    const h = handle_map[tree_id];
+    return h[H_NAME];
 }
 
 async function tree_module_init(file_name, data) {
@@ -205,7 +203,7 @@ async function tree_module_init(file_name, data) {
     const gallery_info = card_data['galleryinfo']
     const tree_id = gallery_info['HID'];
 
-    const tree_handle = handle_map[tree_id];
+    const h = handle_map[tree_id];
     gallery_info['HH'] = key_group[gallery_info['HH']];
     gallery_info['HN'] = key_name[gallery_info['HN']];
     const gallery_list = gallery_info['gallery'].split(',');
@@ -214,7 +212,7 @@ async function tree_module_init(file_name, data) {
         const image_id = gallery_list[i];
         const part_name = (image_id.length == 4) ? image_id : english_key_image[image_id];
         const caption = (image_id.length == 4) ? image_id : key_image[image_id];
-        const image = get_handle_image_url(tree_handle, part_name);
+        const image = get_handle_image_url(h, part_name);
         const new_item = { 'IC': caption, 'IN': image };
         new_gallery_list.push(new_item);
     }
@@ -252,9 +250,9 @@ function tree_grid_init(type, data) {
         const row_list = card['ROW'];
         for (let j = 0; j < row_list.length; j++) {
             const [ tree_id, image_id ] = row_list[j].split(',');
-            const tree_handle = handle_map[tree_id];
-            const href = get_handle_prefix(tree_handle);
-            const new_caption = get_handle_thumbnail_image_id_url(tree_handle, english_key_image, image_id);
+            const h = handle_map[tree_id];
+            const href = get_handle_prefix(h);
+            const new_caption = get_handle_thumbnail_image_id_url(h, english_key_image, image_id);
             new_item = { CI: tree_id, CN: key_name[tree_id], CH: href, CT: new_caption };
             new_col_list.push(new_item);
             if (new_col_list.length >= MAX_COL) {
@@ -280,41 +278,48 @@ function get_region_url(type) {
 
 function tree_intro_init(slider_data) {
     const lang = window.render_language;
-
-    const stats_list = slider_data['statsinfo'];
-    get_lang_map(lang, stats_list);
-
     const lang_obj = window.tree_lang_data;
+    const map_dict = lang_obj['Keys'];
+
+    const stats_info = slider_data['statsinfo'];
+    get_lang_map(lang, stats_info);
+    stats_info['title'] = { T: get_lang_map_word(lang, map_dict, 'Trees'),
+                            R: get_lang_map_word(lang, map_dict, capitalize_word(window.tree_region))
+                          };
+
     const lang_map = lang_obj[lang];
     const key_name = lang_map['Name'];
     const handle_map = lang_obj['Handle'];
     const slider_info = slider_data['sliderinfo'];
     const slider_list = slider_info['items'];
+    const base = 'Flora';
     const new_slider_list = [];
     for (let i = 0; i < slider_list.length; i++) {
         const [ tree_id, count ] = slider_list[i];
         window.tree_count_data[tree_id] = count;
-        const tree_handle = handle_map[tree_id];
-        const href = get_handle_prefix(tree_handle);
-        const part_name = get_part_name(tree_handle);
-        const item = { SD: tree_id, SC: count,
-                       SB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, SA: tree_handle[H_AUTH], SH: href,
-                       SN: key_name[tree_id], SI: get_handle_image_url(tree_handle, part_name)
+        const h = handle_map[tree_id];
+        const href = get_handle_prefix(h);
+        const part_name = get_part_name(h);
+        const i_url = get_handle_image_url(h, part_name);
+        const t_url = get_handle_thumbnail_url(h, part_name);
+        const item = { SD: tree_id, SC: count, SN: key_name[tree_id],
+                       SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH], SH: href,
+                       SI: `${base}/${i_url}`, ST: `${base}/${t_url}`
                      }
         new_slider_list.push(item);
     }
     const start_id = Math.floor(Math.random() * new_slider_list.length);
     const start_items = new_slider_list.splice(0, start_id);
     const new_slide_items = new_slider_list.concat(start_items);
-
     slider_info['items'] = new_slide_items;
+
     render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
 
     setTimeout(() => {
         const swiper = new Swiper('#INTRO_CAROUSEL', {
             direction: 'horizontal',
             preLoadImages: false,
-            lazy: { loadPrevNext: true },
+            lazy: { loadOnTransitionStart: true },
             effect: 'fade',
             fadeEffect: { crossFade: true },
             autoplay: { delay: 5000, disableOnInteraction: false }
@@ -413,20 +418,20 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     const col_name = 'COL' + type[0].toUpperCase();
     for (let i = 0; i < row_list.length; i++) {
         const tree_id = row_list[i];
-        const tree_handle = handle_map[tree_id];
+        const h = handle_map[tree_id];
         const new_image_list = [];
         const image_list = image_data[tree_id].split(',');
         for (let k = 0; k < image_list.length; k++) {
             const image_id = image_list[k];
-            const href = get_handle_prefix(tree_handle);
-            const caption = get_handle_thumbnail_image_id_url(tree_handle, english_key_image, image_id);
+            const href = get_handle_prefix(h);
+            const caption = get_handle_thumbnail_image_id_url(h, english_key_image, image_id);
             const new_item = { CI: caption, CH: href };
             new_image_list.push(new_item);
         }
         const new_item = { COLIMAGE: new_image_list };
-        const href = get_handle_prefix(tree_handle);
-        new_item[col_name] = { CC: (i + 1), CI: tree_id, CN: key_name[tree_id], CF: tree_handle[H_FAMILY],
-                               CB: `${tree_handle[H_GENUS]} ${tree_handle[H_SPECIES]}`, CA: tree_handle[H_AUTH], CH: href
+        const href = get_handle_prefix(h);
+        new_item[col_name] = { CC: (i + 1), CI: tree_id, CN: key_name[tree_id], CF: h[H_FAMILY],
+                               CB: `${h[H_GENUS]} ${h[H_SPECIES]}`, CA: h[H_AUTH], CH: href
                              }
         new_row_list.push(new_item);
     }
@@ -609,9 +614,9 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
         pop = base_pop + pop;
         let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score, 'C' : item.count, 'I' : name_id };
         if (item.category == 'Trees' || item.category == 'Maps') {
-            const tree_handle = handle_map[name_id];
-            r_item['G'] = tree_handle[H_GENUS];
-            r_item['S'] = tree_handle[H_SPECIES];
+            const h = handle_map[name_id];
+            r_item['G'] = h[H_GENUS];
+            r_item['S'] = h[H_SPECIES];
         }
         if (name_id != '') {
             r_item['I'] = name_id;
@@ -762,7 +767,7 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
     }
 
     /*
-    <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
+  <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
     const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
     */
 
@@ -782,8 +787,8 @@ function create_icons() {
 
 function get_url_info(tree_id, level) {
     const [ name, handle_map ] = get_tree_handle(tree_id);
-    const tree_handle = handle_map[tree_id];
-    const [ url, image_url ] = get_image_url(tree_handle, level);
+    const h = handle_map[tree_id];
+    const [ url, image_url ] = get_image_url(h, level);
     const m_url = `javascript:load_module_data('${tree_id}', '${url}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
     const image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
@@ -1071,8 +1076,8 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     for (let i = 0; i < points.length; i++) {
         const [ m_lat, m_long, i_tree_id ] = points[i];
         tree_id = i_tree_id.toString();
-        const tree_handle = handle_map[tree_id];
-        const blooming = tree_handle[H_BLOOM];
+        const h = handle_map[tree_id];
+        const blooming = h[H_BLOOM];
         const icon = get_needed_icon((c_tree_id == i_tree_id), blooming);
         const marker = new L.marker([m_lat, m_long], {icon: icon});
         marker.tree_id = tree_id;
@@ -1097,14 +1102,14 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     for (let tid in tree_dict) {
         if (!tree_dict.hasOwnProperty(tid)) continue;
         const t_name = key_name[tid];
-        const tree_handle = handle_map[tid];
-        const blooming = tree_handle[H_BLOOM];
+        const h = handle_map[tid];
+        const blooming = h[H_BLOOM];
         const icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
         tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid,
                               'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long
-                           })
+                           });
         if (!is_tree) {
-            const [ m_url, image_url ] = get_image_url(tree_handle, 'thumbnail');
+            const [ m_url, image_url ] = get_image_url(h, 'thumbnail');
             tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'SH' : m_url, 'TID' : tid, 'SC' : tree_dict[tid] })
         }
     }

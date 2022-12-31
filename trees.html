@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 79,000+ trees marked in 175+ parks (including Lalbagh, and Cubbon Park), Cetral Business District, Indiranagar, Malleshwaram, Basavanagudi, Chamarajpet, and many BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 80,000+ trees marked in 180+ parks (including Lalbagh, and Cubbon Park), Cetral Business District, Indiranagar, Malleshwaram, Basavanagudi, Chamarajpet, and many BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
@@ -518,6 +518,9 @@
       {{#statsinfo}}
       <div class="row">
         <div class="col-3">
+          {{#title}}
+          <h2><em>{{R}} {{T}}</em></h2>
+          {{/title}}
           <table style="margin-top: 0" border="0" cellpadding="4" class="table table-striped table-condensed" >
             <tbody>
               {{#items}}
@@ -546,7 +549,7 @@
                       <small><i>{{SB}}</i></small> - 
                       <small><font color="brown">{{SA}}</font></small>
                     </h4>
-                    <img class="swiper-lazy" data-src="Flora/{{SI}}" alt="{{SN}}" />
+                    <img class="swiper-lazy" data-src="{{SI}}" alt="{{SN}}" />
                     <div class="swiper-lazy-preloader"></div>
                   </div>
                 </div>
@@ -575,22 +578,6 @@
   <script type="text/html" id="intro-template">
     <div class="col-12">
 
-    <center>
-    <h1><em>{{T}} : {{P}}</em></h1>
-
-    <h3>
-    <blockquote class="blockquote">
-    <p class="text-muted">
-    If we do not know the names of things, the knowledge of them is lost too.
-    <br>
-    If a tree dies, plant another in its place.
-    (<a href="https://en.wikipedia.org/wiki/Carl_Linnaeus" target="_blank">Carolus Linnaeus</a>)
-    </p>
-    </blockquote>
-    </h3>
-    </center>
-  
-    <p style="margin-bottom: 1cm;"></p>
     <div id="INTRO_SLIDER">
     </div>
     
@@ -612,6 +599,20 @@
     </div>
     </div>
         
+    <p style="margin-bottom: 1cm;"></p>
+    <center>
+    <h3>
+    <blockquote class="blockquote">
+    <p class="text-muted">
+    If we do not know the names of things, the knowledge of them is lost too.
+    <br>
+    If a tree dies, plant another in its place.
+    (<a href="https://en.wikipedia.org/wiki/Carl_Linnaeus" target="_blank">Carolus Linnaeus</a>)
+    </p>
+    </blockquote>
+    </h3>
+    </center>
+  
     <p style="margin-bottom: 1cm;"></p>
     <h2>{{N}}</h2>
     <p>
