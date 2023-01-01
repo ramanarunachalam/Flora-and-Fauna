@@ -107,14 +107,11 @@
         </div>
 
         <div class="navbar-nav col-5">
-            <div class="nav-item dropdown">
+            <div class="nav-item">
               {{#maps}}
-              <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{T}}<b class="caret"></b></a>
-              <div class="dropdown-menu">
                 {{#items}}
-                <a class="dropdown-item" href="javascript:load_area_data('{{A}}', '{{I}}');">{{N}}</a>
+                <a href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
                 {{/items}}
-              </div>
               {{/maps}}
             </div>
 
@@ -181,15 +178,23 @@
 
   <script type="text/html" id="area-template">
     <div class="col-3">
-        <div>
-          <h3>{{T}}</h3>
-        </div>
-        <div id="IMAGEINFO">
-        </div>
-        <nav class="navbar navbar-light bg-light">
-          <div id="NAVINFO" class="eside-scroll">
+        <h3 id="CHOSEN_ID">{{T}}</h3>
+        <p style="margin-bottom: 0.5cm;"></p>
+        <div id="CHOSEN_IMG"></div>
+        <p style="margin-bottom: 0.5cm;"></p>
+        <div class="accordion accordion-flush" id="MAP_ACCORDION">
+          {{#items}}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="{{P}}_HEADER">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{P}}_BODY" aria-expanded="false" aria-controls="{{P}}_BODY">
+                {{N}}
+              </button>
+            </h2>
+            <div id="{{P}}_BODY" class="accordion-collapse collapse" aria-labelledby="{{P}}_HEADER" data-bs-parent="#MAP_ACCORDION">
+            </div>
           </div>
-        </nav>
+          {{/items}}
+        </div>
     </div>
     <div class="col-9 d-flex flex-column">
         <div class="p-2">
@@ -356,7 +361,8 @@
           {{/ROW}}
   </script>
 
-  <script type="text/html" id="sidenav-template">
+  <script type="text/html" id="map-nav-template">
+    <div class="accordion-body">
       {{#parkinfo}}
       <ul class="navbar-nav">
          <li class="nav-item">{{SN}}. {{AN}} (<em><font color="brown">{{AC}}</font></em>)
@@ -364,7 +370,7 @@
              {{#parks}}
                <li class="nav-item">
                  {{PID}}. 
-                 <a href="javascript:load_area_latlong_in_osm('{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
+                 <a href="javascript:load_area_latlong_in_osm('parks', '{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">
                    {{PN}}
                  </a>
                </li>
@@ -377,7 +383,7 @@
       <ul class="navbar-nav">
          <li class="nav-item">
            {{SN}}. 
-           <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
+           <a href="javascript:load_area_latlong_in_osm('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
               {{AN}} : {{AID}} (<em><font color="brown">{{AC}}</font></em>)
            </a>
          </li>
@@ -387,12 +393,13 @@
       <ul class="navbar-nav">
          <li class="nav-item">
            {{SN}}. 
-           <a href="javascript:load_area_latlong_in_osm('{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
+           <a href="javascript:load_area_latlong_in_osm('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
               {{AN}} (<em><font color="brown">{{AC}}</font></em>)
            </a>
          </li>
       </ul>
       {{/mapinfo}}
+    </div>
   </script>
 
   <script type="text/html" id="stats-template">

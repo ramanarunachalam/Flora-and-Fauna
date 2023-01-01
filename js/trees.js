@@ -308,10 +308,7 @@ function tree_intro_init(slider_data) {
                      }
         new_slider_list.push(item);
     }
-    const start_id = Math.floor(Math.random() * new_slider_list.length);
-    const start_items = new_slider_list.splice(0, start_id);
-    const new_slide_items = new_slider_list.concat(start_items);
-    slider_info['items'] = new_slide_items;
+    slider_info['items'] = d3.shuffle(new_slider_list);
 
     render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
 
@@ -515,12 +512,8 @@ const REPLACE_LIST = [ [ /_/g, '' ], [ /G/g, 'n' ], [ /J/g, 'n' ] ];
 function transliterator_init() {
     const lang_obj = window.tree_lang_data;
     const char_map = lang_obj['Charmap'];
-    const key_list = new Set();
-    for (let s in char_map) {
-        key_list.add(s); 
-    }
-    window.char_map_key_list = key_list;
-    window.char_map_max_length = d3.max(key_list, d => d.length);
+    window.char_map_key_list = Object.keys(lang_obj['Charmap']);
+    window.char_map_max_length = d3.max(window.char_map_key_list, d => d.length);
 }
 
 function transliterate_text(word) {
@@ -701,8 +694,8 @@ function handle_geocoder_search_results(results, context) {
         const item = results[i];
         const name = item.name.split(',').slice(0, 3).join(',');
         const ll = item.center;
-        const latlong = `${ll.lat},${ll.lng}`;
-        const href = get_search_href('parks', [ 'parks', name.replace("'", ""), latlong ]);
+        const lat_long = `${ll.lat},${ll.lng}`;
+        const href = get_search_href('parks', [ 'parks', name.replace("'", ""), lat_long ]);
         const new_item = { I: i, T: 'Geocoder', N: name, H: href, P: i, SC: i };
         search_items.push(new_item);
     }
@@ -734,7 +727,7 @@ function load_search_history(data) {
 
 function get_zoom(osm_map, tid) {
     let zoom = (osm_map != null) ? osm_map.getZoom() : NATIVE_ZOOM;
-    if (window.area_type == 'Trees') {
+    if (window.area_type == 'trees') {
         const count = window.tree_count_data[tid];
         if (osm_map != null) {
             zoom = (!window.map_area_move && zoom <= TREE_ZOOM) ? TREE_ZOOM : zoom;
@@ -742,6 +735,8 @@ function get_zoom(osm_map, tid) {
         } else {
             zoom = (count < TREE_MIN_COUNT) ? TREE_ZOOM : MIN_ZOOM;
         }
+    } else {
+        if (window.map_area_click) zoom = NATIVE_ZOOM;
     }
     return zoom;
 }
@@ -792,10 +787,9 @@ function get_url_info(tree_id, level) {
     const m_url = `javascript:load_module_data('${tree_id}', '${url}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
     const image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
-    const img_html = `<a href="${m_url}" align="center"><div class="thumbnail" align="center"><img ${image_style} src="${image_url}" class="shadow-box"></a>`;
-    const name_html = `<a href="${a_url}"><p align="center"> ${name} </p></div></a>`;
-    const html = img_html + name_html;
-    return html;
+    const img_html = `<a href="${m_url}"><div class="thumbnail"><img ${image_style} src="${image_url}" class="shadow-box"></div></a>`;
+    const name_html = `<a href="${a_url}">${name}</a>`;
+    return [ name_html, img_html ];
 }
 
 function get_needed_icon(selected, blooming) {
@@ -806,8 +800,9 @@ function get_needed_icon(selected, blooming) {
 }
 
 function set_chosen_image(tree_id) {
-    const tooltip_html = get_url_info(tree_id, 'tooltip');
-    d3.select('#IMAGEINFO').html(tooltip_html);
+    const [ name_html, img_html ] = get_url_info(tree_id, 'tooltip');
+    d3.select('#CHOSEN_ID').html(name_html);
+    d3.select('#CHOSEN_IMG').html(img_html);
 }
 
 function handle_context_menu(key) {
@@ -961,7 +956,9 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             osm_map.removeLayer(area_marker_list[i]);
         }
         const zoom = get_zoom(osm_map, tid);
+        osm_map.options.minZoom = (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM;
         osm_map.setView([c_lat, c_long], zoom);
+        // console.log('osm initialized', window.area_type, a_name, aid, tid, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     } else {
         osm_map = create_osm_map('area', 'MAPINFO', c_lat, c_long, tid);
         window.map_osm_map = osm_map;
@@ -987,11 +984,14 @@ function draw_map_on_move(ev) {
     window.map_area_move = false;
 }
 
-function load_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
+function load_area_latlong_in_osm(a_type, a_name, aid, tid, c_lat, c_long) {
+    window.area_type = a_type;
     window.area_latlong = [];
     window.map_area_move = false;
+    window.map_area_click = true;
     show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
-    add_history('maps', { 'type' : window.area_type, 'id' : aid });
+    window.map_area_click = false;
+    add_history('maps', { 'type' : a_type, 'id' : aid });
 }
 
 function find_area_carousel_tree(tree_id) {
@@ -1175,6 +1175,7 @@ async function tree_area_init(area, aid, item_data) {
     const key_name = lang_map['Name'];
     const handle_map = lang_obj['Handle'];
 
+    let name = capitalize_word(area);
     let lat_long = BANGALORE_LAT_LONG;
     if (window.area_latlong == undefined) {
         window.area_latlong = [];
@@ -1182,53 +1183,55 @@ async function tree_area_init(area, aid, item_data) {
     if (window.area_latlong.length > 0) {
         lat_long = window.area_latlong;
     }
-    let name = capitalize_word(area);
-    if (area == 'parks') {
-        const data = item_data['parks'];
-        const area_list = data['parkinfo'];
-        for (let i = 0; i < area_list.length; i++) {
-            const park_area = area_list[i];
-            park_area['SN'] = i + 1;
-            const park_list = park_area['parks'];
-            for (let j = 0; j < park_list.length; j++) {
-                const park = park_list[j];
-                if (aid != '' && park['PID'] == aid) {
+
+    let data = item_data['parks'];
+    let area_list = data['parkinfo'];
+    for (let i = 0; i < area_list.length; i++) {
+        const park_area = area_list[i];
+        park_area['SN'] = i + 1;
+        const park_list = park_area['parks'];
+        for (let j = 0; j < park_list.length; j++) {
+            const park = park_list[j];
+            if (aid != '' && park['PID'] == aid) {
+                if (area == 'parks') {
                     name = park['PN'];
                     lat_long = [ +park['PLAT'], +park['PLONG'] ];
                 }
             }
         }
-        render_template_data('sidenav-template', 'NAVINFO', data);
-        render_template_data('stats-template', 'STATINFO', data);
-    } else if (area == 'wards') {
-        const data = item_data['wards'];
-        const ward_list = data['wardinfo'];
-        for (let i = 0; i < ward_list.length; i++) {
-            const ward = ward_list[i];
-            ward['SN'] = i + 1;
-            if (aid != '' && ward['AID'] == aid) {
+    }
+    render_template_data('map-nav-template', 'PARK_BODY', data);
+    render_template_data('stats-template', 'STATINFO', data);
+
+    data = item_data['wards'];
+    ward_list = data['wardinfo'];
+    for (let i = 0; i < ward_list.length; i++) {
+        const ward = ward_list[i];
+        ward['SN'] = i + 1;
+        if (aid != '' && ward['AID'] == aid) {
+            if (area == 'wards') {
                 name = ward['AN'];
                 lat_long = [ +ward['ALAT'], +ward['ALONG'] ];
             }
         }
-        render_template_data('sidenav-template', 'NAVINFO', data);
-        render_template_data('stats-template', 'STATINFO', data);
-    } else if (area == 'trees') {
-        const data = item_data['maps'];
-        const tree_list = data['mapinfo'];
-        for (let i = 0; i < tree_list.length; i++) {
-            const an = tree_list[i];
-            const tree_id = +an['AID'];
-            an['AN'] = key_name[tree_id];
-            an['SN'] = i + 1;
-            if (tree_id == aid) {
+    }
+    render_template_data('map-nav-template', 'WARD_BODY', data);
+    render_template_data('stats-template', 'STATINFO', data);
+
+    data = item_data['maps'];
+    tree_list = data['mapinfo'];
+    for (let i = 0; i < tree_list.length; i++) {
+        const an = tree_list[i];
+        const tree_id = +an['AID'];
+        an['AN'] = key_name[tree_id];
+        an['SN'] = i + 1;
+        if (tree_id == aid) {
+            if (area == 'trees') {
                 lat_long = [ +an['ALAT'], +an['ALONG'] ];
             }
         }
-        render_template_data('sidenav-template', 'NAVINFO', data);
-    } else {
-        return;
     }
+    render_template_data('map-nav-template', 'TREE_BODY', data);
 
     await fetch_grid_data();
     if (window.quad_tree == null) return;
@@ -1245,7 +1248,8 @@ async function tree_area_init(area, aid, item_data) {
             name = m_name;
         } else if (aid == 0 || aid == '0') {
             const tree_list = Object.keys(handle_map);
-            aid = tree_list[Math.floor(Math.random() * tree_list.length)];
+            const tree_index = d3.randomInt(0, tree_list.length)();
+            aid = tree_list[tree_index];
             name = m_name;
         } else {
             name = params.getValue('name');
@@ -1262,10 +1266,17 @@ async function load_area_data(area_type, area_id, area_latlong) {
     const lang = window.render_language;
     const map_dict = window.tree_lang_data['Keys'];
     const area_info = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
-                        'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type))
+                        'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type)),
+                        'items' : [ { N: get_lang_map_word(lang, map_dict, 'Parks'), P: 'PARK', },
+                                    { N: get_lang_map_word(lang, map_dict, 'Wards'), P: 'WARD', },
+                                    { N: get_lang_map_word(lang, map_dict, 'Trees'), P: 'TREE', },
+                                  ]
                       };
     render_template_data('area-template', 'SECTION', area_info);
-    if (area_latlong != undefined) window.area_latlong = area_latlong.split(',');
+    if (area_latlong != undefined) {
+        area_latlong = area_latlong.split(',');
+        if (area_latlong.length == 2) window.area_latlong = area_latlong;
+    }
     const area_data = await fetch_area_data();
     if (area_data != null) {
         tree_area_init(area_type, area_id, area_data);
@@ -1407,9 +1418,7 @@ function speech_to_text_init() {
 }
 
 function speech_start(event) {
-    if (!('webkitSpeechRecognition' in window)) {
-        return;
-    }
+    if (!('webkitSpeechRecognition' in window)) return;
     if (window.speech_recognizing) {
         window.speech_recognition.stop();
         return;
@@ -1428,7 +1437,6 @@ function load_keyboard(event) {
     const lang = window.render_language;
     set_input_keyboard(lang.toLowerCase());
     get_bs_modal('#LANG_KBD').show();
-    return;
 }
 
 function handle_history_context(data) {
@@ -1448,7 +1456,7 @@ function handle_history_context(data) {
         // console.log('HISTORY POP: ', window.area_latlong);
         load_area_data(data['type'], data['id']);
     } else if (context == 'search') {
-      load_search_history(data);
+        load_search_history(data);
     }
 }
 
@@ -1503,9 +1511,7 @@ function get_lang_map_word(lang, map_dict, n) {
 }
 
 function get_lang_map(lang, n_dict) {
-    if (lang == 'English') {
-        return;
-    }
+    if (lang == 'English') return;
     const map_dict = window.tree_lang_data['Keys'];
     n_dict['T'] = get_lang_map_word(lang, map_dict, n_dict['T']);
     const i_list = n_dict['items'];
@@ -1530,9 +1536,7 @@ function load_menu_data() {
         let d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
         lang_list.push(d);
     }
-    let map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' },
-                                               { 'N' : 'Wards', 'A' : 'wards', 'I' : '' },
-                                               { 'N' : 'Trees', 'A' : 'trees', 'I' : 0 }
+    let map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' }
                                              ]
                    };
     let collection_list = { 'T' : 'Collections',
@@ -1610,6 +1614,8 @@ function tree_main_init() {
     window.info_initialized = true;
     window.search_initialized = false;
     window.map_initialized = false;
+    window.map_area_move = false;
+    window.map_area_click = false;
     window.tree_popstate = false;
     window.area_marker_list = [];
     window.area_popup_list = [];
