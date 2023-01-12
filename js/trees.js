@@ -787,7 +787,7 @@ function get_url_info(tree_id, level) {
     const m_url = `javascript:load_module_data('${tree_id}', '${url}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
     const image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
-    const img_html = `<a href="${m_url}"><div class="thumbnail"><img ${image_style} src="${image_url}" class="shadow-box"></div></a>`;
+    const img_html = `<center><a href="${m_url}"><div class="thumbnail"><img ${image_style} src="${image_url}" class="shadow-box"></div></a></center>`;
     const name_html = `<a href="${a_url}">${name}</a>`;
     return [ name_html, img_html ];
 }
@@ -1272,7 +1272,7 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                     { N: get_lang_map_word(lang, map_dict, 'Trees'), P: 'TREE', },
                                   ]
                       };
-    render_template_data('area-template', 'SECTION', area_info);
+    render_template_data('map-template', 'SECTION', area_info);
     if (area_latlong != undefined) {
         area_latlong = area_latlong.split(',');
         if (area_latlong.length == 2) window.area_latlong = area_latlong;
