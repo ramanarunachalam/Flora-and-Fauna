@@ -905,15 +905,13 @@ function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
     quad_tree.visit((node, x1, y1, x2, y2) => {
         if (!node.length) {
             do {
-                let d = node.data;
-                if (tree_id > 0 && d[2] == tree_id) {
-                    results.push(d);
-                } else if (tree_id <= 0 && (d[0] >= xmin && d[0] < xmax && d[1] >= ymin && d[1] < ymax)) {
-                    results.push(d);
+                const [ dLat, dLong, dTreeId ] = node.data;
+                if ((tree_id <= 0 || tree_id == dTreeId) && (xmin <= dLat && dLat < xmax && ymin <= dLong && dLong < ymax)) {
+                    results.push(node.data);
                 }
             } while (node = node.next);
         }
-        return tree_id <= 0 && (x1 >= xmax || y1 >= ymax || x2 < xmin || y2 < ymin);
+        return (x1 >= xmax || y1 >= ymax || x2 < xmin || y2 < ymin);
     });
     return results;
 }
@@ -1056,6 +1054,19 @@ function area_carousel_init(tree_image_list) {
     area_highlight_tree(start_id);
 }
 
+function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
+    const icon = get_needed_icon(c_tree_id == i_tree_id, blooming);
+    const marker = new L.marker([m_lat, m_long], {icon: icon});
+    marker.tree_id = i_tree_id;
+    marker.blooming = blooming;
+    marker.on('mouseover', marker_on_mouseover);
+    marker.on('mouseout', marker_on_mouseout);
+    marker.on('click', marker_on_click);
+    marker.on('dblclick', marker_on_doubleclick);
+    marker.on('contextmenu', marker_on_contextmenu);
+    return marker;
+}
+
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const osm_map = window.map_osm_map;
     const area = window.area_type;
@@ -1072,22 +1083,14 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const tree_dict = {};
     const is_tree = (area == 'trees');
     const c_tree_id = is_tree ? +aid : ((tid != 0) ? +tid : 0);
-    const points = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, (area == 'trees') ? c_tree_id : 0);
+    const points = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? c_tree_id : 0);
     for (let i = 0; i < points.length; i++) {
         const [ m_lat, m_long, i_tree_id ] = points[i];
         tree_id = i_tree_id.toString();
         const h = handle_map[tree_id];
         const blooming = h[H_BLOOM];
-        const icon = get_needed_icon((c_tree_id == i_tree_id), blooming);
-        const marker = new L.marker([m_lat, m_long], {icon: icon});
-        marker.tree_id = tree_id;
-        marker.blooming = blooming;
+        const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
         osm_map.addLayer(marker);
-        marker.on('mouseover', marker_on_mouseover);
-        marker.on('mouseout', marker_on_mouseout);
-        marker.on('click', marker_on_click);
-        marker.on('dblclick', marker_on_doubleclick);
-        marker.on('contextmenu', marker_on_contextmenu);
         area_marker_list.push(marker);
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
@@ -1099,7 +1102,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
 
     const tree_stat_list = [];
     const tree_image_list = [];
-    for (let tid in tree_dict) {
+    for (const tid in tree_dict) {
         if (!tree_dict.hasOwnProperty(tid)) continue;
         const t_name = key_name[tid];
         const h = handle_map[tid];
@@ -1139,6 +1142,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
             area_carousel_init(tree_image_list);
         }
     }
+
     window.scrollTo(0, 0);
 }
 
