@@ -896,8 +896,23 @@ function create_quad_tree(grid_flora) {
             }
         }
     }
-    // console.log(`Quad Tree Size: ${quad_tree.size()}`);
+    // quad_tree_visit(quad_tree);
     return quad_tree;
+}
+
+function quad_tree_visit(quad_tree) {
+    let node_count = 0;
+    let leaf_count = 0;
+    quad_tree.visit((node, x1, y1, x2, y2) => {
+        if (!node.length) {
+            do ++leaf_count; while (node = node.next);
+        }
+        else {
+            ++node_count;
+        }
+        return false;
+    });
+    console.log('Quad Tree:', quad_tree.size(), node_count, leaf_count);
 }
 
 function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
