@@ -1,12 +1,20 @@
+:root {
+    --black-100: #D6D9DC;
+    --black-300: #9FA6AD;
+    --trees-body-bg-color: #F2F2F2;
+    --trees-map-bg-color: #F0DBDB;
+    --trees-table-bg-color: #FFF;
+    --trees-shadow-color: #000;
+}
 
 body {
-    background-color: #F2F2F2;
     height: 900px;
+    background-color: var(--trees-body-bg-color);
 }
 
 table {
     margin-top: 30px;
-    background-color: #FFF;
+    background-color: var(--trees-table-bg-color);
 }
 
 h2 {
@@ -71,14 +79,15 @@ a:not([class*="btn"]):hover {
     -webkit-border-radius: 12px; 
     border-radius: 12px; 
 
-    -moz-box-shadow: 4px 4px 14px #000; 
-    -webkit-box-shadow: 4px 4px 14px #000; 
-    box-shadow: 4px 4px 14px #000; 
+    -moz-box-shadow: 4px 4px 14px (--trees-shadow-color); 
+    -webkit-box-shadow: 4px 4px 14px var(--trees-shadow-color); 
+    box-shadow: 4px 4px 14px var(--trees-shadow-color); 
 }
 
 #MAPINFO {
     width: 60vw;
     height: 640px;
+    background-color: var(--trees-map-bg-color) !important;
 }
 
 #IMAGE_MODAL .modal-content {
@@ -98,11 +107,6 @@ a:not([class*="btn"]):hover {
     overflow-y: scroll;
 }
 
-:root {
-    --black-100: #d6d9dc;
-    --black-300: #9fa6ad;
-}
-
 table.langkbd {
     border: none;
 }
@@ -116,5 +120,5 @@ td.keycol {
 }
 
 td.keycol:hover {
-    background-color:var(--black-300)
+    background-color: var(--black-300)
 }
