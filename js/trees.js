@@ -21,6 +21,7 @@ const MAX_RESULTS   = 25;
 const SPEECH_TIME = 100; 
 const MAX_PAGES   = 100;
 
+const FLORA_BASE   = 'Flora'
 const LANGUAGE_URL = 'language.json';
 const SEARCH_URL   = 'flora_index.json';
 const AREA_URL     = 'area.json';
@@ -45,8 +46,11 @@ const TILE_OPTIONS = { attribution: OSM_ATTRIBUTION,
                        maxZoom: MAX_ZOOM
                      };
 
-let current_page = 1;
-let max_page = MAX_PAGES;
+const NORMALIZE_LIST = [ [ /(e)\1+/g, 'i' ], [ /(o)\1+/g, 'u' ], [ /(.)\1+/g, '$1' ],
+                         [ /([bcdfgjklpst])h/g, '$1' ], [ /([sd])v/g, '$1w' ], [ /([ao])u/g, 'ow' ]
+                       ];
+
+const REPLACE_LIST   = [ [ /_/g, '' ], [ /G/g, 'n' ], [ /J/g, 'n' ] ];
 
 
 function capitalize_word(s) {
@@ -60,12 +64,33 @@ function get_url_params() {
     return args;
 }
 
+class LangMap {
+    constructor() {
+        const lang = window.render_language;
+        this.lang_obj = window.tree_lang_data;
+        this.lang_map = this.lang_obj[lang];
+        this.english_lang_map = this.lang_obj['English'];
+        this.map_dict = this.lang_obj['Keys'];
+        this.char_map = this.lang_obj['Charmap'];
+        this.key_name = this.lang_map['Name'];
+        this.handle_map = this.lang_obj['Handle'];
+        this.key_group = this.lang_map['Key Group'];
+        this.key_part = this.lang_map['Key Part'];
+        this.key_image = this.lang_map['Image'];
+        this.english_key_image = this.english_lang_map['Image'];
+        this.english_key_info = this.english_lang_map['Key Name'];
+        this.park_map = this.lang_obj['Parks'];
+        this.ward_map = this.lang_obj['Wards'];
+    }
+}
+
 function lang_name_init() {
     const lang = window.render_language;
+    const imap = new LangMap();
+    window.id_map = imap;
     if (lang == 'English') return;
-    const tree_lang_data = window.tree_lang_data;
-    const english_name = tree_lang_data['English']['Name'];
-    const lang_name = tree_lang_data[lang]['Name'];
+    const english_name = imap.english_lang_map['Name'];
+    const lang_name = imap.lang_map['Name'];
     for (let i = 0; i < english_name.length; i++) {
         if (lang_name[i] == '') {
             lang_name[i] = english_name[i];
@@ -86,87 +111,43 @@ function render_template_data(template_name, id_name, data) {
     d3.select('#' + id_name).html(template_html);
 }
 
-function set_key_map(d_obj, d_map, d_key) {
+function set_key_value_map(d_obj, d_key) {
+    const imap = window.id_map;
     const d = d_obj[d_key];
     if (d[0] == 1) {
-        d_obj[d_key] = d_map[d[1]];
-    } else {
-        d_obj[d_key] = d[1];
-    }
-}
-
-function set_key_value_map(d_obj, d_map, lang_map, d_key) {
-    const d = d_obj[d_key];
-    if (d[0] == 1) {
-        const l_name = d_map[d[1]];
-        const l_map = lang_map[l_name];
+        const l_name = imap.english_key_info[d[1]];
+        const l_map = imap.lang_map[l_name];
         d_obj[d_key] = l_map[d[2]];
     } else {
         d_obj[d_key] = d[2];
     }
 }
 
-function get_tree_handle(tree_id) {
-    const lang_obj = window.tree_lang_data;
-    const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const key_name = lang_map['Name'];
-    const handle_map = lang_obj['Handle'];
-    const name = key_name[tree_id];
-    return [ name, handle_map ];
+function get_lang_map_word(n) {
+    const imap = window.id_map;
+    if (imap.map_dict == undefined) return n;
+    let t = imap.map_dict[n];
+    if (t == undefined) return n;
+    t = t[window.render_language];
+    return (t == undefined) ? n : t;
 }
 
-function get_handle_prefix(h) {
+function get_module_base(h) {
     return `${h[H_GENUS]} - ${h[H_NAME]}/${h[H_NAME]}`;
 }
 
-function get_module_url(tree_id) {
-    const [ name, handle_map ] = get_tree_handle(tree_id);
-    return get_handle_prefix(handle_map[tree_id]);
-}
-
-function get_handle_image_url(h, part_name) {
-    const prefix = get_handle_prefix(h);
-    return `${prefix} - ${part_name}.jpg`;
-}
-
-function get_handle_thumbnail_url(h, part_name) {
-    return `${h[H_GENUS]} - ${h[H_NAME]}/Thumbnails/${h[H_NAME]} - ${part_name}.thumbnail`;
-}
-
-function get_handle_thumbnail_image_id_url(h, english_key_image, image_id) {
-    return (image_id == '') ? 'empty.thumbnail' : get_handle_thumbnail_url(h, english_key_image[image_id]);
-}
-
-function get_part_name(h) {
-    const lang_obj = window.tree_lang_data;
-    const english_lang_map = lang_obj['English'];
-    const english_key_image = english_lang_map['Image'];
-    const image_id = h[H_PART];
-    return english_key_image[image_id];
-}
-
-function get_image_url(h, level) {
-    const base = 'Flora';
-    const part_name = get_part_name(h);
-    const image_url = get_handle_image_url(h, part_name);
-    const thumbnail_url = get_handle_thumbnail_url(h, part_name);
-    const i_url = (level == 'popup') ? `${base}/${image_url}` : `${base}/${thumbnail_url}`;
-    const m_url = get_handle_prefix(h);
-    return [ m_url, i_url ];
+function get_part_image_urls(h, part_name) {
+    const m_base = get_module_base(h);
+    const i_url = `${m_base} - ${part_name}.jpg`;
+    const t_url = `${h[H_GENUS]} - ${h[H_NAME]}/Thumbnails/${h[H_NAME]} - ${part_name}.thumbnail`;
+    return [ i_url, t_url ];
 }
 
 function get_module_name(handle_map, tree_id) {
-    if (tree_id == 0) return '';
-    if (handle_map == null) {
-        const [ p_name, p_handle_map ] = get_tree_handle(tree_id);
-        handle_map = p_handle_map; 
-    }
-    const h = handle_map[tree_id];
-    return h[H_NAME];
+    return (tree_id == 0) ? '' : handle_map[tree_id][H_NAME];
 }
 
-async function tree_module_init(file_name, data) {
+async function tree_module_init(data) {
     if (window.info_initialized == undefined) {
         window.tree_card_data = data;
         const url = `../../${LANGUAGE_URL}`;
@@ -176,7 +157,7 @@ async function tree_module_init(file_name, data) {
             window.render_language = 'English';
             lang_name_init();
             window.info_initialized = true;
-            tree_module_init('', window.tree_card_data);
+            tree_module_init(window.tree_card_data);
         };
         return;
     }
@@ -185,75 +166,58 @@ async function tree_module_init(file_name, data) {
     window.tree_map_data = data['mapinfo'];
     window.tree_box_data = data['mapregion'];
 
-    const lang_obj = window.tree_lang_data;
-    const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const handle_map = lang_obj['Handle'];
-    const english_lang_map = lang_obj['English'];
-    const english_key_info = english_lang_map['Key Name'];
-    const key_group = lang_map['Key Group'];
-    const key_part = lang_map['Key Part'];
-    const key_image = lang_map['Image'];
-    const english_key_image = english_lang_map['Image'];
-    const key_name = lang_map['Name'];
+    const imap = window.id_map;
+    const key_name = imap.key_name;
     if (key_name === undefined) {
-        key_name = english_lang_map['Name']; 
+        key_name = imap.english_lang_map; 
     }
     const card_data = window.tree_card_data;
     const gallery_info = card_data['galleryinfo']
     const tree_id = gallery_info['HID'];
 
-    const h = handle_map[tree_id];
-    gallery_info['HH'] = key_group[gallery_info['HH']];
+    const h = imap.handle_map[tree_id];
+    gallery_info['HH'] = imap.key_group[gallery_info['HH']];
     gallery_info['HN'] = key_name[gallery_info['HN']];
     const gallery_list = gallery_info['gallery'].split(',');
     const new_gallery_list = [];
     for (let i = 0; i < gallery_list.length; i++) {
         const image_id = gallery_list[i];
-        const part_name = (image_id.length == 4) ? image_id : english_key_image[image_id];
-        const caption = (image_id.length == 4) ? image_id : key_image[image_id];
-        const image = get_handle_image_url(h, part_name);
-        const new_item = { 'IC': caption, 'IN': image };
+        const caption = (image_id.length == 4) ? image_id : imap.key_image[image_id];
+        const part_name = (image_id.length == 4) ? image_id : imap.english_key_image[image_id];
+        const [ i_url, t_url ] = get_part_image_urls(h, part_name);
+        const new_item = { 'IC': caption, 'IN': i_url };
         new_gallery_list.push(new_item);
     }
     gallery_info['gallery'] = new_gallery_list;
     const info_list = card_data['cardinfo'];
     for (let i = 0; i < info_list.length; i++) {
         const cv_info = info_list[i];
-        cv_info['CN'] = key_group[cv_info['CN']];
+        cv_info['CN'] = imap.key_group[cv_info['CN']];
         const cv_list = cv_info['CV'];
         for (let j = 0; j < cv_list.length; j++) {
             const cv = cv_list[j];
-            cv['N'] = key_part[cv['N']]; 
-            set_key_value_map(cv, english_key_info, lang_map, 'V');
+            cv['N'] = imap.key_part[cv['N']]; 
+            set_key_value_map(cv, 'V');
         } 
     }
     render_template_data('module-card-info-template', 'CARDINFO', card_data);
 }
 
 function tree_grid_init(type, data) {
-    const lang_obj = window.tree_lang_data;
-    const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const key_name = lang_map['Name'];
-    const english_lang_map = lang_obj['English'];
-    const english_key_info = english_lang_map['Key Name'];
-    const english_key_image = english_lang_map['Image'];
-    const handle_map = lang_obj['Handle'];
+    const imap = window.id_map;
     const card_list = data['cardinfo'];
     const MAX_COL = 6;
     for (let i = 0; i < card_list.length; i++) {
-        set_key_value_map(card_list[i], english_key_info, lang_map, 'N');
+        set_key_value_map(card_list[i], 'N');
         const card = card_list[i];
         const new_row_list = [];
         let new_col_list = [];
         const row_list = card['ROW'];
         for (let j = 0; j < row_list.length; j++) {
             const [ tree_id, image_id ] = row_list[j].split(',');
-            const h = handle_map[tree_id];
-            const href = get_handle_prefix(h);
-            const new_caption = get_handle_thumbnail_image_id_url(h, english_key_image, image_id);
-            new_item = { CI: tree_id, CN: key_name[tree_id], CH: href, CT: new_caption };
+            const h = imap.handle_map[tree_id];
+            const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
+            new_item = { CI: tree_id, CN: imap.key_name[tree_id], CT: (image_id == '') ? 'empty.thumbnail' : t_url };
             new_col_list.push(new_item);
             if (new_col_list.length >= MAX_COL) {
                 new_row_list.push({ COL: new_col_list });
@@ -273,38 +237,31 @@ function tree_simple_init(data) {
 }
 
 function get_region_url(type) {
-    return `Flora/trees_${window.tree_region}_${type}.json`;
+    return `${FLORA_BASE}/trees_${window.tree_region}_${type}.json`;
 }
 
 function tree_intro_init(slider_data) {
     const lang = window.render_language;
-    const lang_obj = window.tree_lang_data;
-    const map_dict = lang_obj['Keys'];
+    const imap = window.id_map;
 
     const stats_info = slider_data['statsinfo'];
-    get_lang_map(lang, stats_info);
-    stats_info['title'] = { T: get_lang_map_word(lang, map_dict, 'Trees'),
-                            R: get_lang_map_word(lang, map_dict, capitalize_word(window.tree_region))
+    get_lang_map(stats_info);
+    stats_info['title'] = { T: get_lang_map_word('Trees'),
+                            R: get_lang_map_word(capitalize_word(window.tree_region))
                           };
 
-    const lang_map = lang_obj[lang];
-    const key_name = lang_map['Name'];
-    const handle_map = lang_obj['Handle'];
     const slider_info = slider_data['sliderinfo'];
     const slider_list = slider_info['items'];
-    const base = 'Flora';
     const new_slider_list = [];
     for (let i = 0; i < slider_list.length; i++) {
         const [ tree_id, count ] = slider_list[i];
         window.tree_count_data[tree_id] = count;
-        const h = handle_map[tree_id];
-        const href = get_handle_prefix(h);
-        const part_name = get_part_name(h);
-        const i_url = get_handle_image_url(h, part_name);
-        const t_url = get_handle_thumbnail_url(h, part_name);
-        const item = { SD: tree_id, SC: count, SN: key_name[tree_id],
-                       SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH], SH: href,
-                       SI: `${base}/${i_url}`, ST: `${base}/${t_url}`
+        const h = imap.handle_map[tree_id];
+        const image_id = h[H_PART];
+        const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
+        const item = { SD: tree_id, SC: count, SN: imap.key_name[tree_id],
+                       SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH],
+                       SI: i_url, ST: t_url
                      }
         new_slider_list.push(item);
     }
@@ -327,8 +284,6 @@ function tree_intro_init(slider_data) {
 async function load_intro_data(region) {
     window.tree_region = region;
     const lang = window.render_language;
-    const lang_obj = window.tree_lang_data;
-    const map_dict = lang_obj['Keys'];
     const c_region = capitalize_word(region);
     const intro_data = { 'N' : 'Tree', 'T' : 'Trees', 'P' : c_region,
                          'I' : 'Keys To Identify', 'R' : 'References', 'B' : 'Books',
@@ -336,7 +291,7 @@ async function load_intro_data(region) {
                          'SP' : 'Spines', 'TW' : 'Branch', 'A' : 'Aerial Root', 'G' : 'Gall'
                        };
     for (let k in intro_data) {
-         intro_data[k] = get_lang_map_word(lang, map_dict, intro_data[k]);
+         intro_data[k] = get_lang_map_word(intro_data[k]);
     }
     render_template_data('intro-template', 'SECTION', intro_data);
     const url = get_region_url('intro');
@@ -356,57 +311,47 @@ function search_init() {
     search_load();
 }
 
-function set_grid_page(n_current_page, n_max_page) {
-    current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : +n_current_page;
-    d3.selectAll('li.page-item.active').classed('active', false);
-    d3.select(`li#top_${current_page}`).classed('active', true);
-    d3.select(`li#bottom_${current_page}`).classed('active', true);
-    max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : +n_max_page;
-}
-
-function show_page(which, is_prev) {
-    const path_list = window.location.pathname.split('/');
-    let new_page = 1;
-    if (is_prev) {
-        new_page = 1;
-        if (current_page > 1) {
-            new_page = +current_page - 1;
-        }
-    } else {
-        new_page = max_page;
-        if (current_page < max_page) {
-            new_page = +current_page + 1;
-        }
+class Paginator {
+    constructor() {
+        this.current_page = 1;
+        this.max_page = MAX_PAGES;
     }
-    current_page = new_page;
-    const href = d3.select(`li#${which}_${new_page} a`).attr('href');
-    window.open(href, '_self', false);
-}
 
-function show_top_prev_page() {
-    show_page('top', true);
-}
+    show_page(which, is_prev) {
+        const path_list = window.location.pathname.split('/');
+        let new_page = 1;
+        if (is_prev) {
+            new_page = 1;
+            if (this.current_page > 1) {
+                new_page = this.current_page - 1;
+            }
+        } else {
+            new_page = this.max_page;
+            if (this.current_page < this.max_page) {
+                new_page = this.current_page + 1;
+            }
+        }
+        this.current_page = new_page;
+        const href = d3.select(`li#${which}_${new_page} a`).attr('href');
+        window.open(href, '_self', false);
+    }
 
-function show_top_next_page() {
-    show_page('top', false);
-}
+    set_grid_page(n_current_page, n_max_page) {
+        d3.select('#top-page-next').on('click', () => { this.show_page('top', false); });
+        d3.select('#top-page-previous').on('click', () => { this.show_page('top', true); });
+        d3.select('#bottom-page-next').on('click', () => { this.show_page('bottom', false); });
+        d3.select('#bottom-page-previous').on('click', () => { this.show_page('bottom', true); });
 
-function show_bottom_prev_page() {
-    show_page('bottom', true);
-}
-
-function show_bottom_next_page() {
-    show_page('bottom', false);
+        this.current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : +n_current_page;
+        d3.selectAll('li.page-item.active').classed('active', false);
+        d3.select(`li#top_${this.current_page}`).classed('active', true);
+        d3.select(`li#bottom_${this.current_page}`).classed('active', true);
+        this.max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : +n_max_page;
+    }
 }
 
 function tree_collection_init(type, letter, page_index, max_page, full_data) {
-    const lang_obj = window.tree_lang_data;
-    const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const english_lang_map = lang_obj['English'];
-    const english_key_image = english_lang_map['Image'];
-    const handle_map = lang_obj['Handle'];
-    const key_name = lang_map['Name'];
+    const imap = window.id_map;
     const data = full_data[type];
     const image_data = full_data['Images'];
     const letter_data = data['LETTER'];
@@ -415,20 +360,18 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     const col_name = 'COL' + type[0].toUpperCase();
     for (let i = 0; i < row_list.length; i++) {
         const tree_id = row_list[i];
-        const h = handle_map[tree_id];
+        const h = imap.handle_map[tree_id];
         const new_image_list = [];
         const image_list = image_data[tree_id].split(',');
         for (let k = 0; k < image_list.length; k++) {
             const image_id = image_list[k];
-            const href = get_handle_prefix(h);
-            const caption = get_handle_thumbnail_image_id_url(h, english_key_image, image_id);
-            const new_item = { CI: caption, CH: href };
+            const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
+            const new_item = { CI: tree_id, CT: (image_id == '') ? 'empty.thumbnail' : t_url };
             new_image_list.push(new_item);
         }
         const new_item = { COLIMAGE: new_image_list };
-        const href = get_handle_prefix(h);
-        new_item[col_name] = { CC: (i + 1), CI: tree_id, CN: key_name[tree_id], CF: h[H_FAMILY],
-                               CB: `${h[H_GENUS]} ${h[H_SPECIES]}`, CA: h[H_AUTH], CH: href
+        new_item[col_name] = { CC: (i + 1), CI: tree_id, CN: imap.key_name[tree_id], CF: h[H_FAMILY],
+                               CB: `${h[H_GENUS]} ${h[H_SPECIES]}`, CA: h[H_AUTH]
                              }
         new_row_list.push(new_item);
     }
@@ -450,28 +393,18 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     render_template_data('pagination-template', 'BOTTOMPAGE', new_data);
     render_template_data('collection-card-info-template', 'CARDINFO', new_data);
 
-    d3.select('#top-page-next').on('click', show_top_next_page);
-    d3.select('#top-page-previous').on('click', show_top_prev_page);
-    d3.select('#bottom-page-next').on('click', show_bottom_next_page);
-    d3.select('#bottom-page-previous').on('click', show_bottom_prev_page);
-
-    set_grid_page(page_index, max_page);
+    window.paginator.set_grid_page(page_index, max_page);
 }
 
 function get_bs_modal(id) {
     return new bootstrap.Modal(d3.select(id).node());
 }
 
-function show_bigger_image() {
-    const [ image_src, caption ] = arguments;
+function show_bigger_image(image_src, caption) {
     d3.select('#IMAGE_IN_MODAL').attr('src', image_src);
     d3.select('#IMAGE_MODEL_LABEL').html(caption);
     get_bs_modal('#IMAGE_MODAL').show();
 }
-
-const NORMALIZE_LIST = [ [ /(e)\1+/g, 'i' ], [ /(o)\1+/g, 'u' ], [ /(.)\1+/g, '$1' ],
-                         [ /([bcdfgjklpst])h/g, '$1' ], [ /([sd])v/g, '$1w' ], [ /([ao])u/g, 'ow' ]
-                       ];
 
 function normalize_search_text(search_text) {
     search_text = search_text.toLowerCase();
@@ -507,19 +440,14 @@ async function search_load() {
     window.search_initialized = true;
 }
 
-const REPLACE_LIST = [ [ /_/g, '' ], [ /G/g, 'n' ], [ /J/g, 'n' ] ];
-
 function transliterator_init() {
-    const lang_obj = window.tree_lang_data;
-    const char_map = lang_obj['Charmap'];
-    window.char_map_key_list = Object.keys(lang_obj['Charmap']);
+    const imap = window.id_map;
+    window.char_map_key_list = Object.keys(imap.char_map);
     window.char_map_max_length = d3.max(window.char_map_key_list, d => d.length);
 }
 
 function transliterate_text(word) {
-    const lang_obj = window.tree_lang_data;
-    const char_map = lang_obj['Charmap'];
-
+    const imap = window.id_map;
     const tokenset = window.char_map_key_list;
     const maxlen = window.char_map_max_length;
     let current = 0;
@@ -539,8 +467,8 @@ function transliterate_text(word) {
             }
             i -= 1;
         }
-        if (p in char_map) {
-            p = char_map[p];
+        if (p in imap.char_map) {
+            p = imap.char_map[p];
         }
         tokenlist.push(p);
         current += j;
@@ -563,14 +491,8 @@ function get_search_href(category, arg_list) {
 }
 
 function get_search_results(search_word, item_list, id_list, base_pop) {
-    const lang_obj = window.tree_lang_data;
     const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const key_name = lang_map['Name'];
-    const map_dict = lang_obj['Keys'];
-    const handle_map = lang_obj['Handle'];
-    const park_map = lang_obj['Parks'];
-    const ward_map = lang_obj['Wards'];
+    const imap = window.id_map;
     const search_engine = window.flora_fauna_search_engine;
     const results = search_engine.search(search_word, SEARCH_OPTIONS);
     if (results.length <= 0) return;
@@ -587,19 +509,19 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
         let name = '';
         let href = '';
         if (item.category == 'Trees') {
-            href = [ name_id, get_handle_prefix(handle_map[name_id]) ];
-            name = key_name[name_id];
+            href = [ name_id ];
+            name = imap.key_name[name_id];
         } else if (item.category == 'Maps') {
-            name = key_name[name_id];
-            href = [ 'trees', name_id, get_handle_prefix(handle_map[name_id]) ];
+            name = imap.key_name[name_id];
+            href = [ 'trees', name_id ];
         } else if (item.category == 'Parks') {
-            name = park_map[name_id];
+            name = imap.park_map[name_id];
             href = [ 'parks', name_id, name.replace("'", "") ];
         } else if (item.category == 'Wards') {
-            name = ward_map[name_id];
+            name = imap.ward_map[name_id];
             href = [ 'wards', name_id, name ];
         }
-        const category = get_lang_map_word(lang, map_dict, item.category);
+        const category = get_lang_map_word(item.category);
         href = get_search_href(item.category, href);
         const new_pop = (score_ratio * item.score) + (pop_ratio * item.pop);
         let pop = (calculate_pop) ? new_pop : item.pop;
@@ -607,13 +529,11 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
         pop = base_pop + pop;
         let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score, 'C' : item.count, 'I' : name_id };
         if (item.category == 'Trees' || item.category == 'Maps') {
-            const h = handle_map[name_id];
+            const h = imap.handle_map[name_id];
             r_item['G'] = h[H_GENUS];
             r_item['S'] = h[H_SPECIES];
         }
-        if (name_id != '') {
-            r_item['I'] = name_id;
-        }
+        if (name_id != '') r_item['I'] = name_id;
         item_list.push(r_item);
         id_list.add(item.id);
     }
@@ -780,27 +700,22 @@ function create_icons() {
     window.red_bloom_icon = create_marker_icon('marker_bloom_red.png');
 }
 
-function get_url_info(tree_id, level) {
-    const [ name, handle_map ] = get_tree_handle(tree_id);
-    const h = handle_map[tree_id];
-    const [ url, image_url ] = get_image_url(h, level);
-    const m_url = `javascript:load_module_data('${tree_id}', '${url}');`;
-    const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
-    const image_style = (level == 'popup') ? 'style="width: 240px; height: 180px;"' : '';
-    const img_html = `<center><a href="${m_url}"><div class="thumbnail"><img ${image_style} src="${image_url}" class="shadow-box"></div></a></center>`;
-    const name_html = `<a href="${a_url}">${name}</a>`;
-    return [ name_html, img_html ];
-}
-
 function get_needed_icon(selected, blooming) {
-    if (selected) {
-        return (blooming) ? window.red_bloom_icon : window.red_tree_icon;
-    } else if (blooming) return window.green_bloom_icon;
+    if (selected) return (blooming) ? window.red_bloom_icon : window.red_tree_icon;
+    else if (blooming) return window.green_bloom_icon;
     return window.green_tree_icon;
 }
 
 function set_chosen_image(tree_id) {
-    const [ name_html, img_html ] = get_url_info(tree_id, 'tooltip');
+    const imap = window.id_map;
+    const name = imap.key_name[tree_id];
+    const h = imap.handle_map[tree_id];
+    const image_id = h[H_PART];
+    const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
+    const h_url = `javascript:load_module_data('${tree_id}');`;
+    const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
+    const name_html = `<a href="${a_url}">${name}</a>`;
+    const img_html = `<center><a href="${h_url}"><div class="thumbnail"><img src="${FLORA_BASE}/${t_url}" class="shadow-box"></div></a></center>`;
     d3.select('#CHOSEN_ID').html(name_html);
     d3.select('#CHOSEN_IMG').html(img_html);
 }
@@ -812,8 +727,7 @@ function handle_context_menu(key) {
     const tree_id = marker.tree_id;
     const pos = marker.getLatLng();
     if (key == 'info') {
-        const m_url = get_module_url(tree_id);
-        load_module_data(tree_id, m_url);
+        load_module_data(tree_id);
     } else if (key == 'tmap') {
         load_area_data('trees', tree_id);
     } else if (key == 'gmap') {
@@ -846,8 +760,7 @@ function marker_on_click(e) {
 
 function load_module_data_with_id(tree_id) {
     window.map_tree_id = tree_id;
-    const m_url = get_module_url(tree_id);
-    load_module_data(tree_id, m_url);
+    load_module_data(tree_id);
 }
 
 function marker_on_doubleclick(e) {
@@ -858,7 +771,8 @@ function marker_on_doubleclick(e) {
 function marker_on_contextmenu(e) {
     const marker = this;
     window.TREE_CONTEXT_MARKER = marker;
-    const [ name, handle_map ] = get_tree_handle(marker.tree_id);
+    const imap = window.id_map;
+    const name = imap.key_name[marker.tree_id];
     d3.select('#CONTEXT_MODEL_LABEL').html(name);
     get_bs_modal('#CONTEXT_MODAL').show();
 }
@@ -940,7 +854,6 @@ async function fetch_grid_data() {
 
 function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     const lang = window.render_language;
-    const map_dict = window.tree_lang_data['Keys'];
     const area = window.area_type;
     const old_a_name = window.map_area_name;
     window.map_area_name = a_name;
@@ -952,9 +865,9 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 
     let n_name = '';
     if (area == 'trees') {
-        n_name = get_module_name(null, tid);
+        n_name = get_module_name(window.id_map.handle_map, tid);
     } else {
-        n_name = get_lang_map_word(lang, map_dict, capitalize_word(a_name));
+        n_name = get_lang_map_word(capitalize_word(a_name));
         if (aid != '') {
             n_name = isFinite(aid) ? `${aid}. ${n_name}` : aid;
         }
@@ -1085,11 +998,7 @@ function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const osm_map = window.map_osm_map;
     const area = window.area_type;
-    const lang_obj = window.tree_lang_data;
-    const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const key_name = lang_map['Name'];
-    const handle_map = lang_obj['Handle'];
+    const imap = window.id_map;
 
     const bounds = osm_map.getBounds();
     const sw = bounds.getSouthWest();
@@ -1102,7 +1011,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     for (let i = 0; i < points.length; i++) {
         const [ m_lat, m_long, i_tree_id ] = points[i];
         tree_id = i_tree_id.toString();
-        const h = handle_map[tree_id];
+        const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
         const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
         osm_map.addLayer(marker);
@@ -1119,16 +1028,17 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const tree_image_list = [];
     for (const tid in tree_dict) {
         if (!tree_dict.hasOwnProperty(tid)) continue;
-        const t_name = key_name[tid];
-        const h = handle_map[tid];
+        const t_name = imap.key_name[tid];
+        const h = imap.handle_map[tid];
         const blooming = h[H_BLOOM];
         const icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
         tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid,
                               'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long
                            });
         if (!is_tree) {
-            const [ m_url, image_url ] = get_image_url(h, 'thumbnail');
-            tree_image_list.push({ 'SN' : t_name, 'SI' : image_url, 'SH' : m_url, 'TID' : tid, 'SC' : tree_dict[tid] })
+            const image_id = h[H_PART];
+            const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
+            tree_image_list.push({ 'SN' : t_name, 'SI' : `${t_url}`, 'TID' : tid, 'SC' : tree_dict[tid] })
         }
     }
     if (tree_stat_list.length > 0) {
@@ -1188,12 +1098,7 @@ async function tree_area_init(area, aid, item_data) {
         return;
     }
 
-    const lang_obj = window.tree_lang_data;
-    const lang = window.render_language;
-    const lang_map = lang_obj[lang];
-    const key_name = lang_map['Name'];
-    const handle_map = lang_obj['Handle'];
-
+    const imap = window.id_map;
     let name = capitalize_word(area);
     let lat_long = BANGALORE_LAT_LONG;
     if (window.area_latlong == undefined) {
@@ -1242,7 +1147,7 @@ async function tree_area_init(area, aid, item_data) {
     for (let i = 0; i < tree_list.length; i++) {
         const an = tree_list[i];
         const tree_id = +an['AID'];
-        an['AN'] = key_name[tree_id];
+        an['AN'] = imap.key_name[tree_id];
         an['SN'] = i + 1;
         if (tree_id == aid) {
             if (area == 'trees') {
@@ -1258,7 +1163,7 @@ async function tree_area_init(area, aid, item_data) {
 
     let tid = (window.map_tree_id != undefined) ? window.map_tree_id : 0;
     if (area == 'trees') {
-        const m_name = get_module_name(handle_map, aid);
+        const m_name = get_module_name(imap.handle_map, aid);
         if (aid != 0) {
             tid = aid;
             name = m_name;
@@ -1266,7 +1171,7 @@ async function tree_area_init(area, aid, item_data) {
             aid = tid;
             name = m_name;
         } else if (aid == 0 || aid == '0') {
-            const tree_list = Object.keys(handle_map);
+            const tree_list = Object.keys(imap.handle_map);
             const tree_index = d3.randomInt(0, tree_list.length)();
             aid = tree_list[tree_index];
             name = m_name;
@@ -1283,12 +1188,11 @@ async function tree_area_init(area, aid, item_data) {
 
 async function load_area_data(area_type, area_id, area_latlong) {
     const lang = window.render_language;
-    const map_dict = window.tree_lang_data['Keys'];
-    const area_info = { 'T' : get_lang_map_word(lang, map_dict, 'Tree'),
-                        'H' : get_lang_map_word(lang, map_dict, capitalize_word(area_type)),
-                        'items' : [ { N: get_lang_map_word(lang, map_dict, 'Parks'), P: 'PARK', },
-                                    { N: get_lang_map_word(lang, map_dict, 'Wards'), P: 'WARD', },
-                                    { N: get_lang_map_word(lang, map_dict, 'Trees'), P: 'TREE', },
+    const area_info = { 'T' : get_lang_map_word('Tree'),
+                        'H' : get_lang_map_word(capitalize_word(area_type)),
+                        'items' : [ { N: get_lang_map_word('Parks'), P: 'PARK', },
+                                    { N: get_lang_map_word('Wards'), P: 'WARD', },
+                                    { N: get_lang_map_word('Trees'), P: 'TREE', },
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
@@ -1336,14 +1240,16 @@ async function load_simple_data() {
     };
 }
 
-async function load_module_data(tree_id, file_name) {
+async function load_module_data(tree_id) {
+    const imap = window.id_map;
+    const m_base = get_module_base(imap.handle_map[tree_id]);
     const module_data = {};
     render_template_data('module-template', 'SECTION', module_data);
-    const url = `Flora/${file_name}.json`;
+    const url = `${FLORA_BASE}/${m_base}.json`;
     const item_data = await d3.json(url);
     if (item_data != null) {
-        tree_module_init(file_name, item_data);
-        add_history('trees', { 'module' : file_name, 'id' : tree_id });
+        tree_module_init(item_data);
+        add_history('trees', { 'id' : tree_id });
     };
 }
 
@@ -1469,7 +1375,7 @@ function handle_history_context(data) {
     } else if (context == 'alphabetical') {
         load_simple_data();
     } else if (context == 'trees') {
-        load_module_data(data['id'], data['module']);
+        load_module_data(data['id']);
     } else if (context == 'maps') {
         window.area_latlong = data['latlong'];
         // console.log('HISTORY POP: ', window.area_latlong);
@@ -1514,35 +1420,18 @@ function add_history(context, data) {
     window.tree_popstate = false;
 }
 
-function get_lang_map_word(lang, map_dict, n) {
-   if (map_dict == undefined) {
-       return n;
-   }
-   let t = map_dict[n];
-   if (t == undefined) {
-       return n;
-   }
-   t = t[lang];
-   if (t == undefined) {
-       return n;
-   }
-   return t;
-}
-
-function get_lang_map(lang, n_dict) {
-    if (lang == 'English') return;
-    const map_dict = window.tree_lang_data['Keys'];
-    n_dict['T'] = get_lang_map_word(lang, map_dict, n_dict['T']);
+function get_lang_map(n_dict) {
+    if (window.render_language == 'English') return;
+    n_dict['T'] = get_lang_map_word(n_dict['T']);
     const i_list = n_dict['items'];
     for (let i = 0; i < i_list.length; i++) {
         const i_dict = i_list[i];
-        i_dict['N'] = get_lang_map_word(lang, map_dict, i_dict['N']);
+        i_dict['N'] = get_lang_map_word(i_dict['N']);
     }
 }
 
 function load_menu_data() {
     const lang = window.render_language;
-    const map_dict = window.tree_lang_data['Keys'];
     const LANG_LIST = [];
     for (let l in MAP_LANG_DICT) {
         LANG_LIST.push(MAP_LANG_DICT[l]);
@@ -1550,7 +1439,7 @@ function load_menu_data() {
     const lang_list = [];
     for (let i = 0; i < LANG_LIST.length; i++) {
         const l = LANG_LIST[i];
-        let t = get_lang_map_word(lang, map_dict, l);
+        let t = get_lang_map_word(l);
         t = REVERSE_LANG_DICT[l];
         let d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
         lang_list.push(d);
@@ -1577,14 +1466,14 @@ function load_menu_data() {
                                       { 'N' : 'India',     'R' : 'india' }
                                     ]
                         };
-    // get_lang_map(lang, lang_list);
-    get_lang_map(lang, map_list);
-    get_lang_map(lang, collection_list);
-    get_lang_map(lang, category_list);
-    get_lang_map(lang, region_list);
-    let menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word(lang, map_dict, 'Trees'),
-                                  'SEARCH' : get_lang_map_word(lang, map_dict, 'Search'),
-                                  'ALPHABETICAL' : get_lang_map_word(lang, map_dict, 'Alphabetical'),
+    // get_lang_map(lang_list);
+    get_lang_map(map_list);
+    get_lang_map(collection_list);
+    get_lang_map(category_list);
+    get_lang_map(region_list);
+    let menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word('Trees'),
+                                  'SEARCH' : get_lang_map_word('Search'),
+                                  'ALPHABETICAL' : get_lang_map_word('Alphabetical'),
                                   'languages' : lang_list,
                                   'maps' : map_list,
                                   'collections' : collection_list,
@@ -1637,8 +1526,6 @@ function tree_main_init() {
     window.map_area_click = false;
     window.tree_popstate = false;
     window.area_marker_list = [];
-    window.area_popup_list = [];
-    window.area_tooltip_list = [];
     window.area_latlong = [];
     window.tree_image_list = [];
     window.tree_lang_data = {};
@@ -1647,6 +1534,9 @@ function tree_main_init() {
     window.quad_tree = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
+
+    window.paginator = new Paginator();
+    window.id_map = {};
 
     window.url_params = get_url_params();
     window.addEventListener('popstate', handle_popstate);
