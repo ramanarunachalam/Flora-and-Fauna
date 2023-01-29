@@ -59,7 +59,7 @@ function capitalize_word(s) {
 
 function get_url_params() {
     const args = {};
-    const parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
         function(m, key, value) { args[key] = value; });
     return args;
 }
@@ -281,7 +281,7 @@ function tree_intro_init(slider_data) {
     }, 0);
 }
 
-async function load_intro_data(region) {
+async function load_intro_data(region, slider_obj) {
     window.tree_region = region;
     const lang = window.render_language;
     const c_region = capitalize_word(region);
@@ -294,21 +294,11 @@ async function load_intro_data(region) {
          intro_data[k] = get_lang_map_word(intro_data[k]);
     }
     render_template_data('intro-template', 'SECTION', intro_data);
-    const url = get_region_url('intro');
-    const slider_data = await d3.json(url);
-    if (slider_data != null) {
-        tree_intro_init(slider_data);
-        add_history('introduction', { 'region' : region });
-    };
-}
-
-function search_init() {
-    window.flora_fauna_search_engine = new MiniSearch({
-        fields: [ 'title', 'aka' ], // fields to index for full-text search
-        storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop', 'count'] // fields to return with search results
-    });
-    window.search_initialized = false;
-    search_load();
+    let slider_data = slider_obj;
+    if (slider_obj == undefined) slider_data = await d3.json(get_region_url('intro'));
+    if (slider_data == null) return;
+    tree_intro_init(slider_data);
+    add_history('introduction', { 'region' : region });
 }
 
 class Paginator {
@@ -415,29 +405,34 @@ function normalize_search_text(search_text) {
     return search_text;
 }
 
-async function search_load() {
+function search_load(search_obj) {
     if (window.search_initialized) return;
-    const search_engine = window.flora_fauna_search_engine;
-    const search_obj = await d3.json(SEARCH_URL);
-    if (search_obj != null) {
-        let data_id = 0;
-        for (let category in search_obj) {
-            const data_list = search_obj[category];
-            for (let i = 0; i < data_list.length; i++) {
-                const item = data_list[i];
-                const t_list = item.A.slice(0, 4);
-                const a_list = item.A.slice(4);
-                const pop = (item.P != undefined) ? item.P : -1;
-                const count = (item.C != undefined) ? item.C : 0;
-                const data_doc = { id: data_id, category: item.T, name: item.N, title: t_list, aka: a_list,
-                                   href: item.H, pop: pop, count: count
-                                 };
-                search_engine.add(data_doc);
-                data_id += 1;
-            }
+    if (search_obj == null) return;
+    let data_id = 0;
+    for (let category in search_obj) {
+        const data_list = search_obj[category];
+        for (let i = 0; i < data_list.length; i++) {
+            const item = data_list[i];
+            const t_list = item.A.slice(0, 4);
+            const a_list = item.A.slice(4);
+            const pop = (item.P != undefined) ? item.P : -1;
+            const count = (item.C != undefined) ? item.C : 0;
+            const data_doc = { id: data_id, category: item.T, name: item.N, title: t_list, aka: a_list,
+                               href: item.H, pop: pop, count: count
+                             };
+            window.flora_search_engine.add(data_doc);
+            data_id += 1;
         }
-    };
-    window.search_initialized = true;
+    }
+}
+
+function search_init() {
+    window.flora_search_engine = new MiniSearch({
+        fields: [ 'title', 'aka' ], // fields to index for full-text search
+        storeFields: ['name', 'genus', 'species', 'href', 'category', 'pop', 'count'] // fields to return with search results
+    });
+    window.search_initialized = false;
+    d3.json(SEARCH_URL).then((search_obj) => { search_load(search_obj); window.search_initialized = true; });
 }
 
 function transliterator_init() {
@@ -493,8 +488,7 @@ function get_search_href(category, arg_list) {
 function get_search_results(search_word, item_list, id_list, base_pop) {
     const lang = window.render_language;
     const imap = window.id_map;
-    const search_engine = window.flora_fauna_search_engine;
-    const results = search_engine.search(search_word, SEARCH_OPTIONS);
+    const results = window.flora_search_engine.search(search_word, SEARCH_OPTIONS);
     if (results.length <= 0) return;
     const max_score = results[0].score;
     const score_ratio = 400 / results[0].score;
@@ -1466,7 +1460,6 @@ function load_menu_data() {
                                       { 'N' : 'India',     'R' : 'india' }
                                     ]
                         };
-    // get_lang_map(lang_list);
     get_lang_map(map_list);
     get_lang_map(collection_list);
     get_lang_map(category_list);
@@ -1500,19 +1493,18 @@ function load_menu_data() {
     }
 }
 
-async function load_content() {
-    const lang_obj = await d3.json(LANGUAGE_URL);
-    if (lang_obj != null) {
-        window.tree_lang_data = lang_obj;
-        lang_name_init();
-        transliterator_init();
-        const tree_id = window.url_params['tid'];
-        if (tree_id == undefined) {
-            load_intro_data(window.tree_region);
-        } else {
-            load_module_data_with_id(tree_id);
-        }
-    };
+async function load_content(lang_data, slider_data) {
+    if (lang_data == undefined) return;
+    window.tree_lang_data = lang_data;
+    lang_name_init();
+    transliterator_init();
+    load_menu_data();
+    const tree_id = window.url_params['tid'];
+    if (tree_id == undefined) {
+        load_intro_data(window.tree_region, slider_data);
+    } else {
+        load_module_data_with_id(tree_id);
+    }
     search_init();
 }
 
@@ -1540,9 +1532,13 @@ function tree_main_init() {
 
     window.url_params = get_url_params();
     window.addEventListener('popstate', handle_popstate);
-    window.onload = load_content;
+
+    const url_list = [ d3.json(LANGUAGE_URL), d3.json(get_region_url('intro')) ];
+    Promise.all(url_list).then((values) => {
+        const [ lang_data, slider_data ] = values;
+        load_content(lang_data, slider_data);
+    });
 
     init_input_keyboard();
-    load_menu_data();
 }
 
