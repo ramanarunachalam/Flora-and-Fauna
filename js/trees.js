@@ -88,13 +88,11 @@ function lang_name_init() {
     const lang = window.render_language;
     const imap = new LangMap();
     window.id_map = imap;
-    if (lang == 'English') return;
+    if (lang === 'English') return;
     const english_name = imap.english_lang_map['Name'];
     const lang_name = imap.lang_map['Name'];
-    for (let i = 0; i < english_name.length; i++) {
-        if (lang_name[i] == '') {
-            lang_name[i] = english_name[i];
-        }
+    for (const [i, value] of english_name.entries()) {
+        if (lang_name[i] === '') lang_name[i] = value;
     }
 }
 
@@ -114,7 +112,7 @@ function render_template_data(template_name, id_name, data) {
 function set_key_value_map(d_obj, d_key) {
     const imap = window.id_map;
     const d = d_obj[d_key];
-    if (d[0] == 1) {
+    if (d[0] === 1) {
         const l_name = imap.english_key_info[d[1]];
         const l_map = imap.lang_map[l_name];
         d_obj[d_key] = l_map[d[2]];
@@ -125,11 +123,11 @@ function set_key_value_map(d_obj, d_key) {
 
 function get_lang_map_word(n) {
     const imap = window.id_map;
-    if (imap.map_dict == undefined) return n;
+    if (imap.map_dict === undefined) return n;
     let t = imap.map_dict[n];
-    if (t == undefined) return n;
+    if (t === undefined) return n;
     t = t[window.render_language];
-    return (t == undefined) ? n : t;
+    return (t === undefined) ? n : t;
 }
 
 function get_module_base(h) {
@@ -144,15 +142,15 @@ function get_part_image_urls(h, part_name) {
 }
 
 function get_module_name(handle_map, tree_id) {
-    return (tree_id == 0) ? '' : handle_map[tree_id][H_NAME];
+    return (tree_id === 0) ? '' : handle_map[tree_id][H_NAME];
 }
 
 async function tree_module_init(data) {
-    if (window.info_initialized == undefined) {
+    if (window.info_initialized === undefined) {
         window.tree_card_data = data;
         const url = `../../${LANGUAGE_URL}`;
         const lang_obj = await d3.json(url);
-        if (lang_obj != null) {
+        if (lang_obj !== null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
             lang_name_init();
@@ -180,22 +178,19 @@ async function tree_module_init(data) {
     gallery_info['HN'] = key_name[gallery_info['HN']];
     const gallery_list = gallery_info['gallery'].split(',');
     const new_gallery_list = [];
-    for (let i = 0; i < gallery_list.length; i++) {
-        const image_id = gallery_list[i];
-        const caption = (image_id.length == 4) ? image_id : imap.key_image[image_id];
-        const part_name = (image_id.length == 4) ? image_id : imap.english_key_image[image_id];
+    for (const image_id of gallery_list) {
+        const is_digit = image_id.length == 4;
+        const caption = is_digit ? image_id : imap.key_image[image_id];
+        const part_name = is_digit ? image_id : imap.english_key_image[image_id];
         const [ i_url, t_url ] = get_part_image_urls(h, part_name);
         const new_item = { 'IC': caption, 'IN': i_url };
         new_gallery_list.push(new_item);
     }
     gallery_info['gallery'] = new_gallery_list;
     const info_list = card_data['cardinfo'];
-    for (let i = 0; i < info_list.length; i++) {
-        const cv_info = info_list[i];
+    for (const cv_info of info_list) {
         cv_info['CN'] = imap.key_group[cv_info['CN']];
-        const cv_list = cv_info['CV'];
-        for (let j = 0; j < cv_list.length; j++) {
-            const cv = cv_list[j];
+        for (const cv of cv_info['CV']) {
             cv['N'] = imap.key_part[cv['N']]; 
             set_key_value_map(cv, 'V');
         } 
@@ -207,17 +202,15 @@ function tree_grid_init(type, data) {
     const imap = window.id_map;
     const card_list = data['cardinfo'];
     const MAX_COL = 6;
-    for (let i = 0; i < card_list.length; i++) {
-        set_key_value_map(card_list[i], 'N');
-        const card = card_list[i];
+    for (const card of card_list) {
+        set_key_value_map(card, 'N');
         const new_row_list = [];
         let new_col_list = [];
-        const row_list = card['ROW'];
-        for (let j = 0; j < row_list.length; j++) {
-            const [ tree_id, image_id ] = row_list[j].split(',');
+        for (const row of card['ROW']) {
+            const [ tree_id, image_id ] = row.split(',');
             const h = imap.handle_map[tree_id];
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-            new_item = { CI: tree_id, CN: imap.key_name[tree_id], CT: (image_id == '') ? 'empty.thumbnail' : t_url };
+            new_item = { CI: tree_id, CN: imap.key_name[tree_id], CT: (image_id === '') ? 'empty.thumbnail' : t_url };
             new_col_list.push(new_item);
             if (new_col_list.length >= MAX_COL) {
                 new_row_list.push({ COL: new_col_list });
@@ -253,8 +246,8 @@ function tree_intro_init(slider_data) {
     const slider_info = slider_data['sliderinfo'];
     const slider_list = slider_info['items'];
     const new_slider_list = [];
-    for (let i = 0; i < slider_list.length; i++) {
-        const [ tree_id, count ] = slider_list[i];
+    for (const slider of slider_list) {
+        const [ tree_id, count ] = slider;
         window.tree_count_data[tree_id] = count;
         const h = imap.handle_map[tree_id];
         const image_id = h[H_PART];
@@ -291,12 +284,13 @@ async function load_intro_data(region, slider_obj) {
                          'SP' : 'Spines', 'TW' : 'Branch', 'A' : 'Aerial Root', 'G' : 'Gall'
                        };
     for (let k in intro_data) {
-         intro_data[k] = get_lang_map_word(intro_data[k]);
+        if (!intro_data.hasOwnProperty(k)) continue;
+        intro_data[k] = get_lang_map_word(intro_data[k]);
     }
     render_template_data('intro-template', 'SECTION', intro_data);
     let slider_data = slider_obj;
-    if (slider_obj == undefined) slider_data = await d3.json(get_region_url('intro'));
-    if (slider_data == null) return;
+    if (slider_obj === undefined) slider_data = await d3.json(get_region_url('intro'));
+    if (slider_data === null) return;
     tree_intro_init(slider_data);
     add_history('introduction', { 'region' : region });
 }
@@ -332,11 +326,11 @@ class Paginator {
         d3.select('#bottom-page-next').on('click', () => { this.show_page('bottom', false); });
         d3.select('#bottom-page-previous').on('click', () => { this.show_page('bottom', true); });
 
-        this.current_page = (n_current_page == '' || n_current_page == undefined) ? 1 : +n_current_page;
+        this.current_page = (n_current_page === undefined) ? 1 : n_current_page;
         d3.selectAll('li.page-item.active').classed('active', false);
         d3.select(`li#top_${this.current_page}`).classed('active', true);
         d3.select(`li#bottom_${this.current_page}`).classed('active', true);
-        this.max_page = (n_max_page == '' || n_max_page == undefined) ? MAX_PAGES : +n_max_page;
+        this.max_page = (n_max_page === undefined) ? MAX_PAGES : n_max_page;
     }
 }
 
@@ -346,32 +340,30 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     const image_data = full_data['Images'];
     const letter_data = data['LETTER'];
     const new_row_list = [];
-    const row_list = letter_data[letter];
     const col_name = 'COL' + type[0].toUpperCase();
-    for (let i = 0; i < row_list.length; i++) {
-        const tree_id = row_list[i];
+    let i = 0;
+    for (const tree_id of letter_data[letter]) {
         const h = imap.handle_map[tree_id];
         const new_image_list = [];
         const image_list = image_data[tree_id].split(',');
-        for (let k = 0; k < image_list.length; k++) {
-            const image_id = image_list[k];
+        for (const image_id of image_list) {
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-            const new_item = { CI: tree_id, CT: (image_id == '') ? 'empty.thumbnail' : t_url };
+            const new_item = { CI: tree_id, CT: (image_id === '') ? 'empty.thumbnail' : t_url };
             new_image_list.push(new_item);
         }
         const new_item = { COLIMAGE: new_image_list };
-        new_item[col_name] = { CC: (i + 1), CI: tree_id, CN: imap.key_name[tree_id], CF: h[H_FAMILY],
+        new_item[col_name] = { CC: ++i, CI: tree_id, CN: imap.key_name[tree_id], CF: h[H_FAMILY],
                                CB: `${h[H_GENUS]} ${h[H_SPECIES]}`, CA: h[H_AUTH]
                              }
         new_row_list.push(new_item);
     }
+    i = 0;
     const [ group, max_pages, links ] = data['PAGES'];
     const link_list = links.split(',')
     const new_link_list = [];
-    for (let i = 0; i < link_list.length; i++) {
-        const page = link_list[i];
-        const page_id = i + 1;
-        const item = { PL: page, PC: (i + 1), PH: `load_collection_data('${group}', '${page}', ${page_id}, ${max_pages})` };
+    for (const page of link_list) {
+        const page_id = ++i;
+        const item = { PL: page, PC: page_id, PH: `load_collection_data('${group}', '${page}', ${page_id}, ${max_pages})` };
         new_link_list.push(item);
     }
     const page_data = { N: 'Page', links: new_link_list };
@@ -398,8 +390,7 @@ function show_bigger_image(image_src, caption) {
 
 function normalize_search_text(search_text) {
     search_text = search_text.toLowerCase();
-    for (let i = 0; i < NORMALIZE_LIST.length; i++) {
-        const expr = NORMALIZE_LIST[i];
+    for (const expr of NORMALIZE_LIST) {
         search_text = search_text.replace(expr[0], expr[1]);
     }
     return search_text;
@@ -407,16 +398,16 @@ function normalize_search_text(search_text) {
 
 function search_load(search_obj) {
     if (window.search_initialized) return;
-    if (search_obj == null) return;
+    if (search_obj === null) return;
     let data_id = 0;
     for (let category in search_obj) {
+        if (!search_obj.hasOwnProperty(category)) continue;
         const data_list = search_obj[category];
-        for (let i = 0; i < data_list.length; i++) {
-            const item = data_list[i];
+        for (const item of data_list) {
             const t_list = item.A.slice(0, 4);
             const a_list = item.A.slice(4);
-            const pop = (item.P != undefined) ? item.P : -1;
-            const count = (item.C != undefined) ? item.C : 0;
+            const pop = (item.P !== undefined) ? item.P : -1;
+            const count = (item.C !== undefined) ? item.C : 0;
             const data_doc = { id: data_id, category: item.T, name: item.N, title: t_list, aka: a_list,
                                href: item.H, pop: pop, count: count
                              };
@@ -448,7 +439,8 @@ function transliterate_text(word) {
     let current = 0;
     const tokenlist = [];
     word = word.toString();
-    while (current < word.length) {
+    const word_len = word.length;
+    while (current < word_len) {
         const nextstr = word.slice(current, current+maxlen);
         let p = nextstr[0];
         let j = 1;
@@ -469,9 +461,8 @@ function transliterate_text(word) {
         current += j;
     }
     let new_word = tokenlist.join('');
-    if (word != new_word) {
-        for (let i = 0; i < REPLACE_LIST.length; i++) {
-            const expr = REPLACE_LIST[i];
+    if (word !== new_word) {
+        for (const expr of REPLACE_LIST) {
             new_word = new_word.replace(expr[0], expr[1]);
         }
     }
@@ -479,10 +470,10 @@ function transliterate_text(word) {
 }
 
 function get_search_href(category, arg_list) {
-    const func = (category == 'Trees') ? 'load_module_data' : 'load_area_data';
+    const func = (category === 'Trees') ? 'load_module_data' : 'load_area_data';
     const args = arg_list.join("', '");
     const href = `${func}('${args}')`;
-    return href
+    return href;
 }
 
 function get_search_results(search_word, item_list, id_list, base_pop) {
@@ -494,24 +485,23 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
     const score_ratio = 400 / results[0].score;
     const pop_ratio = 0.6;
     const calculate_pop = search_word.length > 3;
-    for (let i = 0; i < results.length; i++) {
-        const item = results[i];
+    for (const item of results) {
         if (id_list.has(item.id)) continue;
-        // if (item.category == 'Maps' && item.count <= 0) continue;
-        if (item.category == 'Maps') continue;
+        // if (item.category === 'Maps' && item.count <= 0) continue;
+        if (item.category === 'Maps') continue;
         const name_id = item.name;
         let name = '';
         let href = '';
-        if (item.category == 'Trees') {
+        if (item.category === 'Trees') {
             href = [ name_id ];
             name = imap.key_name[name_id];
-        } else if (item.category == 'Maps') {
+        } else if (item.category === 'Maps') {
             name = imap.key_name[name_id];
             href = [ 'trees', name_id ];
-        } else if (item.category == 'Parks') {
+        } else if (item.category === 'Parks') {
             name = imap.park_map[name_id];
             href = [ 'parks', name_id, name.replace("'", "") ];
-        } else if (item.category == 'Wards') {
+        } else if (item.category === 'Wards') {
             name = imap.ward_map[name_id];
             href = [ 'wards', name_id, name ];
         }
@@ -519,15 +509,15 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
         href = get_search_href(item.category, href);
         const new_pop = (score_ratio * item.score) + (pop_ratio * item.pop);
         let pop = (calculate_pop) ? new_pop : item.pop;
-        if (item.category == 'Maps') pop -= 1;
+        if (item.category === 'Maps') pop -= 1;
         pop = base_pop + pop;
         let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score, 'C' : item.count, 'I' : name_id };
-        if (item.category == 'Trees' || item.category == 'Maps') {
+        if (item.category === 'Trees' || item.category === 'Maps') {
             const h = imap.handle_map[name_id];
             r_item['G'] = h[H_GENUS];
             r_item['S'] = h[H_SPECIES];
         }
-        if (name_id != '') r_item['I'] = name_id;
+        if (name_id !== '') r_item['I'] = name_id;
         item_list.push(r_item);
         id_list.add(item.id);
     }
@@ -536,8 +526,7 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
 function get_tamil_phonetic_word(word) {
     const w_list = [];
     const new_word = word.toLowerCase();
-    for (let i = 0; i < new_word.length; i++) {
-        const c = new_word[i];
+    for (const c of new_word) {
         w_list.push((c in SEARCH_MAP_DICT) ? SEARCH_MAP_DICT[c] : c);
     }
     return w_list.join('');
@@ -549,7 +538,7 @@ function load_search_part(search_word, non_english) {
     const id_list = new Set();
     SEARCH_OPTIONS.fuzzy = term => term.length > 3 ? 0.1 : null;
     get_search_results(search_word, item_list, id_list, SEARCH_BASE_2);
-    if (search_word != s_search_word) {
+    if (search_word !== s_search_word) {
         get_search_results(s_search_word, item_list, id_list, SEARCH_BASE_1);
     }
     let n_search_word = '';
@@ -563,7 +552,7 @@ function load_search_part(search_word, non_english) {
         if (non_english && n_search_word) {
             get_search_results(n_search_word, item_list, id_list, SEARCH_BASE_0);
         }
-        if (search_word != s_search_word) {
+        if (search_word !== s_search_word) {
             get_search_results(s_search_word, item_list, id_list, SEARCH_BASE_0);
         }
     }
@@ -595,7 +584,7 @@ function get_geocoder_nominatim() {
 }
 
 function get_geocoder_search_results(search_word) {
-    if (window.geocoder_nominatim == null || window.geocoder_nominatim == undefined) {
+    if (window.geocoder_nominatim === null || window.geocoder_nominatim === undefined) {
         window.geocoder_nominatim = get_geocoder_nominatim();
     }
     window.geocoder_nominatim.geocode(search_word, handle_geocoder_search_results, search_word);
@@ -604,13 +593,13 @@ function get_geocoder_search_results(search_word) {
 function handle_geocoder_search_results(results, context) {
     // console.log('handle_geocoder_search_results:', results, context);
     const search_items = [];
-    for (let i = 0; i < results.length; i++) {
-        const item = results[i];
+    let i = 0;
+    for (const item of results) {
         const name = item.name.split(',').slice(0, 3).join(',');
         const ll = item.center;
         const lat_long = `${ll.lat},${ll.lng}`;
         const href = get_search_href('parks', [ 'parks', name.replace("'", ""), lat_long ]);
-        const new_item = { I: i, T: 'Geocoder', N: name, H: href, P: i, SC: i };
+        const new_item = { I: i++, T: 'Geocoder', N: name, H: href, P: i, SC: i };
         search_items.push(new_item);
     }
     const item_data = { "searchinfo" : { "results" : search_items } };
@@ -622,7 +611,7 @@ function load_search_data() {
     let search_word = d3.select('#SEARCH_WORD').property('value');
     search_word = decodeURI(search_word);
     const search_len = search_word.length;
-    if (search_len > 1 && search_word[search_len - 1] == SEARCH_END_CHAR) {
+    if (search_len > 1 && search_word[search_len - 1] === SEARCH_END_CHAR) {
         get_geocoder_search_results(search_word.slice(0, search_len - 1))
     } else {
         handle_search_word(search_word);
@@ -640,10 +629,10 @@ function load_search_history(data) {
 }
 
 function get_zoom(osm_map, tid) {
-    let zoom = (osm_map != null) ? osm_map.getZoom() : NATIVE_ZOOM;
-    if (window.area_type == 'trees') {
+    let zoom = (osm_map !== null) ? osm_map.getZoom() : NATIVE_ZOOM;
+    if (window.area_type === 'trees') {
         const count = window.tree_count_data[tid];
-        if (osm_map != null) {
+        if (osm_map !== null) {
             zoom = (!window.map_area_move && zoom <= TREE_ZOOM) ? TREE_ZOOM : zoom;
             zoom = (!window.map_area_move && count >= TREE_MAX_COUNT) ? MIN_ZOOM : zoom;
         } else {
@@ -660,7 +649,7 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
                            rotate: true,
                            touchRotate: true,
                            zoom: get_zoom(null, tid),
-                           minZoom: (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM,
+                           minZoom: (window.area_type === 'trees') ? TREE_ZOOM : MIN_ZOOM,
                            maxZoom: MAX_ZOOM
                          };
     const osm_map = new L.map(id_name, map_options);
@@ -671,7 +660,7 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
 
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
-    if (module == 'area') {
+    if (module === 'area') {
         geocoder.on('finishgeocode', handle_geocoder_mark);
     }
 
@@ -720,11 +709,11 @@ function handle_context_menu(key) {
     const marker = window.TREE_CONTEXT_MARKER;
     const tree_id = marker.tree_id;
     const pos = marker.getLatLng();
-    if (key == 'info') {
+    if (key === 'info') {
         load_module_data(tree_id);
-    } else if (key == 'tmap') {
+    } else if (key === 'tmap') {
         load_area_data('trees', tree_id);
-    } else if (key == 'gmap') {
+    } else if (key === 'gmap') {
         const url = `https://maps.google.com/maps?z=12&t=m&q=loc:${pos.lat}+${pos.lng}`;
         window.open(url, '');
     }
@@ -735,18 +724,14 @@ function marker_on_mouseover() {
 }
 
 function marker_on_mouseout() {
-    if (window.map_tree_id != 0) {
-        set_chosen_image(window.map_tree_id);
-    }
+    if (window.map_tree_id !== 0) set_chosen_image(window.map_tree_id);
 }
 
 function marker_on_click(e) {
     const tree_id = e.target.tree_id;
     window.map_tree_id = tree_id;
-    const area_marker_list = window.area_marker_list;
-    for (let i = 0; i < area_marker_list.length; i++) {
-        const marker = area_marker_list[i];
-        const icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
+    for (const marker of window.area_marker_list) {
+        const icon = get_needed_icon((marker.tree_id === tree_id), marker.blooming);
         marker.setIcon(icon);
     }
     find_area_carousel_tree(tree_id);
@@ -772,9 +757,7 @@ function marker_on_contextmenu(e) {
 }
 
 function get_area_centre() {
-    if (window.map_osm_map == undefined) {
-        return [];
-    }
+    if (window.map_osm_map === undefined) return [];
     const latlong = window.map_osm_map.getCenter();
     const area_latlong = [ latlong.lat, latlong.lng ];
     return area_latlong;
@@ -786,20 +769,17 @@ function handle_geocoder_mark(ev) {
 }
 
 async function fetch_area_data() {
-    if (window.area_data == null) {
-        window.area_data = await d3.json(AREA_URL);
-    }
+    if (window.area_data === null) window.area_data = await d3.json(AREA_URL);
     return window.area_data;
 }
 
-function create_quad_tree(grid_flora) {
+function create_quad_tree(grid_flora_list) {
     const quad_tree = d3.quadtree();
-    for (let i = 0; i < grid_flora.length; i++) {
-        const [ g_sw_lat, g_sw_long, g_ne_lat, g_ne_long, md_name, flora_list ] = grid_flora[i];
-        for (let j = 0; j < flora_list.length; j++) {
-            let [ tree_id, latlong_list ] = flora_list[j];
-            for (let k = 0; k < latlong_list.length; k++) {
-                const latlong = latlong_list[k];
+    for (const grid_flora of grid_flora_list) {
+        const [ g_sw_lat, g_sw_long, g_ne_lat, g_ne_long, md_name, flora_list ] = grid_flora;
+        for (const flora of flora_list) {
+            let [ tree_id, latlong_list ] = flora;
+            for (const latlong of latlong_list) {
                 quad_tree.add([+latlong[0], +latlong[1], +tree_id]);
             }
         }
@@ -829,7 +809,7 @@ function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
         if (!node.length) {
             do {
                 const [ dLat, dLong, dTreeId ] = node.data;
-                if ((tree_id <= 0 || tree_id == dTreeId) && (xmin <= dLat && dLat < xmax && ymin <= dLong && dLong < ymax)) {
+                if ((tree_id <= 0 || tree_id === dTreeId) && (xmin <= dLat && dLat < xmax && ymin <= dLong && dLong < ymax)) {
                     results.push(node.data);
                 }
             } while (node = node.next);
@@ -840,7 +820,7 @@ function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
 }
 
 async function fetch_grid_data() {
-    if (window.quad_tree == null) {
+    if (window.quad_tree === null) {
         const grid_data = await d3.json(GRID_URL);
         window.quad_tree = create_quad_tree(grid_data);
     }
@@ -852,17 +832,15 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     const old_a_name = window.map_area_name;
     window.map_area_name = a_name;
     window.map_area_id = aid;
-    if (tid == 0 && window.map_tree_id != undefined) {
-        tid = window.map_tree_id;
-    }
-    window.map_tree_id = tid;
+    if (tid === 0 && window.map_tree_id !== 0) tid = window.map_tree_id;
+    window.map_tree_id = +tid;
 
     let n_name = '';
-    if (area == 'trees') {
+    if (area === 'trees') {
         n_name = get_module_name(window.id_map.handle_map, tid);
     } else {
         n_name = get_lang_map_word(capitalize_word(a_name));
-        if (aid != '') {
+        if (aid !== '') {
             n_name = isFinite(aid) ? `${aid}. ${n_name}` : aid;
         }
     }
@@ -871,12 +849,11 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     let osm_map;
     if (window.map_initialized) {
         osm_map = window.map_osm_map;
-        const area_marker_list = window.area_marker_list;
-        for (let i = 0; i < area_marker_list.length; i++) {
-            osm_map.removeLayer(area_marker_list[i]);
+        for (const marker of window.area_marker_list) {
+            osm_map.removeLayer(marker);
         }
         const zoom = get_zoom(osm_map, tid);
-        osm_map.options.minZoom = (window.area_type == 'trees') ? TREE_ZOOM : MIN_ZOOM;
+        osm_map.options.minZoom = (window.area_type === 'trees') ? TREE_ZOOM : MIN_ZOOM;
         osm_map.setView([c_lat, c_long], zoom);
         // console.log('osm initialized', window.area_type, a_name, aid, tid, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     } else {
@@ -885,10 +862,10 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
         window.map_area_move = false;
         window.map_initialized = true;
     }
-    if (tid != undefined && tid != 0) {
+    if (tid !== undefined && tid !== 0) {
         set_chosen_image(tid);
     }
-    if (area == 'trees') osm_map.options.minZoom = TREE_ZOOM;
+    if (area === 'trees') osm_map.options.minZoom = TREE_ZOOM;
     draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long);
     window.area_latlong = [];
 }
@@ -915,12 +892,10 @@ function load_area_latlong_in_osm(a_type, a_name, aid, tid, c_lat, c_long) {
 }
 
 function find_area_carousel_tree(tree_id) {
-    const tree_image_list = window.tree_image_list;
-    for (let i = 0; i < tree_image_list.length; i++) {
-        const l_tree_id = tree_image_list[i]['TID'];
-        if (l_tree_id == tree_id) {
+    for (const [i, tree_image] of window.tree_image_list.entries()) {
+        if (tree_id === tree_image['TID']) {
             const swiper = d3.select('#AREA_CAROUSEL').node().swiper;
-            swiper.slideTo(i % tree_image_list.length);
+            swiper.slideTo(i);
             return i;
         }
     }
@@ -929,19 +904,16 @@ function find_area_carousel_tree(tree_id) {
 
 function area_chosen_tree(tree_id) {
     window.map_tree_id = tree_id;
-    const area_marker_list = window.area_marker_list;
-    for (let i = 0; i < area_marker_list.length; i++) {
-        const marker = area_marker_list[i];
-        const icon = get_needed_icon((marker.tree_id == tree_id), marker.blooming);
+    for (const marker of window.area_marker_list) {
+        const icon = get_needed_icon((marker.tree_id === tree_id), marker.blooming);
         marker.setIcon(icon);
     }
     set_chosen_image(tree_id);
 }
 
-function area_highlight_tree(tree_id) {
-    const tree_image_list = window.tree_image_list;
-    const tree_index = tree_id % tree_image_list.length;
-    tree_id = tree_image_list[tree_index]['TID'];
+function area_highlight_tree(active_index) {
+    const tree_index = active_index % window.tree_image_list.length;
+    const tree_id = window.tree_image_list[tree_index]['TID'];
     area_chosen_tree(tree_id);
 }
 
@@ -951,9 +923,7 @@ function area_click_tree(tree_id) {
     window.scrollTo(0, 0);
 }
 
-function area_carousel_init(tree_image_list) {
-    window.tree_image_list = tree_image_list;
-
+function area_carousel_init() {
     const swiper = new Swiper('#AREA_CAROUSEL', {
         direction: 'horizontal',
         centeredSlides: true,
@@ -966,18 +936,16 @@ function area_carousel_init(tree_image_list) {
         },
     });
 
-    let start_id = tree_image_list.length - 1;
     swiper.on('slideChange', function (ev) {
         area_highlight_tree(ev.activeIndex);
     });
 
-    const tree_id = window.map_tree_id;
-    start_id = find_area_carousel_tree(tree_id);
+    let start_id = find_area_carousel_tree(window.map_tree_id);
     area_highlight_tree(start_id);
 }
 
 function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
-    const icon = get_needed_icon(c_tree_id == i_tree_id, blooming);
+    const icon = get_needed_icon(c_tree_id === i_tree_id, blooming);
     const marker = new L.marker([m_lat, m_long], {icon: icon});
     marker.tree_id = i_tree_id;
     marker.blooming = blooming;
@@ -999,11 +967,11 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const ne = bounds.getNorthEast();
     const area_marker_list = [];
     const tree_dict = {};
-    const is_tree = (area == 'trees');
-    const c_tree_id = is_tree ? +aid : ((tid != 0) ? +tid : 0);
-    const points = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? c_tree_id : 0);
-    for (let i = 0; i < points.length; i++) {
-        const [ m_lat, m_long, i_tree_id ] = points[i];
+    const is_tree = (area === 'trees');
+    const c_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
+    const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? c_tree_id : 0);
+    for (const point of point_list) {
+        const [ m_lat, m_long, i_tree_id ] = point;
         tree_id = i_tree_id.toString();
         const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
@@ -1013,7 +981,8 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
     window.area_marker_list = area_marker_list;
-    if (is_tree && !window.map_area_move && 0 < area_marker_list.length && area_marker_list.length < TREE_MIN_COUNT) {
+    const alen = area_marker_list.length;
+    if (is_tree && !window.map_area_move && 0 < alen && alen < TREE_MIN_COUNT) {
         const layer = new L.featureGroup(area_marker_list);
         osm_map.fitBounds(layer.getBounds());
     }
@@ -1032,15 +1001,14 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         if (!is_tree) {
             const image_id = h[H_PART];
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-            tree_image_list.push({ 'SN' : t_name, 'SI' : `${t_url}`, 'TID' : tid, 'SC' : tree_dict[tid] })
+            tree_image_list.push({ 'SN' : t_name, 'SI' : `${t_url}`, 'TID' : +tid, 'SC' : tree_dict[tid] })
         }
     }
     if (tree_stat_list.length > 0) {
         tree_stat_list.sort(function (a, b) { return b.TC - a.TC; });
         let tin = 1;
         let tcount = 0;
-        for (let i = 0; i < tree_stat_list.length; i++) {
-            let info = tree_stat_list[i];
+        for (const info of tree_stat_list) {
             info['TIN'] = tin;
             tin += 1;
             tcount += info['TC'];
@@ -1058,7 +1026,8 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         if (is_tree) {
             d3.select('#MAP_SLIDER').html('');
         } else {
-            area_carousel_init(tree_image_list);
+            window.tree_image_list = tree_image_list;
+            area_carousel_init();
         }
     }
 
@@ -1066,11 +1035,9 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
 }
 
 async function tree_area_init(area, aid, item_data) {
-    if (window.green_tree_icon == undefined) {
-        create_icons();
-    }
+    if (window.green_tree_icon === undefined) create_icons();
 
-    if (area == undefined) {
+    if (area === undefined) {
         area = window.area_type;
         aid = window.area_id;
     }
@@ -1078,10 +1045,10 @@ async function tree_area_init(area, aid, item_data) {
     window.area_id = aid;
     window.area_data = item_data;
 
-    if (window.info_initialized == undefined) {
+    if (window.info_initialized === undefined) {
         window.tree_card_data = data;
         const lang_obj = await d3.json(LANGUAGE_URL);
-        if (lang_obj != null) {
+        if (lang_obj !== null) {
             window.tree_lang_data = lang_obj;
             window.render_language = 'English';
             window.info_initialized = true;
@@ -1095,23 +1062,17 @@ async function tree_area_init(area, aid, item_data) {
     const imap = window.id_map;
     let name = capitalize_word(area);
     let lat_long = BANGALORE_LAT_LONG;
-    if (window.area_latlong == undefined) {
-        window.area_latlong = [];
-    }
-    if (window.area_latlong.length > 0) {
-        lat_long = window.area_latlong;
-    }
+    if (window.area_latlong === undefined) window.area_latlong = [];
+    if (window.area_latlong.length > 0) lat_long = window.area_latlong;
 
     let data = item_data['parks'];
     let area_list = data['parkinfo'];
-    for (let i = 0; i < area_list.length; i++) {
-        const park_area = area_list[i];
+    for (const [i, park_area] of area_list.entries()) {
         park_area['SN'] = i + 1;
         const park_list = park_area['parks'];
-        for (let j = 0; j < park_list.length; j++) {
-            const park = park_list[j];
-            if (aid != '' && park['PID'] == aid) {
-                if (area == 'parks') {
+        for (const park of park_list) {
+            if (aid !== '' && park['PID'] === aid) {
+                if (area === 'parks') {
                     name = park['PN'];
                     lat_long = [ +park['PLAT'], +park['PLONG'] ];
                 }
@@ -1123,11 +1084,10 @@ async function tree_area_init(area, aid, item_data) {
 
     data = item_data['wards'];
     ward_list = data['wardinfo'];
-    for (let i = 0; i < ward_list.length; i++) {
-        const ward = ward_list[i];
+    for (const [i, ward] of ward_list.entries()) {
         ward['SN'] = i + 1;
-        if (aid != '' && ward['AID'] == aid) {
-            if (area == 'wards') {
+        if (aid !== '' && ward['AID'] === aid) {
+            if (area === 'wards') {
                 name = ward['AN'];
                 lat_long = [ +ward['ALAT'], +ward['ALONG'] ];
             }
@@ -1138,13 +1098,13 @@ async function tree_area_init(area, aid, item_data) {
 
     data = item_data['maps'];
     tree_list = data['mapinfo'];
-    for (let i = 0; i < tree_list.length; i++) {
+    for (const [i, an] of tree_list.entries()) {
         const an = tree_list[i];
         const tree_id = +an['AID'];
         an['AN'] = imap.key_name[tree_id];
         an['SN'] = i + 1;
-        if (tree_id == aid) {
-            if (area == 'trees') {
+        if (tree_id === aid) {
+            if (area === 'trees') {
                 lat_long = [ +an['ALAT'], +an['ALONG'] ];
             }
         }
@@ -1152,19 +1112,19 @@ async function tree_area_init(area, aid, item_data) {
     render_template_data('map-nav-template', 'TREE_BODY', data);
 
     await fetch_grid_data();
-    if (window.quad_tree == null) return;
+    if (window.quad_tree === null) return;
     window.map_initialized = false;
 
-    let tid = (window.map_tree_id != undefined) ? window.map_tree_id : 0;
-    if (area == 'trees') {
+    let tid = (window.map_tree_id !== 0) ? window.map_tree_id : 0;
+    if (area === 'trees') {
         const m_name = get_module_name(imap.handle_map, aid);
-        if (aid != 0) {
+        if (aid !== 0) {
             tid = aid;
             name = m_name;
-        } else if (tid != 0) {
+        } else if (tid !== 0) {
             aid = tid;
             name = m_name;
-        } else if (aid == 0 || aid == '0') {
+        } else if (aid === 0 || aid === '0') {
             const tree_list = Object.keys(imap.handle_map);
             const tree_index = d3.randomInt(0, tree_list.length)();
             aid = tree_list[tree_index];
@@ -1173,9 +1133,7 @@ async function tree_area_init(area, aid, item_data) {
             name = params.getValue('name');
             name = name.replace(/%20/g, ' ');
         }
-        if (tid == 0) {
-            tid = aid;
-        }
+        if (tid === 0) tid = aid;
     }
     show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
 }
@@ -1190,12 +1148,12 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
-    if (area_latlong != undefined) {
+    if (area_latlong !== undefined) {
         area_latlong = area_latlong.split(',');
-        if (area_latlong.length == 2) window.area_latlong = area_latlong;
+        if (area_latlong.length === 2) window.area_latlong = area_latlong;
     }
     const area_data = await fetch_area_data();
-    if (area_data != null) {
+    if (area_data !== null) {
         tree_area_init(area_type, area_id, area_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
     };
@@ -1206,7 +1164,7 @@ async function load_collection_data(type, letter, page_index, page_max) {
     render_template_data('page-template', 'SECTION', collection_data);
     const url = get_region_url('page');
     const item_data = await d3.json(url);
-    if (item_data != null) {
+    if (item_data !== null) {
         tree_collection_init(type, letter, page_index, page_max, item_data);
         add_history('collections', { 'type' : type, 'letter' : letter, 'page' : page_index, 'max' : page_max });
     };
@@ -1217,7 +1175,7 @@ async function load_category_data(type) {
     render_template_data('grid-template', 'SECTION', category_grid_data);
     const url = get_region_url('grid');
     const item_data = await d3.json(url);
-    if (item_data != null) {
+    if (item_data !== null) {
         tree_grid_init(type, item_data[type]);
         add_history('categories', { 'type' : type });
     };
@@ -1228,7 +1186,7 @@ async function load_simple_data() {
     render_template_data('simple-template', 'SECTION', simple_data);
     const url = get_region_url('simple');
     const item_data = await d3.json(url);
-    if (item_data != null) {
+    if (item_data !== null) {
         tree_simple_init(item_data);
         add_history('alphabetical', { 'region' : window.tree_region });
     };
@@ -1241,7 +1199,7 @@ async function load_module_data(tree_id) {
     render_template_data('module-template', 'SECTION', module_data);
     const url = `${FLORA_BASE}/${m_base}.json`;
     const item_data = await d3.json(url);
-    if (item_data != null) {
+    if (item_data !== null) {
         tree_module_init(item_data);
         add_history('trees', { 'id' : tree_id });
     };
@@ -1277,15 +1235,15 @@ function speech_to_text_init() {
         };
 
         window.speech_recognition.onerror = function(event) {
-            if (event.error == 'no-speech') {
+            if (event.error === 'no-speech') {
                 console.log('Speech Error: No Speech');
                 window.speech_ignore_onend = true;
             }
-            if (event.error == 'audio-capture') {
+            if (event.error === 'audio-capture') {
                 console.log('Speech Error: Audio Capture');
               window.speech_ignore_onend = true;
             }
-            if (event.error == 'not-allowed') {
+            if (event.error === 'not-allowed') {
                 if (event.timeStamp - window.speech_start_timestamp < SPEECH_TIME) {
                     console.log('Speech Error: Info Blocked');
                 } else {
@@ -1310,17 +1268,18 @@ function speech_to_text_init() {
         window.speech_recognition.onresult = function(event) {
             const interim_transcript = '';
             /*
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
+            const elen = event.results.length;
+            for (let i = event.resultIndex; i < elen; ++i) {
                 if (event.results[i].isFinal) {
                     window.speech_final_transcript += event.results[i][0].transcript;
                 } else {
                     interim_transcript += event.results[i][0].transcript;
                 }
-                console.log('Speech Interim: ' + event.resultIndex + ' ' + event.results.length + ' ' + event.results[i][0].transcript);
+                console.log('Speech Interim: ' + event.resultIndex + ' ' + elen + ' ' + event.results[i][0].transcript);
             }
-            console.log('Speech Result: ' + event.resultIndex + ' ' + event.results.length + ' ' + interim_transcript);
+            console.log('Speech Result: ' + event.resultIndex + ' ' + elen + ' ' + interim_transcript);
             */
-            if (event.results.length > 0) {
+            if (event.results.elen > 0) {
                 window.speech_final_transcript = event.results[0][0].transcript;
             } else {
                 window.speech_final_transcript = '';
@@ -1360,28 +1319,28 @@ function load_keyboard(event) {
 
 function handle_history_context(data) {
     const context = data['context'];
-    if (context == 'introduction') {
+    if (context === 'introduction') {
         load_intro_data(data['region']);
-    } else if (context == 'collections') {
+    } else if (context === 'collections') {
         load_collection_data(data['type'], data['letter'], data['page'], data['max']);
-    } else if (context == 'categories') {
+    } else if (context === 'categories') {
         load_category_data(data['type']);
-    } else if (context == 'alphabetical') {
+    } else if (context === 'alphabetical') {
         load_simple_data();
-    } else if (context == 'trees') {
+    } else if (context === 'trees') {
         load_module_data(data['id']);
-    } else if (context == 'maps') {
+    } else if (context === 'maps') {
         window.area_latlong = data['latlong'];
         // console.log('HISTORY POP: ', window.area_latlong);
         load_area_data(data['type'], data['id']);
-    } else if (context == 'search') {
+    } else if (context === 'search') {
         load_search_history(data);
     }
 }
 
 function handle_popstate(e) {
     const data = e.state;
-    if (data == null || data == undefined) return;
+    if (data === null || data === undefined) return;
     // console.log('POP: ', e);
     window.tree_popstate = true;
     handle_history_context(data);
@@ -1392,17 +1351,17 @@ function add_history(context, data) {
     if (!window.tree_popstate) {
         data['context'] = context;
         let title = capitalize_word(context);
-        if (context == 'introduction') {
+        if (context === 'introduction') {
             title += ' ' + capitalize_word(data['region']);
-        } else if (context == 'collections') {
+        } else if (context === 'collections') {
             title += ' ' + capitalize_word(data['type']) + ' ' + data['letter'];
-        } else if (context == 'categories') {
+        } else if (context === 'categories') {
             title += ' ' + capitalize_word(data['type']);
-        } else if (context == 'alphabetical') {
+        } else if (context === 'alphabetical') {
             title += ' Alphabetical'
-        } else if (context == 'trees') {
+        } else if (context === 'trees') {
             title += ' ' + data['module'];
-        } else if (context == 'maps') {
+        } else if (context === 'maps') {
             data['latlong'] = get_area_centre();
             title += ' ' + capitalize_word(data['type']);
             // console.log('HISTORY PUSH: ', data['latlong']);
@@ -1415,11 +1374,9 @@ function add_history(context, data) {
 }
 
 function get_lang_map(n_dict) {
-    if (window.render_language == 'English') return;
+    if (window.render_language === 'English') return;
     n_dict['T'] = get_lang_map_word(n_dict['T']);
-    const i_list = n_dict['items'];
-    for (let i = 0; i < i_list.length; i++) {
-        const i_dict = i_list[i];
+    for (const i_dict of n_dict['items']) {
         i_dict['N'] = get_lang_map_word(i_dict['N']);
     }
 }
@@ -1428,14 +1385,14 @@ function load_menu_data() {
     const lang = window.render_language;
     const LANG_LIST = [];
     for (let l in MAP_LANG_DICT) {
+        if (!MAP_LANG_DICT.hasOwnProperty(l)) continue;
         LANG_LIST.push(MAP_LANG_DICT[l]);
     }
     const lang_list = [];
-    for (let i = 0; i < LANG_LIST.length; i++) {
-        const l = LANG_LIST[i];
+    for (const l of LANG_LIST) {
         let t = get_lang_map_word(l);
         t = REVERSE_LANG_DICT[l];
-        let d = (l == lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
+        let d = (l === lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
         lang_list.push(d);
     }
     let map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' }
@@ -1484,8 +1441,8 @@ function load_menu_data() {
     init_search_listener();
     speech_to_text_init();
 
-    if (window.history_data == null || window.history_data == undefined) {
-        if (Object.keys(window.tree_lang_data).length != 0) {
+    if (window.history_data === null || window.history_data === undefined) {
+        if (Object.keys(window.tree_lang_data).length !== 0) {
             load_intro_data(window.tree_region);
         }
     } else  {
@@ -1494,16 +1451,16 @@ function load_menu_data() {
 }
 
 async function load_content(lang_data, slider_data) {
-    if (lang_data == undefined) return;
+    if (lang_data === undefined) return;
     window.tree_lang_data = lang_data;
     lang_name_init();
     transliterator_init();
     load_menu_data();
     const tree_id = window.url_params['tid'];
-    if (tree_id == undefined) {
+    if (tree_id === undefined) {
         load_intro_data(window.tree_region, slider_data);
     } else {
-        load_module_data_with_id(tree_id);
+        load_module_data_with_id(+tree_id);
     }
     search_init();
 }
@@ -1516,6 +1473,7 @@ function tree_main_init() {
     window.map_initialized = false;
     window.map_area_move = false;
     window.map_area_click = false;
+    window.map_tree_id = 0;
     window.tree_popstate = false;
     window.area_marker_list = [];
     window.area_latlong = [];
