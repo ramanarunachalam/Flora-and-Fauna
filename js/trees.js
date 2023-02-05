@@ -67,20 +67,19 @@ function get_url_params() {
 class LangMap {
     constructor() {
         const lang = window.render_language;
-        this.lang_obj = window.tree_lang_data;
-        this.lang_map = this.lang_obj[lang];
-        this.english_lang_map = this.lang_obj['English'];
-        this.map_dict = this.lang_obj['Keys'];
-        this.char_map = this.lang_obj['Charmap'];
-        this.key_name = this.lang_map['Name'];
-        this.handle_map = this.lang_obj['Handle'];
-        this.key_group = this.lang_map['Key Group'];
-        this.key_part = this.lang_map['Key Part'];
-        this.key_image = this.lang_map['Image'];
-        this.english_key_image = this.english_lang_map['Image'];
-        this.english_key_info = this.english_lang_map['Key Name'];
-        this.park_map = this.lang_obj['Parks'];
-        this.ward_map = this.lang_obj['Wards'];
+        const lang_data = window.tree_lang_data;
+        this.map_dict = lang_data['Keys'];
+        this.park_map = lang_data['Parks'];
+        this.ward_map = lang_data['Wards'];
+        this.char_map = lang_data['Charmap'];
+        this.handle_map = lang_data['Handle'];
+        this.lang_map = lang_data[lang];
+        this.lang_name_map = this.lang_map['Name'];
+        this.lang_key_image = this.lang_map['Image'];
+        this.english_map = lang_data['English'];
+        this.english_name_map = this.english_map['Name'];
+        this.english_key_image = this.english_map['Image'];
+        this.english_key_name = this.english_map['Key Name'];
     }
 }
 
@@ -89,7 +88,7 @@ function lang_name_init() {
     const imap = new LangMap();
     window.id_map = imap;
     if (lang === 'English') return;
-    const english_name = imap.english_lang_map['Name'];
+    const english_name = imap.english_map['Name'];
     const lang_name = imap.lang_map['Name'];
     for (const [i, value] of english_name.entries()) {
         if (lang_name[i] === '') lang_name[i] = value;
@@ -113,7 +112,7 @@ function set_key_value_map(d_obj, d_key) {
     const imap = window.id_map;
     const d = d_obj[d_key];
     if (d[0] === 1) {
-        const l_name = imap.english_key_info[d[1]];
+        const l_name = imap.english_key_name[d[1]];
         const l_map = imap.lang_map[l_name];
         d_obj[d_key] = l_map[d[2]];
     } else {
@@ -165,22 +164,22 @@ async function tree_module_init(data) {
     window.tree_box_data = data['mapregion'];
 
     const imap = window.id_map;
-    const key_name = imap.key_name;
-    if (key_name === undefined) {
-        key_name = imap.english_lang_map; 
-    }
+    const key_name = imap.lang_name_map;
+    if (key_name === undefined) key_name = imap.english_map;
     const card_data = window.tree_card_data;
     const gallery_info = card_data['galleryinfo']
     const tree_id = gallery_info['HID'];
 
+    const key_group = imap.lang_map['Key Group'];
+    const key_part = imap.lang_map['Key Part'];
     const h = imap.handle_map[tree_id];
-    gallery_info['HH'] = imap.key_group[gallery_info['HH']];
-    gallery_info['HN'] = key_name[gallery_info['HN']];
+    gallery_info['HH'] = key_group[gallery_info['HH']];
+    gallery_info['HN'] = imap.lang_name_map[gallery_info['HN']];
     const gallery_list = gallery_info['gallery'].split(',');
     const new_gallery_list = [];
     for (const image_id of gallery_list) {
         const is_digit = image_id.length == 4;
-        const caption = is_digit ? image_id : imap.key_image[image_id];
+        const caption = is_digit ? image_id : imap.lang_key_image[image_id];
         const part_name = is_digit ? image_id : imap.english_key_image[image_id];
         const [ i_url, t_url ] = get_part_image_urls(h, part_name);
         const new_item = { 'IC': caption, 'IN': i_url };
@@ -189,9 +188,9 @@ async function tree_module_init(data) {
     gallery_info['gallery'] = new_gallery_list;
     const info_list = card_data['cardinfo'];
     for (const cv_info of info_list) {
-        cv_info['CN'] = imap.key_group[cv_info['CN']];
+        cv_info['CN'] = key_group[cv_info['CN']];
         for (const cv of cv_info['CV']) {
-            cv['N'] = imap.key_part[cv['N']]; 
+            cv['N'] = key_part[cv['N']]; 
             set_key_value_map(cv, 'V');
         } 
     }
@@ -210,7 +209,7 @@ function tree_grid_init(type, data) {
             const [ tree_id, image_id ] = row.split(',');
             const h = imap.handle_map[tree_id];
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-            new_item = { CI: tree_id, CN: imap.key_name[tree_id], CT: (image_id === '') ? 'empty.thumbnail' : t_url };
+            new_item = { CI: tree_id, CN: imap.lang_name_map[tree_id], CT: (image_id === '') ? 'empty.thumbnail' : t_url };
             new_col_list.push(new_item);
             if (new_col_list.length >= MAX_COL) {
                 new_row_list.push({ COL: new_col_list });
@@ -252,7 +251,7 @@ function tree_intro_init(slider_data) {
         const h = imap.handle_map[tree_id];
         const image_id = h[H_PART];
         const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-        const item = { SD: tree_id, SC: count, SN: imap.key_name[tree_id],
+        const item = { SD: tree_id, SC: count, SN: imap.lang_name_map[tree_id],
                        SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH],
                        SI: i_url, ST: t_url
                      }
@@ -352,7 +351,7 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
             new_image_list.push(new_item);
         }
         const new_item = { COLIMAGE: new_image_list };
-        new_item[col_name] = { CC: ++i, CI: tree_id, CN: imap.key_name[tree_id], CF: h[H_FAMILY],
+        new_item[col_name] = { CC: ++i, CI: tree_id, CN: imap.lang_name_map[tree_id], CF: h[H_FAMILY],
                                CB: `${h[H_GENUS]} ${h[H_SPECIES]}`, CA: h[H_AUTH]
                              }
         new_row_list.push(new_item);
@@ -454,9 +453,7 @@ function transliterate_text(word) {
             }
             i -= 1;
         }
-        if (p in imap.char_map) {
-            p = imap.char_map[p];
-        }
+        if (p in imap.char_map) p = imap.char_map[p];
         tokenlist.push(p);
         current += j;
     }
@@ -494,9 +491,9 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
         let href = '';
         if (item.category === 'Trees') {
             href = [ name_id ];
-            name = imap.key_name[name_id];
+            name = imap.lang_name_map[name_id];
         } else if (item.category === 'Maps') {
-            name = imap.key_name[name_id];
+            name = imap.lang_name_map[name_id];
             href = [ 'trees', name_id ];
         } else if (item.category === 'Parks') {
             name = imap.park_map[name_id];
@@ -691,7 +688,7 @@ function get_needed_icon(selected, blooming) {
 
 function set_chosen_image(tree_id) {
     const imap = window.id_map;
-    const name = imap.key_name[tree_id];
+    const name = imap.lang_name_map[tree_id];
     const h = imap.handle_map[tree_id];
     const image_id = h[H_PART];
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
@@ -751,7 +748,7 @@ function marker_on_contextmenu(e) {
     const marker = this;
     window.TREE_CONTEXT_MARKER = marker;
     const imap = window.id_map;
-    const name = imap.key_name[marker.tree_id];
+    const name = imap.lang_name_map[marker.tree_id];
     d3.select('#CONTEXT_MODEL_LABEL').html(name);
     get_bs_modal('#CONTEXT_MODAL').show();
 }
@@ -991,7 +988,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const tree_image_list = [];
     for (const tid in tree_dict) {
         if (!tree_dict.hasOwnProperty(tid)) continue;
-        const t_name = imap.key_name[tid];
+        const t_name = imap.lang_name_map[tid];
         const h = imap.handle_map[tid];
         const blooming = h[H_BLOOM];
         const icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
@@ -1101,7 +1098,7 @@ async function tree_area_init(area, aid, item_data) {
     for (const [i, an] of tree_list.entries()) {
         const an = tree_list[i];
         const tree_id = +an['AID'];
-        an['AN'] = imap.key_name[tree_id];
+        an['AN'] = imap.lang_name_map[tree_id];
         an['SN'] = i + 1;
         if (tree_id === aid) {
             if (area === 'trees') {
