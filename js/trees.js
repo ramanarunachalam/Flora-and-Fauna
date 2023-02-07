@@ -18,10 +18,10 @@ const SEARCH_BASE_2 = 4000;
 const SEARCH_BASE_3 = 5000;
 const MAX_RESULTS   = 25;
 
-const SPEECH_TIME = 100; 
+const SPEECH_TIME = 100;
 const MAX_PAGES   = 100;
 
-const FLORA_BASE   = 'Flora'
+const FLORA_BASE   = 'Flora';
 const LANGUAGE_URL = 'language.json';
 const SEARCH_URL   = 'flora_index.json';
 const AREA_URL     = 'area.json';
@@ -46,11 +46,18 @@ const TILE_OPTIONS = { attribution: OSM_ATTRIBUTION,
                        maxZoom: MAX_ZOOM
                      };
 
-const NORMALIZE_LIST = [ [ /(e)\1+/g, 'i' ], [ /(o)\1+/g, 'u' ], [ /(.)\1+/g, '$1' ],
-                         [ /([bcdfgjklpst])h/g, '$1' ], [ /([sd])v/g, '$1w' ], [ /([ao])u/g, 'ow' ]
-                       ];
+const SEARCH_REPLACE_LIST =  [ [ /(e)\1+/g, 'i' ],
+                               [ /(o)\1+/g, 'u' ],
+                               [ /(.)\1+/g, '$1' ],
+                               [ /([bcdfgjklpst])h/g, '$1' ],
+                               [ /([sd])v/g, '$1w' ],
+                               [ /([ao])u/g, 'ow' ]
+                             ];
 
-const REPLACE_LIST   = [ [ /_/g, '' ], [ /G/g, 'n' ], [ /J/g, 'n' ] ];
+const ENGLISH_REPLACE_LIST = [ [ /_/g, '' ],
+                               [ /G/g, 'n' ],
+                               [ /J/g, 'n' ]
+                             ];
 
 
 function capitalize_word(s) {
@@ -60,7 +67,8 @@ function capitalize_word(s) {
 function get_url_params() {
     const args = {};
     window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
-        function(m, key, value) { args[key] = value; });
+        function(m, key, value) { args[key] = value;
+    });
     return args;
 }
 
@@ -190,9 +198,9 @@ async function tree_module_init(data) {
     for (const cv_info of info_list) {
         cv_info['CN'] = key_group[cv_info['CN']];
         for (const cv of cv_info['CV']) {
-            cv['N'] = key_part[cv['N']]; 
+            cv['N'] = key_part[cv['N']];
             set_key_value_map(cv, 'V');
-        } 
+        }
     }
     render_template_data('module-card-info-template', 'CARDINFO', card_data);
 }
@@ -389,7 +397,7 @@ function show_bigger_image(image_src, caption) {
 
 function normalize_search_text(search_text) {
     search_text = search_text.toLowerCase();
-    for (const expr of NORMALIZE_LIST) {
+    for (const expr of SEARCH_REPLACE_LIST) {
         search_text = search_text.replace(expr[0], expr[1]);
     }
     return search_text;
