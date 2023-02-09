@@ -276,6 +276,8 @@ function tree_intro_init(slider_data) {
             lazy: { loadOnTransitionStart: true },
             effect: 'fade',
             fadeEffect: { crossFade: true },
+            cubeEffect: { shadow: true, slideShadows: true, shadowOffset: 50, shadowScale: 0.3 },
+            coverflowEffect: { slideShadows: true, modifier: 1, depth: 100, stretch: 0, rotate: 50 },
             autoplay: { delay: 5000, disableOnInteraction: false }
         });
     }, 0);
