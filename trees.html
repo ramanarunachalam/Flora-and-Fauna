@@ -549,6 +549,16 @@
               {{/items}}
             </tbody>
           </table>
+          <div class="card">
+            <div class="card-header">
+              <h4>
+                <a href="https://play.google.com/store/apps/details?id=com.indic.trees&hl=en_IN&gl=US" target="_blank">
+                  <img src="https://play-lh.googleusercontent.com/wFOuPreBpxQkstJ_AymOOifW4AMceH3XSdjxa2086GRebFemN09we28uay9oY8HSNLw=w240-h480" style="width: 64px; height: 48px;">
+                   &nbsp; Bengaluru Trees
+                </a>
+              </h4>
+            </div>
+          </div>
         </div>
         {{/statsinfo}}
         {{#sliderinfo}}
@@ -557,26 +567,34 @@
             <div class="swiper-wrapper">
               {{#items}}
               <div class="swiper-slide">
-                <div class="d-flex">
-                  <div class="d-block p-2">
-                    <div class="card">
-                      <div class="card-header">
-                        <h4>
-                          <span class="badge rounded-pill text-bg-dark"><small>{{SC}}</small></span> &nbsp;
-                          <a href="javascript:load_module_data('{{SD}}');">
-                            <em>{{SN}}</em>
-                          </a>
-                          <a href="javascript:load_area_data('trees', '{{SD}}');">
-                            <img class="ICON" src="icons/geo-alt.svg">
-                          </a>
-                          <small><i>{{SB}}</i></small> - 
-                          <small><font color="brown">{{SA}}</font></small>
-                        </h4>
+                <div class="card">
+                  <div class="card-header">
+                    <div class="row">
+                      <div class="col-auto align-items-center justify-content-left">
+                        <span class="badge rounded-pill text-bg-dark">{{SC}}</span> &nbsp;
+                      </div>
+                      <div class="col text-center">
+                        <a href="javascript:load_module_data('{{SD}}');">
+                          <h4><em>{{SN}}</em></h4>
+                        </a>
+                      </div>
+                      <div class="col-auto align-items-center justify-content-right">
+                        <a href="javascript:load_area_data('trees', '{{SD}}');">
+                          <img class="ICON" src="icons/geo-alt.svg">
+                        </a>
                       </div>
                     </div>
-                    <p class="mt-1"></p>
-                    <img class="swiper-lazy" data-src="Flora/{{SI}}" alt="{{SN}}" />
-                    <div class="swiper-lazy-preloader"></div>
+                  </div>
+                  <div class="card-body">
+                    <center>
+                      <img class="swiper-lazy" data-src="Flora/{{SI}}" alt="{{SN}}" />
+                      <div class="swiper-lazy-preloader"></div>
+                    </center>
+                  </div>
+                  <div class="card-footer">
+                    <div class="text-center">
+                      <h5><i>{{SB}}</i> <font color="brown">{{SA}}</font><h5>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -607,17 +625,6 @@
     <div id="INTRO_SLIDER">
     </div>
     
-    <div class="card">
-    <div class="card-header">
-      <h4>
-        <a href="https://play.google.com/store/apps/details?id=com.indic.trees&hl=en_IN&gl=US" target="_blank">
-          <img src="https://play-lh.googleusercontent.com/wFOuPreBpxQkstJ_AymOOifW4AMceH3XSdjxa2086GRebFemN09we28uay9oY8HSNLw=w240-h480" style="width: 64px; height: 48px;">
-          Bengaluru Trees: Android App
-        </a>
-      </h4>
-    </div>
-    </div>
-        
     <p><em>
     Pictures are mine and they are shot with <img class="ICON" src="icons/camera.svg"> Cannon PowerShot Sx120, Nikon Coolpix P600.
     Most of the information are from the references cited below.
