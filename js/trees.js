@@ -4,13 +4,15 @@ const BANGALORE_LAT_LONG = [ BANGALORE_LAT, BANGALORE_LONG ];
 const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
 
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
-const SEARCH_MAP_DICT = { 'c' : 's', 'p' : 'b' };
+
+const EMPTY_THUMBNAIL = 'blank.svg';
 
 const MAP_ICON_SIZE  = [24, 24];
 const MAP_ANCHOR_POS = [12, 24];
 
 const SEARCH_OPTIONS  = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
 const SEARCH_END_CHAR = '.';
+const SEARCH_MAP_DICT = { 'c' : 's', 'p' : 'b' };
 
 const SEARCH_BASE_0 = 0;
 const SEARCH_BASE_1 = 1000;
@@ -217,7 +219,7 @@ function tree_grid_init(type, data) {
             const [ tree_id, image_id ] = row.split(',');
             const h = imap.handle_map[tree_id];
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-            new_item = { CI: tree_id, CN: imap.lang_name_map[tree_id], CT: (image_id === '') ? 'empty.thumbnail' : t_url };
+            new_item = { CI: tree_id, CN: imap.lang_name_map[tree_id], CT: (image_id === '') ? EMPTY_THUMBNAIL : t_url };
             new_col_list.push(new_item);
             if (new_col_list.length >= MAX_COL) {
                 new_row_list.push({ COL: new_col_list });
@@ -276,8 +278,6 @@ function tree_intro_init(slider_data) {
             lazy: { loadOnTransitionStart: true },
             effect: 'fade',
             fadeEffect: { crossFade: true },
-            cubeEffect: { shadow: true, slideShadows: true, shadowOffset: 50, shadowScale: 0.3 },
-            coverflowEffect: { slideShadows: true, modifier: 1, depth: 100, stretch: 0, rotate: 50 },
             autoplay: { delay: 5000, disableOnInteraction: false }
         });
     }, 0);
@@ -357,7 +357,7 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
         const image_list = image_data[tree_id].split(',');
         for (const image_id of image_list) {
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-            const new_item = { CI: tree_id, CT: (image_id === '') ? 'empty.thumbnail' : t_url };
+            const new_item = { CI: tree_id, CT: (image_id === '') ? EMPTY_THUMBNAIL : t_url };
             new_image_list.push(new_item);
         }
         const new_item = { COLIMAGE: new_image_list };

@@ -297,7 +297,7 @@
                     {{#COLIMAGE}}
                     <td>
                       <a href="javascript:load_module_data('{{CI}}');">
-                        <img class="shadow-box" src="Flora/{{CT}}" />
+                        <img class="shadow-box" src="Flora/{{CT}}" width="120" height="90" />
                       </a>
                     </td>
                     {{/COLIMAGE}}
@@ -327,7 +327,7 @@
                   <td>
                     <p align="center"><br /></p><p align="center">
                       <a href="javascript:load_module_data('{{CI}}');">
-                        <img class="shadow-box" src="Flora/{{CT}}" />
+                        <img class="shadow-box" src="Flora/{{CT}}"  width="120" height="90" />
                       </a>
                     </p>
                     <p align="center">
@@ -493,7 +493,7 @@
           {{#gallery}}
           <div class="col-sm-3 col-md-3">
             <figure class="figure">
-              <img style="width: 240px; height: 180px;" data-src="js/holder.js/240x180" alt="240x180" src="Flora/{{IN}}" class="figure-img rounded shadow-box" onclick='show_bigger_image("Flora/{{IN}}", "{{IC}}");'>
+              <img class="figure-img rounded shadow-box" src="Flora/{{IN}}" width="240" height="180" onclick='show_bigger_image("Flora/{{IN}}", "{{IC}}");'>
               <figcaption class="figure-caption text-center">{{IC}}</figcaption>
             </figure>
           </div>
@@ -510,20 +510,25 @@
       </div>
       <div class="card-body">
         <div class="row shadow-box">
-          <figure class="figure">
-            {{#CI}}
-            <img src="Flora/{{CI}}" class="figure-img img-fluid float-start rounded shadow-box" alt="Thumbnails" />
-            {{/CI}}
-            <figcaption class="figure-caption float-end">
-              <table border="0" cellpadding="4" class="table table-striped table-condensed" >
-              <tbody>
-                {{#CV}}
-                <tr><td><b>{{N}}</b></td><td>{{{V}}}</td></tr>
-                {{/CV}}
-              </tbody>
-              </table>
-            </figcaption> 
-          </figure>
+          {{#CI}}
+          <div class="col-6">
+            <img class="rounded shadow-box" src="Flora/{{CI}}" alt="Thumbnails" />
+          </div>
+          <div class="col-1">
+          </div>
+          <div class="col-5">
+          {{/CI}}
+          {{^CI}}
+          <div class="col-12">
+          {{/CI}}
+            <table border="0" cellpadding="4" class="table table-striped table-condensed" >
+            <tbody>
+              {{#CV}}
+              <tr><td><b>{{N}}</b></td><td>{{{V}}}</td></tr>
+              {{/CV}}
+            </tbody>
+            </table>
+          </div>
         </div> 
       </div> 
     </div>
@@ -553,7 +558,7 @@
             <div class="card-header">
               <h4>
                 <a href="https://play.google.com/store/apps/details?id=com.indic.trees&hl=en_IN&gl=US" target="_blank">
-                  <img src="https://play-lh.googleusercontent.com/wFOuPreBpxQkstJ_AymOOifW4AMceH3XSdjxa2086GRebFemN09we28uay9oY8HSNLw=w240-h480" style="width: 64px; height: 48px;">
+                  <img src="https://play-lh.googleusercontent.com/wFOuPreBpxQkstJ_AymOOifW4AMceH3XSdjxa2086GRebFemN09we28uay9oY8HSNLw=w240-h480" width="64" height="48">
                    &nbsp; Bengaluru Trees
                 </a>
               </h4>
@@ -570,24 +575,24 @@
                 <div class="card">
                   <div class="card-header">
                     <div class="row">
-                      <div class="col-auto align-items-center justify-content-left">
-                        <span class="badge rounded-pill text-bg-dark">{{SC}}</span> &nbsp;
+                      <div class="col-auto align-items-center justify-content-right">
+                        <a href="javascript:load_area_data('trees', '{{SD}}');">
+                          <img class="ICON" src="icons/geo-alt.svg">
+                        </a>
                       </div>
                       <div class="col text-center">
                         <a href="javascript:load_module_data('{{SD}}');">
                           <h4><em>{{SN}}</em></h4>
                         </a>
                       </div>
-                      <div class="col-auto align-items-center justify-content-right">
-                        <a href="javascript:load_area_data('trees', '{{SD}}');">
-                          <img class="ICON" src="icons/geo-alt.svg">
-                        </a>
+                      <div class="col-auto align-items-center justify-content-left">
+                        <span class="badge rounded-pill text-bg-dark">{{SC}}</span> &nbsp;
                       </div>
                     </div>
                   </div>
                   <div class="card-body">
                     <center>
-                      <img class="swiper-lazy" data-src="Flora/{{SI}}" alt="{{SN}}" />
+                      <img class="swiper-lazy" data-src="Flora/{{SI}}" alt="{{SN}}" width="640" height="480" />
                       <div class="swiper-lazy-preloader"></div>
                     </center>
                   </div>
