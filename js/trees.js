@@ -7,6 +7,9 @@ const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H
 
 const EMPTY_THUMBNAIL = 'blank.svg';
 
+const INIT_COUNT = 5;
+const IMP_COUNT  = 4;
+
 const MAP_ICON_SIZE  = [24, 24];
 const MAP_ANCHOR_POS = [12, 24];
 
@@ -254,6 +257,7 @@ function tree_intro_init(slider_data) {
 
     const slider_info = slider_data['sliderinfo'];
     const slider_list = slider_info['items'];
+    let s_count = 0;
     const new_slider_list = [];
     for (const slider of slider_list) {
         const [ tree_id, count ] = slider;
@@ -265,21 +269,29 @@ function tree_intro_init(slider_data) {
                        SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH],
                        SI: i_url, ST: t_url
                      }
-        new_slider_list.push(item);
+        const s_index = Math.floor(Math.random() * s_count);
+        new_slider_list.splice(s_index, 0, item);
+        s_count++;
     }
-    slider_info['items'] = d3.shuffle(new_slider_list);
-
+    slider_info['items'] = new_slider_list.slice(0, INIT_COUNT);
     render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
 
+    const swiper_option = {
+        direction: 'horizontal',
+        preLoadImages: false,
+        lazy: { loadOnTransitionStart: true },
+        effect: 'fade',
+        fadeEffect: { crossFade: true },
+        autoplay: { delay: 5000, disableOnInteraction: false }
+    };
+
     setTimeout(() => {
-        const swiper = new Swiper('#INTRO_CAROUSEL', {
-            direction: 'horizontal',
-            preLoadImages: false,
-            lazy: { loadOnTransitionStart: true },
-            effect: 'fade',
-            fadeEffect: { crossFade: true },
-            autoplay: { delay: 5000, disableOnInteraction: false }
-        });
+        const swiper = new Swiper('#INTRO_CAROUSEL', swiper_option);
+        setTimeout(() => {
+            slider_info['items'] = new_slider_list.slice(INIT_COUNT);
+            render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
+            const swiper = new Swiper('#INTRO_CAROUSEL', swiper_option);
+        }, 26000);
     }, 0);
 }
 
@@ -413,8 +425,8 @@ function search_load(search_obj) {
         if (!search_obj.hasOwnProperty(category)) continue;
         const data_list = search_obj[category];
         for (const item of data_list) {
-            const t_list = item.A.slice(0, 4);
-            const a_list = item.A.slice(4);
+            const t_list = item.A.slice(0, IMP_COUNT);
+            const a_list = item.A.slice(IMP_COUNT);
             const pop = (item.P !== undefined) ? item.P : -1;
             const count = (item.C !== undefined) ? item.C : 0;
             const data_doc = { id: data_id, category: item.T, name: item.N, title: t_list, aka: a_list,
