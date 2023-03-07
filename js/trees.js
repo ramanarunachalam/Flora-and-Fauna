@@ -65,6 +65,25 @@ const ENGLISH_REPLACE_LIST = [ [ /_/g, '' ],
                              ];
 
 
+const INTRO_SWIPER_OPTIONS = {
+    direction: 'horizontal',
+    preLoadImages: false,
+    lazy: { loadOnTransitionStart: true },
+    effect: 'fade',
+    fadeEffect: { crossFade: true },
+    autoplay: { delay: 5000, disableOnInteraction: false }
+};
+
+const AREA_SWIPER_OPTIONS = 
+{
+    direction: 'horizontal',
+    centeredSlides: true,
+    preLoadImages: true,
+    slidesPerView: 3,
+    spaceBetween: 5,
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+};
+
 function capitalize_word(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -256,10 +275,8 @@ function tree_intro_init(slider_data) {
                           };
 
     const slider_info = slider_data['sliderinfo'];
-    const slider_list = slider_info['items'];
-    let s_count = 0;
-    const new_slider_list = [];
-    for (const slider of slider_list) {
+    let slider_list = [];
+    for (const slider of slider_info['items']) {
         const [ tree_id, count ] = slider;
         window.tree_count_data[tree_id] = count;
         const h = imap.handle_map[tree_id];
@@ -269,28 +286,19 @@ function tree_intro_init(slider_data) {
                        SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH],
                        SI: i_url, ST: t_url
                      }
-        const s_index = Math.floor(Math.random() * s_count);
-        new_slider_list.splice(s_index, 0, item);
-        s_count++;
+        slider_list.push(item);
     }
-    slider_info['items'] = new_slider_list.slice(0, INIT_COUNT);
+    slider_info['items'] = [];
     render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
-
-    const swiper_option = {
-        direction: 'horizontal',
-        preLoadImages: false,
-        lazy: { loadOnTransitionStart: true },
-        effect: 'fade',
-        fadeEffect: { crossFade: true },
-        autoplay: { delay: 5000, disableOnInteraction: false }
-    };
-
     setTimeout(() => {
-        const swiper = new Swiper('#INTRO_CAROUSEL', swiper_option);
+        slider_list = d3.shuffle(slider_list);
+        slider_info['items'] = slider_list.slice(0, INIT_COUNT);
+        render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
+        const swiper = new Swiper('#INTRO_CAROUSEL', INTRO_SWIPER_OPTIONS);
         setTimeout(() => {
-            slider_info['items'] = new_slider_list.slice(INIT_COUNT);
+            slider_info['items'] = slider_list.slice(INIT_COUNT);
             render_template_data('intro-carousel-template', 'INTRO_SLIDER', slider_data);
-            const swiper = new Swiper('#INTRO_CAROUSEL', swiper_option);
+            const swiper = new Swiper('#INTRO_CAROUSEL', INTRO_SWIPER_OPTIONS);
         }, 26000);
     }, 0);
 }
@@ -943,18 +951,7 @@ function area_click_tree(tree_id) {
 }
 
 function area_carousel_init() {
-    const swiper = new Swiper('#AREA_CAROUSEL', {
-        direction: 'horizontal',
-        centeredSlides: true,
-        preLoadImages: true,
-        slidesPerView: 3,
-        spaceBetween: 5,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-    });
-
+    const swiper = new Swiper('#AREA_CAROUSEL', AREA_SWIPER_OPTIONS);
     swiper.on('slideChange', function (ev) {
         area_highlight_tree(ev.activeIndex);
     });
