@@ -67,8 +67,6 @@ const ENGLISH_REPLACE_LIST = [ [ /_/g, '' ],
 
 const INTRO_SWIPER_OPTIONS = {
     direction: 'horizontal',
-    preLoadImages: false,
-    lazy: { loadOnTransitionStart: true },
     effect: 'fade',
     fadeEffect: { crossFade: true },
     autoplay: { delay: 5000, disableOnInteraction: false }
@@ -78,7 +76,6 @@ const AREA_SWIPER_OPTIONS =
 {
     direction: 'horizontal',
     centeredSlides: true,
-    preLoadImages: true,
     slidesPerView: 3,
     spaceBetween: 5,
     navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
