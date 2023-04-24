@@ -1,6 +1,6 @@
 const BANGALORE_LAT  = 12.97729;
 const BANGALORE_LONG = 77.59973;
-const BANGALORE_LAT_LONG = [ BANGALORE_LAT, BANGALORE_LONG ];
+let BANGALORE_LAT_LONG = [ BANGALORE_LAT, BANGALORE_LONG ];
 const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
 
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
@@ -44,6 +44,7 @@ const TREE_ZOOM   = 12;
 const MIN_ZOOM    = 16;
 const NATIVE_ZOOM = 18;
 const MAX_ZOOM    = 21;
+const MAX_RADIUS  = 12;
 
 const TILE_OPTIONS = { attribution: OSM_ATTRIBUTION,
                        subdomains: ['a', 'b', 'c'],
@@ -668,12 +669,20 @@ function get_zoom(osm_map, tid) {
     return zoom;
 }
 
+function get_min_zoom() {
+    return (window.area_type === 'trees' || window.map_heatmap) ? TREE_ZOOM : MIN_ZOOM;
+}
+
+function set_min_zoom(area) {
+    if (area === 'trees' || window.map_heatmap) window.map_osm_map.options.minZoom = TREE_ZOOM;
+}
+
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
     const map_options  = { center: [ c_lat, c_long ],
                            rotate: true,
                            touchRotate: true,
                            zoom: get_zoom(null, tid),
-                           minZoom: (window.area_type === 'trees') ? TREE_ZOOM : MIN_ZOOM,
+                           minZoom: get_min_zoom(),
                            maxZoom: MAX_ZOOM
                          };
     const osm_map = new L.map(id_name, map_options);
@@ -711,6 +720,18 @@ function get_needed_icon(selected, blooming) {
     if (selected) return (blooming) ? window.red_bloom_icon : window.red_tree_icon;
     else if (blooming) return window.green_bloom_icon;
     return window.green_tree_icon;
+}
+
+function set_heatmap() {
+    const osm_map = window.map_osm_map;
+    if (window.map_heatmap && window.heat_layer !== null) {
+        osm_map.removeLayer(window.heat_layer);
+        window.heat_layer = null;
+    }
+    const latlong = osm_map.getCenter();
+    const zoom = (window.map_heatmap) ? NATIVE_ZOOM : TREE_ZOOM;
+    osm_map.setView([latlong.lat, latlong.lng], zoom);
+    window.map_heatmap = !window.map_heatmap;
 }
 
 function set_chosen_image(tree_id) {
@@ -877,7 +898,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             osm_map.removeLayer(marker);
         }
         const zoom = get_zoom(osm_map, tid);
-        osm_map.options.minZoom = (window.area_type === 'trees') ? TREE_ZOOM : MIN_ZOOM;
+        osm_map.options.minZoom = get_min_zoom();
         osm_map.setView([c_lat, c_long], zoom);
         // console.log('osm initialized', window.area_type, a_name, aid, tid, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     } else {
@@ -889,7 +910,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     if (tid !== undefined && tid !== 0) {
         set_chosen_image(tid);
     }
-    if (area === 'trees') osm_map.options.minZoom = TREE_ZOOM;
+    set_min_zoom(area);
     draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long);
     window.area_latlong = [];
 }
@@ -979,6 +1000,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
     const area_marker_list = [];
+    const heat_map_list = [];
     const tree_dict = {};
     const is_tree = (area === 'trees');
     const c_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
@@ -988,16 +1010,29 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_id = i_tree_id.toString();
         const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
-        const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
-        osm_map.addLayer(marker);
-        area_marker_list.push(marker);
+        if (window.map_heatmap) {
+            heat_map_list.push([ m_lat, m_long, 1.0 ]);
+        } else {
+            const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
+            osm_map.addLayer(marker);
+            area_marker_list.push(marker);
+        }
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
     window.area_marker_list = area_marker_list;
-    const alen = area_marker_list.length;
-    if (is_tree && !window.map_area_move && 0 < alen && alen < TREE_MIN_COUNT) {
-        const layer = new L.featureGroup(area_marker_list);
-        osm_map.fitBounds(layer.getBounds());
+    if (window.heat_layer !== null) {
+        osm_map.removeLayer(window.heat_layer);
+        window.heat_layer = null;
+    }
+    if (window.map_heatmap) {
+        window.heat_layer = L.heatLayer(heat_map_list, { radius: MAX_RADIUS });
+        window.heat_layer.addTo(osm_map);
+    } else {
+        const alen = area_marker_list.length;
+        if (is_tree && !window.map_area_move && 0 < alen && alen < TREE_MIN_COUNT) {
+            const layer = new L.featureGroup(area_marker_list);
+            osm_map.fitBounds(layer.getBounds());
+        }
     }
 
     const tree_stat_list = [];
@@ -1152,6 +1187,7 @@ async function tree_area_init(area, aid, item_data) {
 }
 
 async function load_area_data(area_type, area_id, area_latlong) {
+    window.map_heatmap = false;
     const lang = window.render_language;
     const area_info = { 'T' : get_lang_map_word('Tree'),
                         'H' : get_lang_map_word(capitalize_word(area_type)),
@@ -1478,6 +1514,28 @@ async function load_content(lang_data, slider_data) {
     search_init();
 }
 
+function show_geo_location(position) {
+    console.log("show_geo_location: ", position);
+    BANGALORE_LAT_LONG = [ position.coords.latitude, position.coords.longitude ];
+}
+
+function error_geo_location(error) {
+    console.log("error_geo_location: ", error);
+}
+
+function get_geo_location() {
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+    };
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(show_geo_location, error_geo_location, options);
+    } else {
+        console.log("Geolocation is not supported.");
+    }
+}
+
 function tree_main_init() {
     window.render_language = 'English';
     window.tree_region = 'bangalore';
@@ -1486,8 +1544,9 @@ function tree_main_init() {
     window.map_initialized = false;
     window.map_area_move = false;
     window.map_area_click = false;
-    window.map_tree_id = 0;
     window.tree_popstate = false;
+    window.map_heatmap = false;
+    window.map_tree_id = 0;
     window.area_marker_list = [];
     window.area_latlong = [];
     window.tree_image_list = [];
@@ -1495,6 +1554,7 @@ function tree_main_init() {
     window.tree_count_data = {};
     window.area_data = null;
     window.quad_tree = null;
+    window.heat_layer = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
 
@@ -1503,6 +1563,8 @@ function tree_main_init() {
 
     window.url_params = get_url_params();
     window.addEventListener('popstate', handle_popstate);
+
+    get_geo_location();
 
     const url_list = [ d3.json(LANGUAGE_URL), d3.json(get_region_url('intro')) ];
     Promise.all(url_list).then((values) => {
