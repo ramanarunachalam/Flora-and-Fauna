@@ -31,6 +31,7 @@ const LANGUAGE_URL = 'language.json';
 const SEARCH_URL   = 'flora_index.json';
 const AREA_URL     = 'area.json';
 const GRID_URL     = 'grid.json';
+const HISTORY_URL  = 'history.json';
 
 const OSM_TILE_URL     = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const OSM_BUILDING_URL = 'https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json';
@@ -208,7 +209,7 @@ async function tree_module_init(data) {
     const gallery_list = gallery_info['gallery'].split(',');
     const new_gallery_list = [];
     for (const image_id of gallery_list) {
-        const is_digit = image_id.length == 4;
+        const is_digit = image_id.length === 4;
         const caption = is_digit ? image_id : imap.lang_key_image[image_id];
         const part_name = is_digit ? image_id : imap.english_key_image[image_id];
         const [ i_url, t_url ] = get_part_image_urls(h, part_name);
@@ -670,11 +671,11 @@ function get_zoom(osm_map, tid) {
 }
 
 function get_min_zoom() {
-    return (window.area_type === 'trees' || window.map_heatmap) ? TREE_ZOOM : MIN_ZOOM;
+    return (window.area_type === 'trees' || window.map_heatmap || map_deleted) ? TREE_ZOOM : MIN_ZOOM;
 }
 
 function set_min_zoom(area) {
-    if (area === 'trees' || window.map_heatmap) window.map_osm_map.options.minZoom = TREE_ZOOM;
+    if (area === 'trees' || window.map_heatmap || map_deleted) window.map_osm_map.options.minZoom = TREE_ZOOM;
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
@@ -829,7 +830,6 @@ function create_quad_tree(grid_flora_list) {
             }
         }
     }
-    // quad_tree_visit(quad_tree);
     return quad_tree;
 }
 
@@ -865,9 +865,10 @@ function quad_tree_find(quad_tree, xmin, ymin, xmax, ymax, tree_id) {
 }
 
 async function fetch_grid_data() {
-    if (window.quad_tree === null) {
+    if (window.all_quad_tree === null) {
         const grid_data = await d3.json(GRID_URL);
-        window.quad_tree = create_quad_tree(grid_data);
+        window.all_quad_tree = create_quad_tree(grid_data);
+        window.quad_tree = window.all_quad_tree;
     }
 }
 
@@ -1160,7 +1161,7 @@ async function tree_area_init(area, aid, item_data) {
     render_template_data('map-nav-template', 'TREE_BODY', data);
 
     await fetch_grid_data();
-    if (window.quad_tree === null) return;
+    if (window.all_quad_tree === null) return;
     window.map_initialized = false;
 
     let tid = (window.map_tree_id !== 0) ? window.map_tree_id : 0;
@@ -1206,6 +1207,36 @@ async function load_area_data(area_type, area_id, area_latlong) {
         tree_area_init(area_type, area_id, area_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
     };
+}
+
+async function render_deleted_data() {
+    let deleted_data = null;
+    if (window.deleted_quad_tree === null) {
+        const history_data = await d3.json(HISTORY_URL);
+        if (history_data === null) return;
+        deleted_data = history_data['deleted'];
+        if (deleted_data === null) return;
+    }
+    if (window.deleted_quad_tree === null && deleted_data !== null) {
+        const quad_tree = d3.quadtree();
+        for (const tree_id in deleted_data) {
+            const latlong_list = deleted_data[tree_id];
+            for (const latlong of deleted_data[tree_id]) {
+                quad_tree.add([+latlong[0], +latlong[1], +tree_id]);
+            }
+        }
+        window.deleted_quad_tree = quad_tree;
+    }
+    if (window.quad_tree === window.deleted_quad_tree) {
+        window.quad_tree = window.all_quad_tree;
+    } else {
+        window.quad_tree = window.deleted_quad_tree;
+    }
+    const osm_map = window.map_osm_map;
+    const latlong = osm_map.getCenter();
+    const zoom = (window.quad_tree !== window.deleted_quad_tree) ? NATIVE_ZOOM : TREE_ZOOM;
+    osm_map.setView([latlong.lat, latlong.lng], zoom);
+    window.map_deleted = !window.map_deleted;
 }
 
 async function load_collection_data(type, letter, page_index, page_max) {
@@ -1546,6 +1577,7 @@ function tree_main_init() {
     window.map_area_click = false;
     window.tree_popstate = false;
     window.map_heatmap = false;
+    window.map_deleted = false;
     window.map_tree_id = 0;
     window.area_marker_list = [];
     window.area_latlong = [];
@@ -1554,6 +1586,8 @@ function tree_main_init() {
     window.tree_count_data = {};
     window.area_data = null;
     window.quad_tree = null;
+    window.all_quad_tree = null;
+    window.deleted_quad_tree = null;
     window.heat_layer = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
