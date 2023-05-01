@@ -42,9 +42,11 @@ const TREE_MIN_COUNT = 200;
 const TREE_MAX_COUNT = 750;
 
 const TREE_ZOOM   = 12;
+const MISC_ZOOM   = 13;
 const MIN_ZOOM    = 16;
 const NATIVE_ZOOM = 18;
 const MAX_ZOOM    = 21;
+
 const MAX_RADIUS  = 12;
 
 const TILE_OPTIONS = { attribution: OSM_ATTRIBUTION,
@@ -272,6 +274,15 @@ function tree_intro_init(slider_data) {
     stats_info['title'] = { T: get_lang_map_word('Trees'),
                             R: get_lang_map_word(capitalize_word(window.tree_region))
                           };
+    const stats_data = {};
+    for (const item of stats_info['items']) {
+        if (item.N === 'Locations') stats_data['L'] = item.C;
+        if (item.N === 'Parks') stats_data['P'] = item.C;
+        if (item.N === 'Wards') stats_data['W'] = item.C;
+        if (item.N === 'Maps') stats_data['M'] = item.C;
+    }
+    stats_data['R'] = stats_info['deletes'];
+    window.stats_data = stats_data;
 
     const slider_info = slider_data['sliderinfo'];
     let slider_list = [];
@@ -671,11 +682,11 @@ function get_zoom(osm_map, tid) {
 }
 
 function get_min_zoom() {
-    return (window.area_type === 'trees' || window.map_heatmap || map_deleted) ? TREE_ZOOM : MIN_ZOOM;
+    return (window.area_type === 'trees' || window.map_heatmap || window.map_deleted) ? TREE_ZOOM : MIN_ZOOM;
 }
 
 function set_min_zoom(area) {
-    if (area === 'trees' || window.map_heatmap || map_deleted) window.map_osm_map.options.minZoom = TREE_ZOOM;
+    if (area === 'trees' || window.map_heatmap || window.map_deleted) window.map_osm_map.options.minZoom = TREE_ZOOM;
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
@@ -723,16 +734,16 @@ function get_needed_icon(selected, blooming) {
     return window.green_tree_icon;
 }
 
-function set_heatmap() {
+function render_heatmap() {
     const osm_map = window.map_osm_map;
     if (window.map_heatmap && window.heat_layer !== null) {
         osm_map.removeLayer(window.heat_layer);
         window.heat_layer = null;
     }
-    const latlong = osm_map.getCenter();
-    const zoom = (window.map_heatmap) ? NATIVE_ZOOM : TREE_ZOOM;
-    osm_map.setView([latlong.lat, latlong.lng], zoom);
     window.map_heatmap = !window.map_heatmap;
+    const zoom = (window.map_heatmap) ? MISC_ZOOM : NATIVE_ZOOM;
+    osm_map.options.minZoom = get_min_zoom();
+    osm_map.setView(BANGALORE_LAT_LONG, zoom);
 }
 
 function set_chosen_image(tree_id) {
@@ -1192,9 +1203,12 @@ async function load_area_data(area_type, area_id, area_latlong) {
     const lang = window.render_language;
     const area_info = { 'T' : get_lang_map_word('Tree'),
                         'H' : get_lang_map_word(capitalize_word(area_type)),
-                        'items' : [ { N: get_lang_map_word('Parks'), P: 'PARK', },
-                                    { N: get_lang_map_word('Wards'), P: 'WARD', },
-                                    { N: get_lang_map_word('Trees'), P: 'TREE', },
+                        'LN' : get_lang_map_word('Locations'),
+                        'LC' : window.stats_data['L'],
+                        'R' : window.stats_data['R'],
+                        'items' : [ { N: get_lang_map_word('Parks'), P: 'PARK', C: window.stats_data['P'] },
+                                    { N: get_lang_map_word('Wards'), P: 'WARD', C: window.stats_data['W'] },
+                                    { N: get_lang_map_word('Trees'), P: 'TREE', C: window.stats_data['M'] },
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
@@ -1232,11 +1246,11 @@ async function render_deleted_data() {
     } else {
         window.quad_tree = window.deleted_quad_tree;
     }
-    const osm_map = window.map_osm_map;
-    const latlong = osm_map.getCenter();
-    const zoom = (window.quad_tree !== window.deleted_quad_tree) ? NATIVE_ZOOM : TREE_ZOOM;
-    osm_map.setView([latlong.lat, latlong.lng], zoom);
     window.map_deleted = !window.map_deleted;
+    const osm_map = window.map_osm_map;
+    const zoom = (window.map_deleted) ? MISC_ZOOM : NATIVE_ZOOM;
+    osm_map.options.minZoom = get_min_zoom();
+    osm_map.setView(BANGALORE_LAT_LONG, zoom);
 }
 
 async function load_collection_data(type, letter, page_index, page_max) {
@@ -1584,6 +1598,7 @@ function tree_main_init() {
     window.tree_image_list = [];
     window.tree_lang_data = {};
     window.tree_count_data = {};
+    window.stats_data = {};
     window.area_data = null;
     window.quad_tree = null;
     window.all_quad_tree = null;

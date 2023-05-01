@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 98,000+ trees marked in 225+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and many BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 99,000+ trees marked in 225+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and many BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
@@ -181,18 +181,21 @@
         <p class="mt-1"></p>
         <div class="card">
           <div class="card-header">
-            <h4 id="CHOSEN_ID">{{T}}</h4>
+            <center><h3>{{LN}}: <font color=brown>{{LC}}</font></h3></center>
+          </div>
+          <div class="card-body">
+            <div id="CHOSEN_IMG"></div>
+            <p class="mt-2"></p>
+            <center><h5 id="CHOSEN_ID">{{T}}</h5></center>
           </div>
         </div>
-        <p class="mt-3"></p>
-        <div id="CHOSEN_IMG"></div>
         <p class="mt-4"></p>
         <div class="accordion accordion-flush" id="MAP_ACCORDION">
           {{#items}}
           <div class="accordion-item">
             <h2 class="accordion-header" id="{{P}}_HEADER">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{P}}_BODY" aria-expanded="false" aria-controls="{{P}}_BODY">
-                {{N}}
+                {{N}} (<font color=brown>{{C}}</font>)
               </button>
             </h2>
             <div id="{{P}}_BODY" class="accordion-collapse collapse" aria-labelledby="{{P}}_HEADER" data-bs-parent="#MAP_ACCORDION">
@@ -200,13 +203,17 @@
           </div>
           {{/items}}
         </div>
-        <p class="mt-4"></p>
-        <center>
-          <a href="javascript:set_heatmap();"><img class="ICON" src="icons/soundwave.svg"> Heatmap</a>
-        </center>
-        <center>
-          <a href="javascript:render_deleted_data();"><img class="ICON" src="icons/pencil.svg"> Removed</a>
-        </center>
+        <p class="mt-3"></p>
+        <ul class="list-unstyled">
+          <li>
+            <p class="mt-3"></p>
+            <a href="javascript:render_heatmap();"><img class="ICON" src="icons/soundwave.svg"> Heatmap</a>
+          </li>
+          <li>
+            <p class="mt-3"></p>
+            <a href="javascript:render_deleted_data();"><img class="ICON" src="icons/x.svg"> Removed (<font color=brown>{{R}}</font>) </a>
+          </li>
+        </ul>
     </div>
     <div class="col-9 d-flex flex-column">
         <div class="p-2">
