@@ -901,6 +901,11 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             n_name = isFinite(aid) ? `${aid}. ${n_name}` : aid;
         }
     }
+    if (window.map_heatmap) {
+        n_name = 'Heatmap';
+    } else if (window.map_deleted) {
+        n_name = 'Removed';
+    }
     d3.select('#TITLE_HEADER').html(n_name);
 
     let osm_map;
