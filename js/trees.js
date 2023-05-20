@@ -2,6 +2,7 @@ const BANGALORE_LAT  = 12.97729;
 const BANGALORE_LONG = 77.59973;
 let BANGALORE_LAT_LONG = [ BANGALORE_LAT, BANGALORE_LONG ];
 const BANGALORE_BBOX = '77.299805,12.762250,77.879333,13.170423';
+const HEATMAP_CENTER = [ 12.96621, 77.60680 ]; // Shoolay Circle
 
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
 
@@ -743,7 +744,7 @@ function render_heatmap() {
     window.map_heatmap = !window.map_heatmap;
     const zoom = (window.map_heatmap) ? MISC_ZOOM : NATIVE_ZOOM;
     osm_map.options.minZoom = get_min_zoom();
-    osm_map.setView(BANGALORE_LAT_LONG, zoom);
+    osm_map.setView(HEATMAP_CENTER, zoom);
 }
 
 function set_chosen_image(tree_id) {
