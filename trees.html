@@ -1,24 +1,24 @@
 <!DOCTYPE HTML>
 
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,06,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and many 75+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,07,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and many 75+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
-<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" type="text/css"/>
+<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" type="text/css"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" rel="preload"/>
-<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.2.4/swiper-bundle.min.css" rel="preload"/>
+<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.3.2/swiper-bundle.min.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="css/trees.css" type="text/css"/>
 <title>Trees of Bangalore</title>
 </head>
 
 <body>
-    <header id="MENU_DATA" class="navbar navbar-expand sticky-top navbar-light bg-light nav-fill w-100 ">
+    <header id="MENU_DATA" class="navbar navbar-expand sticky-top bg-body-tertiary nav-fill">
     </header>  
     
     <div class="container">
@@ -26,9 +26,12 @@
       </div>
     </div>
 
-    <div class="modal fade" id="LANG_KBD">
+    <div id="LANG_KBD" class="modal fade" tabindex="-1" aria-labelledby="KBD_MODEL_LABEL">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="KBD_MODEL_LABEL">Keyboard</h3>
+          </div>
           <div id="GENKBD" class="modal-body">
           </div>
         </div>
@@ -83,20 +86,12 @@
     {{#menus}}
         <div class="navbar-nav col-1">
             <a class="nav-item" href="javascript:load_intro_data('bangalore');">
-              <img class="ICON" src="icons/house-fill.svg"> &nbsp; {{TITLE}}
+                <img class="ICON" src="icons/house-fill.svg">
             </a>
         </div>
 
-        <div class="navbar-nav col-6">
-            <div class="nav-item">
-                <select class="form-select" id="LANG_DATA" onchange="set_language(this)">
-                  {{#languages}}
-                  <option style="font-size: 12px" {{O}}>{{N}}</option>
-                  {{/languages}}
-                </select>
-            </div>
-
-            <form method="GET" action="javascript:load_search_data();" class="nav-item navbar-form" role="search">
+        <div class="navbar-nav col-4">
+            <form class="nav-item navbar-form" method="GET" action="javascript:load_search_data();" role="search">
                 <div class="input-group">
                     <button class="button" type="submit"><img class="ICON" src="icons/search.svg"></button>
                     <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="{{SEARCH}}" type="text">
@@ -106,19 +101,19 @@
             </form>
         </div>
 
-        <div class="navbar-nav col-5">
+        <div class="navbar-nav col-7">
             <div class="nav-item">
               {{#maps}}
                 {{#items}}
-                <a href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
+                <a class="btn btn-link" href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
                 {{/items}}
               {{/maps}}
             </div>
 
             <div class="nav-item dropdown">
               {{#collections}}
-              <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{T}}<b class="caret"></b></a>
-              <div class="dropdown-menu">
+              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{T}}</a>
+              <div class="dropdown-menu dropdown-menu-end">
                 {{#items}}
                 <a class="dropdown-item" href="javascript:load_collection_data('{{A}}', '{{L}}');">{{N}}</a>
                 {{/items}}
@@ -128,8 +123,8 @@
 
             <div class="nav-item dropdown">
               {{#categories}}
-              <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{T}}<b class="caret"></b></a>
-              <div class="dropdown-menu">
+              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{T}}</a>
+              <div class="dropdown-menu dropdown-menu-end">
                 {{#items}}
                 <a class="dropdown-item" href="javascript:load_category_data('{{C}}');">{{N}}</a>
                 {{/items}}
@@ -138,16 +133,25 @@
               </div>
               {{/categories}}
             </div>
-    
+
             <div class="nav-item dropdown">
               {{#regions}}
-              <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{T}}<b class="caret"></b></a>
-              <div class="dropdown-menu">
+              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{T}}</a>
+              <div class="dropdown-menu dropdown-menu-end">
                 {{#items}}
                 <a class="dropdown-item" href="javascript:load_intro_data('{{R}}');">{{N}}</a>
                 {{/items}}
               </div>
               {{/regions}}
+            </div>
+    
+            <div class="nav-item dropdown">
+              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{LANGUAGE}}</a>
+              <div class="dropdown-menu dropdown-menu-end">
+                {{#languages}}
+                <a class="dropdown-item" href="javascript:set_language('{{N}}', '{{O}}');">{{N}}</a>
+                {{/languages}}
+              </div>
             </div>
         </div>
     {{/menus}}
@@ -254,13 +258,21 @@
       {{#pageinfo}}
       <nav id="{{N}}-page" class="d-flex justify-content-center">
         <ul class="pagination pagination-sm">
-          <li class="page-item" id="{{N}}-page-previous" aria-label="Prev"><a href="#">&laquo;</a></li>&nbsp;
+          <li class="page-item" id="{{N}}-page-previous">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+          </li>&nbsp;
           {{#links}}
           <li class="page-item" id="{{N}}_{{PC}}" class="active">
             <a class="page-link" href="javascript:{{PH}};">{{PL}}</a>
           </li>
           {{/links}}
-          <li class="page-item" id="{{N}}-page-next" aria-label="Next"><a href="#">&raquo;</a></li>
+          <li class="page-item" id="{{N}}-page-next">
+            <a class="page-link" href="#" aria-label="Next">
+             <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
         </ul>
       </nav>
       {{/pageinfo}}
@@ -728,13 +740,13 @@ Trees are an important component of the natural landscape because of their preve
     </div>
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7.8.4/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/minisearch@6.1.0/dist/umd/index.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9.2.4/swiper-bundle.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9.3.2/swiper-bundle.min.js" defer></script>
   <script src="js/leaflet-heat.js" defer></script>
   <script src="js/translation.js"></script>
   <script src="js/transliterate.js"></script>

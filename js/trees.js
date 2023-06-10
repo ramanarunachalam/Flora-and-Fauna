@@ -129,9 +129,9 @@ function lang_name_init() {
     }
 }
 
-function set_language(obj) {
-    window.GOT_LANGUAGE = obj.value;
-    window.render_language = MAP_LANG_DICT[obj.value];
+function set_language(n, o) {
+    window.GOT_LANGUAGE = n;
+    window.render_language = MAP_LANG_DICT[n];
     lang_name_init();
     load_menu_data();
 }
@@ -468,8 +468,9 @@ function search_init() {
 
 function transliterator_init() {
     const imap = window.id_map;
-    window.char_map_key_list = Object.keys(imap.char_map);
-    window.char_map_max_length = d3.max(window.char_map_key_list, d => d.length);
+    const char_map_key_list = Object.keys(imap.char_map);
+    window.char_map_max_length = d3.max(char_map_key_list, d => d.length);
+    window.char_map_key_list = new Set(char_map_key_list);
 }
 
 function transliterate_text(word) {
@@ -500,7 +501,7 @@ function transliterate_text(word) {
     }
     let new_word = tokenlist.join('');
     if (word !== new_word) {
-        for (const expr of REPLACE_LIST) {
+        for (const expr of ENGLISH_REPLACE_LIST) {
             new_word = new_word.replace(expr[0], expr[1]);
         }
     }
@@ -1522,6 +1523,7 @@ function load_menu_data() {
     get_lang_map(category_list);
     get_lang_map(region_list);
     let menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word('Trees'),
+                                  'LANGUAGE' : window.GOT_LANGUAGE,
                                   'SEARCH' : get_lang_map_word('Search'),
                                   'ALPHABETICAL' : get_lang_map_word('Alphabetical'),
                                   'languages' : lang_list,
@@ -1589,6 +1591,7 @@ function get_geo_location() {
 
 function tree_main_init() {
     window.render_language = 'English';
+    window.GOT_LANGUAGE = MAP_LANG_DICT[window.render_language]
     window.tree_region = 'bangalore';
     window.info_initialized = true;
     window.search_initialized = false;

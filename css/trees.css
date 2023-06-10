@@ -13,30 +13,7 @@ body {
 }
 
 table {
-    margin-top: 30px;
     background-color: var(--trees-table-bg-color);
-}
-
-h2 {
-    margin-left: 5px;
-    font-size:   30px;
-    font-style:  oblique;
-    font-weight: bold;
-}
-
-h3 {
-    margin-left: 5px;
-    font-size:   25px;
-    font-style:  oblique;
-    font-weight: bold;
-}
-
-p {
-    margin: 10px;
-}
-
-a {
-    color: blue;
 }
 
 /* Bootstrap 5 tweak: do not underline links unless hovered over */
