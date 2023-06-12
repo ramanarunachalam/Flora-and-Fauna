@@ -1,10 +1,25 @@
-:root {
-    --black-100: #D6D9DC;
-    --black-300: #9FA6AD;
-    --trees-body-bg-color: #F2F2F2;
+:root, [data-bs-theme=light] {
+    --trees-body-bg-color: lightgray;
+    --trees-card-bg-color: silver;
     --trees-map-bg-color: #F0DBDB;
     --trees-table-bg-color: #FFF;
     --trees-shadow-color: #000;
+    --trees-num-color: brown;
+    --indic-kbd-key: #000;
+    --indic-kbd-bg: silver;
+    --indic-kbd-hover: lightgray;
+}
+
+[data-bs-theme=dark] {
+    --trees-body-bg-color: dimgray;
+    --trees-card-bg-color: dimgray;
+    --trees-map-bg-color: #F0DBDB;
+    --trees-table-bg-color: #000;
+    --trees-shadow-color: #FFF;
+    --trees-num-color: tan;
+    --indic-kbd-key: #FFF;
+    --indic-kbd-bg: dimgray;
+    --indic-kbd-hover: lightgray;
 }
 
 body {
@@ -29,8 +44,20 @@ a:not([class*="btn"]):hover {
     height: 24px;
 }
 
+.NAV_ICON{
+    font-size: 2rem;
+}
+
+.ICON_FONT {
+    font-size: 1.5rem;
+}
+
+.NUM_COLOR {
+    color: var(--trees-num-color);
+}
+
 .card-header {
-    background-color:  silver;
+    background-color:  var(--trees-card-bg-color);
 }
 
 .INTRO_OL {
@@ -93,9 +120,10 @@ td.keycol {
     border-radius: 5px;
     border: 5px solid white;
     cursor: pointer;
-    background-color: var(--black-100)
+    color: var(--indic-kbd-key) !important;
+    background-color: var(--indic-kbd-bg);
 }
 
 td.keycol:hover {
-    background-color: var(--black-300)
+    background-color:var(--indic-kbd-hover)
 }

@@ -136,6 +136,18 @@ function set_language(n, o) {
     load_menu_data();
 }
 
+function toggle_icon(id, old_class, new_class) {
+    d3.selectAll('#' + id).classed(old_class, false);
+    d3.selectAll('#' + id).classed(new_class, true);
+}
+
+function toggle_brightness() {
+    window.COLOR_SCHEME = (window.COLOR_SCHEME === 'dark') ? 'light' : 'dark';
+    d3.select('html').attr('data-bs-theme', window.COLOR_SCHEME);
+    if (window.COLOR_SCHEME === 'dark') toggle_icon('BRIGHTNESS', 'bi-brightness-low', 'bi-brightness-high-fill');
+    else toggle_icon('BRIGHTNESS', 'bi-brightness-high-fill', 'bi-brightness-low');
+}
+
 function render_template_data(template_name, id_name, data) {
     const ul_template = d3.select('#' + template_name).html();
     const template_html = Mustache.render(ul_template, data);
@@ -1082,7 +1094,7 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         }
         if (!is_tree) {
             tin -= 1;
-            let n_title = `${n_name} (<font color=brown>${tin} / ${tcount}</font>)`;
+            let n_title = `${n_name} (<font class="NUM_COLOR">${tin} / ${tcount}</font>)`;
             d3.select('#TITLE_HEADER').html(n_title);
         }
         let data = { 'trees' : tree_stat_list };
@@ -1592,6 +1604,7 @@ function get_geo_location() {
 function tree_main_init() {
     window.render_language = 'English';
     window.GOT_LANGUAGE = MAP_LANG_DICT[window.render_language]
+    window.COLOR_SCHEME = 'light';
     window.tree_region = 'bangalore';
     window.info_initialized = true;
     window.search_initialized = false;

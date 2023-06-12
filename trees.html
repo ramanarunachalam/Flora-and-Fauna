@@ -5,13 +5,14 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,07,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and many 75+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,07,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and 80+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" type="text/css"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" rel="preload"/>
+<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" type="text/css"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.3.2/swiper-bundle.min.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="css/trees.css" type="text/css"/>
 <title>Trees of Bangalore</title>
@@ -64,14 +65,14 @@
           </div>
           <div class="modal-body">
             <ul class="list-group">
-              <a href="javascript:handle_context_menu('info');" class="list-group-item">
-                <img class="ICON" src="icons/info.svg"> &nbsp; Tree Info
+              <a class="list-group-item" href="javascript:handle_context_menu('info');">
+                <i class="bi bi-info ICON_FONT"></i> &nbsp; Tree Info
               </a>
-              <a href="javascript:handle_context_menu('tmap')" class="list-group-item">
-                <img class="ICON" src="icons/geo-alt.svg"> &nbsp; Tree Map
+              <a class="list-group-item" href="javascript:handle_context_menu('tmap')">
+                <i class="bi bi-geo-alt-fill ICON_FONT"></i>&nbsp; Tree Map
               </a>
-              <a href="javascript:handle_context_menu('gmap')" class="list-group-item">
-                <img class="ICON" src="icons/geo.svg"> &nbsp; Google Map
+              <a class="list-group-item" href="javascript:handle_context_menu('gmap')">
+                <i class="bi bi-google ICON_FONT"></i>&nbsp; Google Map
               </a>
             </ul>
           </div>
@@ -84,46 +85,55 @@
 
   <script type="text/html" id="menu-template">
     {{#menus}}
-        <div class="navbar-nav col-1">
-            <a class="nav-item" href="javascript:load_intro_data('bangalore');">
-                <img class="ICON" src="icons/house-fill.svg">
+        <ul class="navbar-nav col-1">
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:load_intro_data('bangalore');">
+                <i class="bi bi-house-fill ICON_FONT"></i>
             </a>
-        </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>Brightness</em>" href='javascript:toggle_brightness();'>
+                <span class="button"><i id="BRIGHTNESS" class="bi bi-brightness-low ICON_FONT"></i></span>
+            </a>
+          </li>
+        </ul>
 
-        <div class="navbar-nav col-4">
-            <form class="nav-item navbar-form" method="GET" action="javascript:load_search_data();" role="search">
+        <ul class="navbar-nav col-4">
+          <li class="nav-item">
+            <form class="d-flex" method="GET" action="javascript:load_search_data();" role="search">
                 <div class="input-group">
-                    <button class="button" type="submit"><img class="ICON" src="icons/search.svg"></button>
-                    <input class="form-control" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" placeholder="{{SEARCH}}" type="text">
-                    <button class="button" onclick="speech_start(event)"><img id="MIC_IMAGE" class="ICON" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>Only in Chrome</em>" src="icons/mic-mute.svg"></button>
-                    <button class="button" onclick="load_keyboard(event)"><img id="KBD_IMAGE" class="ICON" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>Language Keyboard</em>" src="icons/keyboard.svg"></button>
+                    <button class="button" type="submit"><i class="bi bi-search ICON_FONT"></i></button>
+                    <input class="form-control me-2" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" type="text" placeholder="{{SEARCH}}" aria-label="Search">
+                    <button class="button" onclick="speech_start(event)"><i id="MIC_IMAGE" class="bi bi-mic-mute ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{MTP}}</em>"></i></button>
+                    <button class="button" onclick="load_keyboard(event)"><i class="bi bi-keyboard ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{KTP}}</em>"></i></button>
                 </div>
             </form>
-        </div>
+          </li>
+        </ul>
 
-        <div class="navbar-nav col-7">
-            <div class="nav-item">
+        <ul class="navbar-nav col-7">
+            <li class="nav-item">
               {{#maps}}
                 {{#items}}
-                <a class="btn btn-link" href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
+                <a class="nav-link" href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
                 {{/items}}
               {{/maps}}
-            </div>
+            </li>
 
-            <div class="nav-item dropdown">
+            <li class="nav-item dropdown">
               {{#collections}}
-              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{T}}</a>
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
               <div class="dropdown-menu dropdown-menu-end">
                 {{#items}}
                 <a class="dropdown-item" href="javascript:load_collection_data('{{A}}', '{{L}}');">{{N}}</a>
                 {{/items}}
               </div>
               {{/collections}}
-            </div>
+            </li>
 
-            <div class="nav-item dropdown">
+            <li class="nav-item dropdown">
               {{#categories}}
-              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{T}}</a>
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
               <div class="dropdown-menu dropdown-menu-end">
                 {{#items}}
                 <a class="dropdown-item" href="javascript:load_category_data('{{C}}');">{{N}}</a>
@@ -132,28 +142,28 @@
                 <a class="dropdown-item" href="javascript:load_simple_data();">{{ALPHABETICAL}}</a>
               </div>
               {{/categories}}
-            </div>
+            </li>
 
-            <div class="nav-item dropdown">
+            <li class="nav-item dropdown">
               {{#regions}}
-              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{T}}</a>
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
               <div class="dropdown-menu dropdown-menu-end">
                 {{#items}}
                 <a class="dropdown-item" href="javascript:load_intro_data('{{R}}');">{{N}}</a>
                 {{/items}}
               </div>
               {{/regions}}
-            </div>
+            </li>
     
-            <div class="nav-item dropdown">
-              <a class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{LANGUAGE}}</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{LANGUAGE}}</a>
               <div class="dropdown-menu dropdown-menu-end">
                 {{#languages}}
                 <a class="dropdown-item" href="javascript:set_language('{{N}}', '{{O}}');">{{N}}</a>
                 {{/languages}}
               </div>
-            </div>
-        </div>
+            </li>
+        </ul>
     {{/menus}}
   </script>
 
@@ -168,9 +178,9 @@
         <ul class="list-group">
           {{#results}}
           <li class="list-group-item">
-            <a href="javascript:{{H}}">{{T}} : {{N}}{{#G}}<font color=brown><=></font><i>{{G}} {{S}}</i>{{/G}}</a>
-            {{#C}}<a href="javascript:load_area_data('trees', '{{I}}');"><img class="ICON" src="icons/geo-alt.svg"></a>{{/C}}
-            {{#G}}<a href="trees.html?tid={{I}}" target="_blank"><img class="ICON" src="icons/link.svg"></a>{{/G}}
+            <a href="javascript:{{H}}">{{T}} : {{N}}{{#G}}<font class="NUM_COLOR"><=></font><i>{{G}} {{S}}</i>{{/G}}</a>
+            {{#C}}<a href="javascript:load_area_data('trees', '{{I}}');"><i class="bi bi-geo-alt-fill ICON_FONT"></i></a>{{/C}}
+            {{#G}}<a href="trees.html?tid={{I}}" target="_blank"><i class="bi bi-link ICON_FONT"></i></a>{{/G}}
           </li>
           {{/results}}
         </ul>
@@ -185,7 +195,7 @@
         <p class="mt-1"></p>
         <div class="card">
           <div class="card-header">
-            <center><h3>{{LN}}: <font color=brown>{{LC}}</font></h3></center>
+            <center><h3>{{LN}}: <font class="NUM_COLOR">{{LC}}</font></h3></center>
           </div>
           <div class="card-body">
             <div id="CHOSEN_IMG"></div>
@@ -199,7 +209,7 @@
           <div class="accordion-item">
             <h2 class="accordion-header" id="{{P}}_HEADER">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{P}}_BODY" aria-expanded="false" aria-controls="{{P}}_BODY">
-                {{N}} (<font color=brown>{{C}}</font>)
+                {{N}} (<font class="NUM_COLOR">{{C}}</font>)
               </button>
             </h2>
             <div id="{{P}}_BODY" class="accordion-collapse collapse" aria-labelledby="{{P}}_HEADER" data-bs-parent="#MAP_ACCORDION">
@@ -211,11 +221,11 @@
         <ul class="list-unstyled">
           <li>
             <p class="mt-3"></p>
-            <a href="javascript:render_heatmap();"><img class="ICON" src="icons/soundwave.svg"> Heatmap</a>
+            <a href="javascript:render_heatmap();"><i class="bi bi-soundwave ICON_FONT"></i>&nbsp; Heatmap</a>
           </li>
           <li>
             <p class="mt-3"></p>
-            <a href="javascript:render_deleted_data();"><img class="ICON" src="icons/x.svg"> Removed (<font color=brown>{{R}}</font>) </a>
+            <a href="javascript:render_deleted_data();"><i class="bi bi-x ICON_FONT"></i> Removed (<font class="NUM_COLOR">{{R}}</font>) </a>
           </li>
         </ul>
     </div>
@@ -293,9 +303,9 @@
                     {{#COLA}}
                     <td>
                       <a href="javascript:load_module_data('{{CI}}');">
-                        <font color=brown>{{CC}}</font>. {{CN}}<br/>
+                        <font class="NUM_COLOR">{{CC}}</font>. {{CN}}<br/>
                         {{CB}}<br>
-                        <em><small><font color=brown>{{CA}}</font></small></em><br>
+                        <em><small><font class="NUM_COLOR">{{CA}}</font></small></em><br>
                         {{CF}}
                       </a>
                     </td>
@@ -303,9 +313,9 @@
                     {{#COLF}}
                     <td>
                       <a href="javascript:load_module_data('{{CI}}');">
-                        <font color=brown>{{CC}}</font>. {{CF}}<br>
+                        <font class="NUM_COLOR">{{CC}}</font>. {{CF}}<br>
                         {{CB}}<br>
-                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        <em><small><font class="NUM_COLOR">{{CA}}</font></small></em><br/>
                         {{CN}}
                       </a>
                     </td>
@@ -313,8 +323,8 @@
                     {{#COLG}}
                     <td>
                       <a href="javascript:load_module_data('{{CI}}');">
-                        <font color=brown>{{CC}}</font>. {{CB}}<br>
-                        <em><small><font color=brown>{{CA}}</font></small></em><br/>
+                        <font class="NUM_COLOR">{{CC}}</font>. {{CB}}<br>
+                        <em><small><font class="NUM_COLOR">{{CA}}</font></small></em><br/>
                         {{CF}}<br>
                         {{CN}}
                       </a>
@@ -400,7 +410,7 @@
     <div class="accordion-body">
       {{#parkinfo}}
       <ul class="navbar-nav">
-         <li class="nav-item">{{SN}}. {{AN}} (<em><font color="brown">{{AC}}</font></em>)
+         <li class="nav-item">{{SN}}. {{AN}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
            <ul>
              {{#parks}}
                <li class="nav-item">
@@ -419,7 +429,7 @@
          <li class="nav-item">
            {{SN}}. 
            <a href="javascript:load_area_latlong_in_osm('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
-              {{AN}} : {{AID}} (<em><font color="brown">{{AC}}</font></em>)
+              {{AN}} : {{AID}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
            </a>
          </li>
       </ul>
@@ -429,7 +439,7 @@
          <li class="nav-item">
            {{SN}}. 
            <a href="javascript:load_area_latlong_in_osm('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
-              {{AN}} (<em><font color="brown">{{AC}}</font></em>)
+              {{AN}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
            </a>
          </li>
       </ul>
@@ -463,7 +473,7 @@
                <img class="ICON" src="{{TI}}" alt="{{TN}}" />
              </td>
              <td>
-               <em><font color="brown">{{{TC}}}</font></em>
+               <em><font class="NUM_COLOR">{{{TC}}}</font></em>
              </td>
            </tr>
           {{/trees}}
@@ -506,7 +516,7 @@
     <h2>
       <mark>{{HN}}</mark> : <em><small>{{HB}}</small></em>
       <a href="javascript:load_area_data('trees', '{{HID}}');">
-         <img class="ICON" src="icons/geo-alt.svg">
+         <i class="bi bi-geo-alt-fill ICON_FONT"></i>
       </a>
     </h2>
     <br/>
@@ -602,7 +612,7 @@
                     <div class="row">
                       <div class="col-auto align-items-center justify-content-right">
                         <a href="javascript:load_area_data('trees', '{{SD}}');">
-                          <img class="ICON" src="icons/geo-alt.svg">
+                          <i class="bi bi-geo-alt-fill ICON_FONT"></i>
                         </a>
                       </div>
                       <div class="col text-center">
@@ -623,7 +633,7 @@
                   </div>
                   <div class="card-footer">
                     <div class="text-center">
-                      <h5><i>{{SB}}</i> <font color="brown">{{SA}}</font><h5>
+                      <h5><i>{{SB}}</i> <font class="NUM_COLOR">{{SA}}</font><h5>
                     </div>
                   </div>
                 </div>
@@ -656,7 +666,7 @@
     </div>
     
     <p><em>
-    Pictures are mine and they are shot with <img class="ICON" src="icons/camera.svg"> Cannon PowerShot Sx120, Nikon Coolpix P600.
+    Pictures are mine and they are shot with <i class="bi bi-camera ICON_FONT"></i> Cannon PowerShot Sx120, Nikon Coolpix P600.
     Most of the information are from the references cited below.
     There will be errors or incorrect information which can be attributed to my ignorance or negligence.
     </em></p>
