@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="dark">
 
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,07,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and 80+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,08,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and 80+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
@@ -85,85 +85,85 @@
 
   <script type="text/html" id="menu-template">
     {{#menus}}
-        <ul class="navbar-nav col-1">
-          <li class="nav-item">
-            <a class="nav-link" href="javascript:load_intro_data('bangalore');">
-                <i class="bi bi-house-fill ICON_FONT"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>Brightness</em>" href='javascript:toggle_brightness();'>
-                <span class="button"><i id="BRIGHTNESS" class="bi bi-brightness-low ICON_FONT"></i></span>
-            </a>
-          </li>
+    <ul class="navbar-nav col-1">
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:load_intro_data('bangalore');">
+          <i class="bi bi-house-fill ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{HTP}}"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href='javascript:toggle_brightness();'>
+          <i id="BRIGHTNESS" class="bi bi-brightness-high-fill ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{BTP}}</em>"></i>
+        </a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav col-4">
+      <li class="nav-item">
+        <form class="d-flex" method="GET" action="javascript:load_search_data();" role="search">
+          <div class="input-group">
+            <button class="btn" type="submit"><i class="bi bi-search ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{STP}}"></i></button>
+            <input class="form-control me-2" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" type="text" placeholder="{{SEARCH}}" aria-label="Search">
+            <button class="btn" onclick="speech_start(event)"><i id="MIC_IMAGE" class="bi bi-mic-mute ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{MTP}}</em>"></i></button>
+            <button class="btn" onclick="load_keyboard(event)"><i class="bi bi-keyboard ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{KTP}}</em>"></i></button>
+          </div>
+        </form>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav col-7">
+      <li class="nav-item">
+        {{#maps}}
+          {{#items}}
+          <a class="nav-link" href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
+          {{/items}}
+        {{/maps}}
+      </li>
+
+      <li class="nav-item dropdown">
+        {{#collections}}
+        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {{#items}}
+          <li><a class="dropdown-item" href="javascript:load_collection_data('{{A}}', '{{L}}');">{{N}}</a></li>
+          {{/items}}
         </ul>
+        {{/collections}}
+      </li>
 
-        <ul class="navbar-nav col-4">
-          <li class="nav-item">
-            <form class="d-flex" method="GET" action="javascript:load_search_data();" role="search">
-                <div class="input-group">
-                    <button class="button" type="submit"><i class="bi bi-search ICON_FONT"></i></button>
-                    <input class="form-control me-2" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" type="text" placeholder="{{SEARCH}}" aria-label="Search">
-                    <button class="button" onclick="speech_start(event)"><i id="MIC_IMAGE" class="bi bi-mic-mute ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{MTP}}</em>"></i></button>
-                    <button class="button" onclick="load_keyboard(event)"><i class="bi bi-keyboard ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{KTP}}</em>"></i></button>
-                </div>
-            </form>
-          </li>
+      <li class="nav-item dropdown">
+        {{#categories}}
+        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {{#items}}
+          <li><a class="dropdown-item" href="javascript:load_category_data('{{C}}');">{{N}}</a></li>
+          {{/items}}
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" href="javascript:load_simple_data();">{{ALPHABETICAL}}</a>
         </ul>
+        {{/categories}}
+      </li>
 
-        <ul class="navbar-nav col-7">
-            <li class="nav-item">
-              {{#maps}}
-                {{#items}}
-                <a class="nav-link" href="javascript:load_area_data('{{A}}', '{{I}}');">{{T}}</a>
-                {{/items}}
-              {{/maps}}
-            </li>
-
-            <li class="nav-item dropdown">
-              {{#collections}}
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
-              <div class="dropdown-menu dropdown-menu-end">
-                {{#items}}
-                <a class="dropdown-item" href="javascript:load_collection_data('{{A}}', '{{L}}');">{{N}}</a>
-                {{/items}}
-              </div>
-              {{/collections}}
-            </li>
-
-            <li class="nav-item dropdown">
-              {{#categories}}
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
-              <div class="dropdown-menu dropdown-menu-end">
-                {{#items}}
-                <a class="dropdown-item" href="javascript:load_category_data('{{C}}');">{{N}}</a>
-                {{/items}}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="javascript:load_simple_data();">{{ALPHABETICAL}}</a>
-              </div>
-              {{/categories}}
-            </li>
-
-            <li class="nav-item dropdown">
-              {{#regions}}
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
-              <div class="dropdown-menu dropdown-menu-end">
-                {{#items}}
-                <a class="dropdown-item" href="javascript:load_intro_data('{{R}}');">{{N}}</a>
-                {{/items}}
-              </div>
-              {{/regions}}
-            </li>
-    
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{LANGUAGE}}</a>
-              <div class="dropdown-menu dropdown-menu-end">
-                {{#languages}}
-                <a class="dropdown-item" href="javascript:set_language('{{N}}', '{{O}}');">{{N}}</a>
-                {{/languages}}
-              </div>
-            </li>
+      <li class="nav-item dropdown">
+        {{#regions}}
+        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{T}}</a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {{#items}}
+          <li><a class="dropdown-item" href="javascript:load_intro_data('{{R}}');">{{N}}</a></li>
+          {{/items}}
         </ul>
+        {{/regions}}
+      </li>
+  
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{LANGUAGE}}</a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {{#languages}}
+          <li><a class="dropdown-item" href="javascript:set_language('{{N}}', '{{O}}');">{{N}}</a></li>
+          {{/languages}}
+        </ul>
+      </li>
+    </ul>
     {{/menus}}
   </script>
 

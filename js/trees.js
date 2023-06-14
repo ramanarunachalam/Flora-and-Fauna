@@ -1534,6 +1534,12 @@ function load_menu_data() {
     get_lang_map(collection_list);
     get_lang_map(category_list);
     get_lang_map(region_list);
+
+    const home_tooltip = 'Home';
+    const bright_tooltip = 'Brightness';
+    const search_tooltip = 'Prefix Search <br/> e.g. purasam <br/>';
+    const mic_tooltip = 'Only in Chrome';
+    const kbd_tooltip = 'Language Keyboard';
     let menu_dict = { 'menus' : { 'TITLE' : get_lang_map_word('Trees'),
                                   'LANGUAGE' : window.GOT_LANGUAGE,
                                   'SEARCH' : get_lang_map_word('Search'),
@@ -1542,7 +1548,9 @@ function load_menu_data() {
                                   'maps' : map_list,
                                   'collections' : collection_list,
                                   'categories' : category_list,
-                                  'regions' : region_list
+                                  'regions' : region_list,
+                                  'HTP' : home_tooltip, 'BTP' : bright_tooltip,
+                                  'STP' : search_tooltip, 'MTP' : mic_tooltip, 'KTP' : kbd_tooltip
                                 }
                     };
     render_template_data('menu-template', 'MENU_DATA', menu_dict);
@@ -1604,7 +1612,7 @@ function get_geo_location() {
 function tree_main_init() {
     window.render_language = 'English';
     window.GOT_LANGUAGE = MAP_LANG_DICT[window.render_language]
-    window.COLOR_SCHEME = 'light';
+    window.COLOR_SCHEME = d3.select('html').attr('data-bs-theme');
     window.tree_region = 'bangalore';
     window.info_initialized = true;
     window.search_initialized = false;
