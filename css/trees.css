@@ -127,3 +127,7 @@ td.keycol {
 td.keycol:hover {
     background-color:var(--indic-kbd-hover)
 }
+
+.marker-cluster span {
+    color: black;
+}

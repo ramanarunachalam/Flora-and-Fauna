@@ -696,11 +696,11 @@ function get_zoom(osm_map, tid) {
 }
 
 function get_min_zoom() {
-    return (window.area_type === 'trees' || window.map_heatmap || window.map_deleted) ? TREE_ZOOM : MIN_ZOOM;
+    return (window.area_type === 'trees' || window.map_state !== '') ? 1 : MIN_ZOOM;
 }
 
 function set_min_zoom(area) {
-    if (area === 'trees' || window.map_heatmap || window.map_deleted) window.map_osm_map.options.minZoom = TREE_ZOOM;
+    if (area === 'trees' || window.map_state !== '') window.map_osm_map.options.minZoom = 1;
 }
 
 function create_osm_map(module, id_name, c_lat, c_long, tid) {
@@ -748,16 +748,61 @@ function get_needed_icon(selected, blooming) {
     return window.green_tree_icon;
 }
 
-function render_heatmap() {
+function clean_layers() {
     const osm_map = window.map_osm_map;
-    if (window.map_heatmap && window.heat_layer !== null) {
+    if (window.heat_layer !== null) {
         osm_map.removeLayer(window.heat_layer);
         window.heat_layer = null;
     }
-    window.map_heatmap = !window.map_heatmap;
-    const zoom = (window.map_heatmap) ? MISC_ZOOM : NATIVE_ZOOM;
+
+    if (window.cluster_layer !== null) {
+        osm_map.removeLayer(window.cluster_layer);
+        window.cluster_layer = null;
+    }
+}
+
+function special_set_view(state, latlong) {
+    clean_layers();
+    window.map_state = (window.map_state === state) ? '' : state;
+    if (window.map_state === 'removed') {
+        window.quad_tree = window.deleted_quad_tree;
+    } else {
+        window.quad_tree = window.all_quad_tree;
+    }
+    const osm_map = window.map_osm_map;
+    const zoom = (window.map_state !== '') ? MISC_ZOOM : NATIVE_ZOOM;
     osm_map.options.minZoom = get_min_zoom();
-    osm_map.setView(HEATMAP_CENTER, zoom);
+    osm_map.setView(latlong, zoom);
+}
+
+function render_heatmap() {
+    special_set_view('heatmap', HEATMAP_CENTER);
+}
+
+function render_cluster() {
+    special_set_view('cluster', BANGALORE_LAT_LONG);
+}
+
+async function render_deleted_data() {
+    let deleted_data = null;
+    if (window.deleted_quad_tree === null) {
+        const history_data = await d3.json(HISTORY_URL);
+        if (history_data === null) return;
+        deleted_data = history_data['deleted'];
+        if (deleted_data === null) return;
+    }
+    if (window.deleted_quad_tree === null && deleted_data !== null) {
+        const quad_tree = d3.quadtree();
+        for (const tree_id in deleted_data) {
+            const latlong_list = deleted_data[tree_id];
+            for (const latlong of deleted_data[tree_id]) {
+                quad_tree.add([+latlong[0], +latlong[1], +tree_id]);
+            }
+        }
+        window.deleted_quad_tree = quad_tree;
+    }
+
+    special_set_view('removed', BANGALORE_LAT_LONG);
 }
 
 function set_chosen_image(tree_id) {
@@ -915,12 +960,16 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
             n_name = isFinite(aid) ? `${aid}. ${n_name}` : aid;
         }
     }
-    if (window.map_heatmap) {
+    if (window.map_state === 'heatmap') {
         n_name = 'Heatmap';
-    } else if (window.map_deleted) {
+    } else if (window.map_map_state === 'cluster') {
+        n_name = 'Cluster';
+    } else if (window.map_state === 'removed') {
         n_name = 'Removed';
     }
     d3.select('#TITLE_HEADER').html(n_name);
+
+    clean_layers();
 
     let osm_map;
     if (window.map_initialized) {
@@ -1041,23 +1090,25 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_id = i_tree_id.toString();
         const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
-        if (window.map_heatmap) {
+        if (window.map_state === 'heatmap') {
             heat_map_list.push([ m_lat, m_long, 1.0 ]);
         } else {
             const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
-            osm_map.addLayer(marker);
+            if (window.map_state !== 'cluster') osm_map.addLayer(marker);
             area_marker_list.push(marker);
         }
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
     window.area_marker_list = area_marker_list;
-    if (window.heat_layer !== null) {
-        osm_map.removeLayer(window.heat_layer);
-        window.heat_layer = null;
-    }
-    if (window.map_heatmap) {
+    if (window.map_state === 'heatmap') {
         window.heat_layer = L.heatLayer(heat_map_list, { radius: MAX_RADIUS });
         window.heat_layer.addTo(osm_map);
+    } else if (window.map_state === 'cluster') {
+        window.cluster_layer = L.markerClusterGroup();
+        for (const marker of area_marker_list) {
+            window.cluster_layer.addLayer(marker);
+        }
+        osm_map.addLayer(window.cluster_layer);
     } else {
         const alen = area_marker_list.length;
         if (is_tree && !window.map_area_move && 0 < alen && alen < TREE_MIN_COUNT) {
@@ -1218,7 +1269,7 @@ async function tree_area_init(area, aid, item_data) {
 }
 
 async function load_area_data(area_type, area_id, area_latlong) {
-    window.map_heatmap = false;
+    window.map_state = '';
     const lang = window.render_language;
     const area_info = { 'T' : get_lang_map_word('Tree'),
                         'H' : get_lang_map_word(capitalize_word(area_type)),
@@ -1240,36 +1291,6 @@ async function load_area_data(area_type, area_id, area_latlong) {
         tree_area_init(area_type, area_id, area_data);
         add_history('maps', { 'type' : area_type, 'id' : area_id });
     };
-}
-
-async function render_deleted_data() {
-    let deleted_data = null;
-    if (window.deleted_quad_tree === null) {
-        const history_data = await d3.json(HISTORY_URL);
-        if (history_data === null) return;
-        deleted_data = history_data['deleted'];
-        if (deleted_data === null) return;
-    }
-    if (window.deleted_quad_tree === null && deleted_data !== null) {
-        const quad_tree = d3.quadtree();
-        for (const tree_id in deleted_data) {
-            const latlong_list = deleted_data[tree_id];
-            for (const latlong of deleted_data[tree_id]) {
-                quad_tree.add([+latlong[0], +latlong[1], +tree_id]);
-            }
-        }
-        window.deleted_quad_tree = quad_tree;
-    }
-    if (window.quad_tree === window.deleted_quad_tree) {
-        window.quad_tree = window.all_quad_tree;
-    } else {
-        window.quad_tree = window.deleted_quad_tree;
-    }
-    window.map_deleted = !window.map_deleted;
-    const osm_map = window.map_osm_map;
-    const zoom = (window.map_deleted) ? MISC_ZOOM : NATIVE_ZOOM;
-    osm_map.options.minZoom = get_min_zoom();
-    osm_map.setView(BANGALORE_LAT_LONG, zoom);
 }
 
 async function load_collection_data(type, letter, page_index, page_max) {
@@ -1620,8 +1641,7 @@ function tree_main_init() {
     window.map_area_move = false;
     window.map_area_click = false;
     window.tree_popstate = false;
-    window.map_heatmap = false;
-    window.map_deleted = false;
+    window.map_state = '';
     window.map_tree_id = 0;
     window.area_marker_list = [];
     window.area_latlong = [];
@@ -1634,6 +1654,7 @@ function tree_main_init() {
     window.all_quad_tree = null;
     window.deleted_quad_tree = null;
     window.heat_layer = null;
+    window.cluster_layer = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
 
