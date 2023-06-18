@@ -881,7 +881,7 @@ function get_area_centre() {
 
 function handle_geocoder_mark(ev) {
     draw_map_on_move(ev);
-    add_history('maps', { 'type' : window.area_type, 'id' : window.parent.map_area_id });
+    add_history('maps', { 'type' : window.area_type, 'id' : window.map_area_id });
 }
 
 async function fetch_area_data() {
