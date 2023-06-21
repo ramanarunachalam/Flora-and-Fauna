@@ -65,17 +65,9 @@ a:not([class*="btn"]):hover {
     list-style-type: decimal-leading-zero;
 }
 
-.SIMPLE_OL {
-    list-style-position: inside;
-    list-style-type: decimal-leading-zero;
-}
-
-.H_LIST ul {
-    list-style: none;
- }
-
-.H_LIST ol {
-    list-style: none;
+.H_LIST {
+    padding: 0;
+    list-style-type: none;
  }
 
 .shadow-box {
