@@ -5,13 +5,13 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,09,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and 80+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+<meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 1,10,000+ trees marked in 240+ parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Basavanagudi, Jayanagar, Rajajinagar, Vijayanagar, Frasertown, Chamarajpet, and 80+ BBMP Wards in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
 <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
 <meta name="author" content="Raman Arunachalam"/>
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" type="text/css"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" type="text/css"/>
-<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.3.2/swiper-bundle.min.css" rel="preload"/>
+<link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.4.1/swiper-bundle.min.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" rel="preload"/>
 <link media="all" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.min.css" rel="preload"/>
@@ -105,7 +105,7 @@
         <form class="d-flex" method="GET" action="javascript:load_search_data();" role="search">
           <div class="input-group">
             <button class="btn" type="submit"><i class="bi bi-search ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{STP}}"></i></button>
-            <input class="form-control me-2" id="SEARCH_WORD" results=5 autosave=5 autofocus name="word" type="text" placeholder="{{SEARCH}}" aria-label="Search">
+            <input class="form-control me-2" id="SEARCH_WORD" results=5 autosave=5 autofocus autocomplete="off" name="word" type="text" placeholder="{{SEARCH}}" aria-label="Search">
             <button class="btn" onclick="speech_start(event)"><i id="MIC_IMAGE" class="bi bi-mic-mute ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{MTP}}</em>"></i></button>
             <button class="btn" onclick="load_keyboard(event)"><i class="bi bi-keyboard ICON_FONT" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<em>{{KTP}}</em>"></i></button>
           </div>
@@ -759,10 +759,10 @@ Trees are an important component of the natural landscape because of their preve
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7.8.4/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/minisearch@6.1.0/dist/umd/index.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9.3.2/swiper-bundle.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9.4.1/swiper-bundle.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js" defer></script>
