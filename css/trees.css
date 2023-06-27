@@ -1,22 +1,28 @@
 :root, [data-bs-theme=light] {
-    --trees-body-bg-color: lightgray;
-    --trees-card-bg-color: silver;
-    --trees-map-bg-color: #F0DBDB;
-    --trees-table-bg-color: #FFF;
+    --trees-body-bg: lightgray;
+    --trees-card-bg: silver;
+    --trees-map-bg: #F0DBDB;
+    --trees-table-bg: #FFF;
     --trees-shadow-color: #000;
+    --trees-text-color: black;
     --trees-num-color: brown;
+    --trees-empty-bg: dimgray;
+    --trees-intro-swiper-bg: #E8E8E8;
     --indic-kbd-key: #000;
     --indic-kbd-bg: silver;
     --indic-kbd-hover: lightgray;
 }
 
 [data-bs-theme=dark] {
-    --trees-body-bg-color: dimgray;
-    --trees-card-bg-color: dimgray;
-    --trees-map-bg-color: #F0DBDB;
-    --trees-table-bg-color: #000;
+    --trees-body-bg: dimgray;
+    --trees-card-bg: dimgray;
+    --trees-map-bg: #F0DBDB;
+    --trees-table-bg: #000;
     --trees-shadow-color: #FFF;
+    --trees-text-color: white;
     --trees-num-color: tan;
+    --trees-empty-bg: black;
+    --trees-intro-swiper-bg: white;
     --indic-kbd-key: #FFF;
     --indic-kbd-bg: dimgray;
     --indic-kbd-hover: lightgray;
@@ -24,11 +30,11 @@
 
 body {
     height: 900px;
-    background-color: var(--trees-body-bg-color);
+    background-color: var(--trees-body-bg);
 }
 
 table {
-    background-color: var(--trees-table-bg-color);
+    background-color: var(--trees-table-bg);
 }
 
 /* Bootstrap 5 tweak: do not underline links unless hovered over */
@@ -56,8 +62,28 @@ a:not([class*="btn"]):hover {
     color: var(--trees-num-color);
 }
 
+.TEXT_COLOR {
+    color: var(--trees-text-color) !important;
+}
+
+.nav-link {
+    color: var(--trees-text-color) !important;
+}
+
+.dropdown-item {
+    color: var(--trees-text-color) !important;
+}
+
+.EMPTY_COLOR {
+    background-color: var(--trees-empty-bg);
+}
+
+.INTRO_SWIPER_COLOR {
+    background-color: var(--trees-intro-swiper-bg);
+}
+
 .card-header {
-    background-color:  var(--trees-card-bg-color);
+    background-color:  var(--trees-card-bg);
 }
 
 .INTRO_OL {
@@ -83,7 +109,7 @@ a:not([class*="btn"]):hover {
 #MAPINFO {
     width: 60vw;
     height: 640px;
-    background-color: var(--trees-map-bg-color) !important;
+    background-color: var(--trees-map-bg) !important;
 }
 
 #IMAGE_MODAL .modal-content {
