@@ -5,6 +5,7 @@
     --trees-table-bg: #FFF;
     --trees-shadow-color: #000;
     --trees-text-color: black;
+    --trees-text-bg: white;
     --trees-num-color: brown;
     --trees-empty-bg: dimgray;
     --trees-intro-swiper-bg: #E8E8E8;
@@ -20,6 +21,7 @@
     --trees-table-bg: #000;
     --trees-shadow-color: #FFF;
     --trees-text-color: white;
+    --trees-text-bg: black;
     --trees-num-color: tan;
     --trees-empty-bg: black;
     --trees-intro-swiper-bg: white;
@@ -58,8 +60,17 @@ a:not([class*="btn"]):hover {
     font-size: 1.5rem;
 }
 
+.BADGE_COLOR {
+    color: var(--trees-text-bg) !important;
+    background-color: var(--trees-text-color) !important;
+}
+
 .NUM_COLOR {
     color: var(--trees-num-color);
+}
+
+.BODY_BG {
+    background-color: var(--trees-text-bg) !important;
 }
 
 .TEXT_COLOR {
@@ -67,6 +78,10 @@ a:not([class*="btn"]):hover {
 }
 
 .nav-link {
+    color: var(--trees-text-color) !important;
+}
+
+.CARD_HEADER {
     color: var(--trees-text-color) !important;
 }
 
