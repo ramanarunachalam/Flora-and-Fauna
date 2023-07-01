@@ -83,6 +83,7 @@ a:not([class*="btn"]):hover {
 
 .CARD_HEADER {
     color: var(--trees-text-color) !important;
+    text-align: center;
 }
 
 .dropdown-item {
