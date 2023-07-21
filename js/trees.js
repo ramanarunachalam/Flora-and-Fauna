@@ -750,6 +750,7 @@ function get_needed_icon(selected, blooming) {
 
 function clean_layers() {
     const osm_map = window.map_osm_map;
+
     if (window.heat_layer !== null) {
         osm_map.removeLayer(window.heat_layer);
         window.heat_layer = null;
@@ -758,6 +759,11 @@ function clean_layers() {
     if (window.cluster_layer !== null) {
         osm_map.removeLayer(window.cluster_layer);
         window.cluster_layer = null;
+    }
+
+    if (window.ward_boundary !== null) {
+        osm_map.removeLayer(window.ward_boundary);
+        window.ward_boundary = null;
     }
 }
 
@@ -1168,6 +1174,21 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
             window.tree_image_list = tree_image_list;
             area_carousel_init();
         }
+    }
+
+    if (area === 'wards') {
+        const polygon_list = [];
+        for (const p_list of window.area_data['wards']['wardarea'][aid.toString()]) {
+            const new_l_list = [];
+            for (const l_list of p_list[0]) {
+                const [ lat, lng ] = l_list;
+                new_l_list.push([ +lat, +lng ]);
+            }
+            polygon_list.push([ new_l_list ]);
+        }
+        const options = { color: 'purple' };
+        window.ward_boundary = L.polygon(polygon_list, options);
+        osm_map.addLayer(window.ward_boundary);
     }
 
     window.scrollTo(0, 0);
@@ -1664,6 +1685,7 @@ function tree_main_init() {
     window.deleted_quad_tree = null;
     window.heat_layer = null;
     window.cluster_layer = null;
+    window.ward_boundary = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
 
