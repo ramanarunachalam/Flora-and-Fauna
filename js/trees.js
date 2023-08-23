@@ -144,8 +144,8 @@ function toggle_icon(id, old_class, new_class) {
 function toggle_brightness() {
     window.COLOR_SCHEME = (window.COLOR_SCHEME === 'dark') ? 'light' : 'dark';
     d3.select('html').attr('data-bs-theme', window.COLOR_SCHEME);
-    if (window.COLOR_SCHEME === 'dark') toggle_icon('BRIGHTNESS', 'bi-brightness-low', 'bi-brightness-high-fill');
-    else toggle_icon('BRIGHTNESS', 'bi-brightness-high-fill', 'bi-brightness-low');
+    if (window.COLOR_SCHEME === 'dark') toggle_icon('BRIGHTNESS', 'bi-moon-fill', 'bi-brightness-high-fill');
+    else toggle_icon('BRIGHTNESS', 'bi-brightness-high-fill', 'bi-moon-fill');
 }
 
 function render_template_data(template_name, id_name, data) {
