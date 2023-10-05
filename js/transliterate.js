@@ -1,8 +1,64 @@
+
 let REVERSE_LANG_DICT = {}
 for (let k in MAP_LANG_DICT) {
     REVERSE_LANG_DICT[MAP_LANG_DICT[k]] = k;
 }
-let superscript_code_list = new Set(SUPERSCRIPT_CODES.map(i => String.fromCharCode(i)));
+
+const ENGLISH_REPLACE_LIST = [ 
+                               [ /\./g, '' ],
+                               [ /_/g, '' ],
+                               [ /G/g, 'n' ],
+                               [ /J/g, 'n' ]
+                             ];
+
+const SUPERSCRIPT_CODES = [ 0x00B2, 0x00B3, 0x2074 ];
+const superscript_code_list = new Set(SUPERSCRIPT_CODES.map(i => String.fromCharCode(i)));
+
+/*
+     Transliteration
+*/
+
+function transliterate_search_init() {
+    const char_map = window.id_map.char_map;
+    const char_map_key_list = Object.keys(char_map);
+    const max_len = d3.max(char_map_key_list, d => d.length);
+    const token_set = new Set(char_map_key_list);
+    window.INDIC_CHAR_MAP = [ char_map, token_set, max_len ];
+}
+
+function transliterate_search_text(word) {
+    const [ char_map, token_set, maxlen ] = window.INDIC_CHAR_MAP;
+    let current = 0;
+    const tokenlist = [];
+    word = word.toString();
+    const word_len = word.length;
+    while (current < word_len) {
+        const nextstr = word.slice(current, current+maxlen);
+        let p = nextstr[0];
+        let j = 1;
+        let i = maxlen;
+        while (i > 0) {
+            let s = nextstr.slice(0, i);
+            if (token_set.has(s)) {
+                p = s;
+                j = i;
+                break
+            }
+            i -= 1;
+        }
+        if (p in char_map) p = char_map[p];
+        tokenlist.push(p);
+        current += j;
+    }
+    let new_word = tokenlist.join('');
+    if (word !== new_word) {
+        for (const expr of ENGLISH_REPLACE_LIST) {
+            new_word = new_word.replace(expr[0], expr[1]);
+        }
+    }
+    // console.log('transliterate_search_text:', new_word);
+    return new_word;
+}
 
 
 /*

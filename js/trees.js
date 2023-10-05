@@ -64,11 +64,6 @@ const SEARCH_REPLACE_LIST =  [ [ /(e)\1+/g, 'i' ],
                                [ /([ao])u/g, 'ow' ]
                              ];
 
-const ENGLISH_REPLACE_LIST = [ [ /_/g, '' ],
-                               [ /G/g, 'n' ],
-                               [ /J/g, 'n' ]
-                             ];
-
 
 const INTRO_SWIPER_OPTIONS = {
     direction: 'horizontal',
@@ -478,48 +473,6 @@ function search_init() {
     d3.json(SEARCH_URL).then((search_obj) => { search_load(search_obj); window.search_initialized = true; });
 }
 
-function transliterator_init() {
-    const imap = window.id_map;
-    const char_map_key_list = Object.keys(imap.char_map);
-    window.char_map_max_length = d3.max(char_map_key_list, d => d.length);
-    window.char_map_key_list = new Set(char_map_key_list);
-}
-
-function transliterate_text(word) {
-    const imap = window.id_map;
-    const tokenset = window.char_map_key_list;
-    const maxlen = window.char_map_max_length;
-    let current = 0;
-    const tokenlist = [];
-    word = word.toString();
-    const word_len = word.length;
-    while (current < word_len) {
-        const nextstr = word.slice(current, current+maxlen);
-        let p = nextstr[0];
-        let j = 1;
-        let i = maxlen;
-        while (i > 0) {
-            let s = nextstr.slice(0, i);
-            if (tokenset.has(s)) {
-                p = s;
-                j = i;
-                break
-            }
-            i -= 1;
-        }
-        if (p in imap.char_map) p = imap.char_map[p];
-        tokenlist.push(p);
-        current += j;
-    }
-    let new_word = tokenlist.join('');
-    if (word !== new_word) {
-        for (const expr of ENGLISH_REPLACE_LIST) {
-            new_word = new_word.replace(expr[0], expr[1]);
-        }
-    }
-    return new_word;
-}
-
 function get_search_href(category, arg_list) {
     const func = (category === 'Trees') ? 'load_module_data' : 'load_area_data';
     const args = arg_list.join("', '");
@@ -616,7 +569,7 @@ function load_search_part(search_word, non_english) {
 function handle_search_word(search_word) {
     const c = search_word.charCodeAt(0);
     if (c > 127) {
-        search_word = transliterate_text(search_word);
+        search_word = transliterate_search_text(search_word);
     }
     const non_english = (0x0B80 <= c && c <= 0x0BFF) ? true : false;
     const new_item_list = load_search_part(search_word, non_english);
@@ -1372,7 +1325,7 @@ async function load_module_data(tree_id) {
 function transliterator_word() {
     let source = d3.select('#SOURCE').property('value');
     source = source.replace(/\n/g, "<br />");
-    const target = transliterate_text(source);
+    const target = transliterate_search_text(source);
     d3.select('#TARGET').html(target);
 }
 
@@ -1627,7 +1580,7 @@ async function load_content(lang_data, slider_data) {
     if (lang_data === undefined) return;
     window.tree_lang_data = lang_data;
     lang_name_init();
-    transliterator_init();
+    transliterate_search_init();
     load_menu_data();
     const tree_id = window.url_params['tid'];
     if (tree_id === undefined) {
