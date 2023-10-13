@@ -124,9 +124,16 @@ function lang_name_init() {
     }
 }
 
-function set_language(n, o) {
+async function set_language(n, o) {
     window.GOT_LANGUAGE = n;
     window.render_language = MAP_LANG_DICT[n];
+
+    /*
+    const lang = window.render_language;
+    const l_lang = lang.toLowerCase();
+    const lang_map_data = await d3.json(`${l_lang}_map.json`);
+    */
+
     lang_name_init();
     load_menu_data();
 }
@@ -1576,9 +1583,12 @@ function load_menu_data() {
     }
 }
 
-async function load_content(lang_data, slider_data) {
+async function load_content(values) {
+    //const [ lang_data, lang_map_data, slider_data ] = values;
+    const [ lang_data, slider_data ] = values;
     if (lang_data === undefined) return;
     window.tree_lang_data = lang_data;
+    // window.tree_lang_map_data = lang_map_data;
     lang_name_init();
     transliterate_search_init();
     load_menu_data();
@@ -1630,6 +1640,7 @@ function tree_main_init() {
     window.area_latlong = [];
     window.tree_image_list = [];
     window.tree_lang_data = {};
+    window.tree_lang_map_data = {};
     window.tree_count_data = {};
     window.stats_data = {};
     window.area_data = null;
@@ -1650,11 +1661,11 @@ function tree_main_init() {
 
     get_geo_location();
 
+    const lang = window.render_language;
+    const l_lang = lang.toLowerCase();
+    // const url_list = [ d3.json(LANGUAGE_URL), d3.json(`${l_lang}_map.json`), d3.json(get_region_url('intro')) ];
     const url_list = [ d3.json(LANGUAGE_URL), d3.json(get_region_url('intro')) ];
-    Promise.all(url_list).then((values) => {
-        const [ lang_data, slider_data ] = values;
-        load_content(lang_data, slider_data);
-    });
+    Promise.all(url_list).then((values) => { load_content(values); });
 
     init_input_keyboard();
 }

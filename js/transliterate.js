@@ -11,9 +11,6 @@ const ENGLISH_REPLACE_LIST = [
                                [ /J/g, 'n' ]
                              ];
 
-const SUPERSCRIPT_CODES = [ 0x00B2, 0x00B3, 0x2074 ];
-const superscript_code_list = new Set(SUPERSCRIPT_CODES.map(i => String.fromCharCode(i)));
-
 /*
      Transliteration
 */
@@ -66,6 +63,9 @@ function transliterate_search_text(word) {
 */
 
 const ROW_SIZE = 9;
+
+const SUPERSCRIPT_CODES = [ 0x00B2, 0x00B3, 0x2074 ];
+const superscript_code_list = new Set(SUPERSCRIPT_CODES.map(i => String.fromCharCode(i)));
 
 function render_keys(lang_dict) {
     const row_list = [];
