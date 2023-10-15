@@ -96,45 +96,36 @@ function get_url_params() {
 class LangMap {
     constructor() {
         const lang = window.render_language;
-        const lang_data = window.tree_lang_data;
-        this.map_dict = lang_data['Keys'];
+        let lang_data = window.tree_lang_data;
+        this.iso = lang_data['iso'];
+        this.language = lang_data['language'];
         this.park_map = lang_data['Parks'];
         this.ward_map = lang_data['Wards'];
-        this.char_map = lang_data['Charmap'];
         this.handle_map = lang_data['Handle'];
-        this.lang_map = lang_data[lang];
-        this.lang_name_map = this.lang_map['Name'];
-        this.lang_key_image = this.lang_map['Image'];
-        this.english_map = lang_data['English'];
-        this.english_name_map = this.english_map['Name'];
-        this.english_key_image = this.english_map['Image'];
-        this.english_key_name = this.english_map['Key Name'];
+        lang_data = window.tree_lang_map_data;
+        this.lang_map = lang_data;
+        this.map_dict = lang_data['Keys'];
+        this.lang_name_map = lang_data['Name'];
+        this.lang_key_image = lang_data['Image'];
+        const english_map = lang_data['English Info'];
+        this.english_key_image = english_map['Image'];
+        this.english_key_name = english_map['Key Name'];
     }
 }
 
 function lang_name_init() {
     const lang = window.render_language;
-    const imap = new LangMap();
-    window.id_map = imap;
-    if (lang === 'English') return;
-    const english_name = imap.english_map['Name'];
-    const lang_name = imap.lang_map['Name'];
-    for (const [i, value] of english_name.entries()) {
-        if (lang_name[i] === '') lang_name[i] = value;
-    }
+    transliterator_lang_init(lang);
+    window.id_map = new LangMap();
 }
 
 async function set_language(n, o) {
     window.GOT_LANGUAGE = n;
-    window.render_language = MAP_LANG_DICT[n];
-
-    /*
+    const lang_dict = window.id_map.language;
+    window.render_language = lang_dict[n];
     const lang = window.render_language;
     const l_lang = lang.toLowerCase();
-    const lang_map_data = await d3.json(`${l_lang}_map.json`);
-    */
-
-    lang_name_init();
+    window.tree_lang_map_data = await d3.json(`${l_lang}_map.json`);
     load_menu_data();
 }
 
@@ -169,11 +160,7 @@ function set_key_value_map(d_obj, d_key) {
 }
 
 function get_lang_map_word(n) {
-    const imap = window.id_map;
-    if (imap.map_dict === undefined) return n;
-    let t = imap.map_dict[n];
-    if (t === undefined) return n;
-    t = t[window.render_language];
+    const t = window.id_map.map_dict[n];
     return (t === undefined) ? n : t;
 }
 
@@ -188,8 +175,8 @@ function get_part_image_urls(h, part_name) {
     return [ i_url, t_url ];
 }
 
-function get_module_name(handle_map, tree_id) {
-    return (tree_id === 0) ? '' : handle_map[tree_id][H_NAME];
+function get_module_name(tree_id) {
+    return (tree_id === 0) ? '' : window.id_map.handle_map[tree_id][H_NAME];
 }
 
 async function tree_module_init(data) {
@@ -213,7 +200,6 @@ async function tree_module_init(data) {
 
     const imap = window.id_map;
     const key_name = imap.lang_name_map;
-    if (key_name === undefined) key_name = imap.english_map;
     const card_data = window.tree_card_data;
     const gallery_info = card_data['galleryinfo']
     const tree_id = gallery_info['HID'];
@@ -575,9 +561,7 @@ function load_search_part(search_word, non_english) {
 
 function handle_search_word(search_word) {
     const c = search_word.charCodeAt(0);
-    if (c > 127) {
-        search_word = transliterate_search_text(search_word);
-    }
+    if (c > 127) search_word = transliterate_lang_to_hk(search_word);
     const non_english = (0x0B80 <= c && c <= 0x0BFF) ? true : false;
     const new_item_list = load_search_part(search_word, non_english);
     const item_data = { "searchinfo" : { "results" : new_item_list } };
@@ -927,7 +911,7 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 
     let n_name = '';
     if (area === 'trees') {
-        n_name = get_module_name(window.id_map.handle_map, tid);
+        n_name = get_module_name(tid);
     } else {
         n_name = get_lang_map_word(capitalize_word(a_name));
         if (aid !== '') {
@@ -1237,7 +1221,7 @@ async function tree_area_init(area, aid, item_data) {
 
     let tid = (window.map_tree_id !== 0) ? window.map_tree_id : 0;
     if (area === 'trees') {
-        const m_name = get_module_name(imap.handle_map, aid);
+        const m_name = get_module_name(aid);
         if (aid !== 0) {
             tid = aid;
             name = m_name;
@@ -1426,7 +1410,7 @@ function speech_start(event) {
         return;
     }
     const lang = window.render_language;
-    const s_lang = MAP_ISO_DICT[lang];
+    const s_lang = window.id_map.iso[lang];
     window.speech_final_transcript = '';
     window.speech_recognition.lang = s_lang;
     window.speech_recognition.start();
@@ -1436,8 +1420,7 @@ function speech_start(event) {
 }
 
 function load_keyboard(event) {
-    const lang = window.render_language;
-    set_input_keyboard(lang.toLowerCase());
+    set_input_keyboard(window.tree_lang_map_data['keyboard']);
     get_bs_modal('#LANG_KBD').show();
 }
 
@@ -1506,17 +1489,13 @@ function get_lang_map(n_dict) {
 }
 
 function load_menu_data() {
+    lang_name_init();
     const lang = window.render_language;
-    const LANG_LIST = [];
-    for (let l in MAP_LANG_DICT) {
-        if (!MAP_LANG_DICT.hasOwnProperty(l)) continue;
-        LANG_LIST.push(MAP_LANG_DICT[l]);
-    }
+    const got_lang = window.GOT_LANGUAGE;
+    const lang_dict = window.id_map.language;
     const lang_list = [];
-    for (const l of LANG_LIST) {
-        let t = get_lang_map_word(l);
-        t = REVERSE_LANG_DICT[l];
-        let d = (l === lang) ? { 'N' : t, 'O' : 'selected' } : { 'N' : t };
+    for (const l in lang_dict) {
+        const d = (l === got_lang) ? { 'N' : l, 'O' : 'selected' } : { 'N' : l };
         lang_list.push(d);
     }
     let map_list = { 'T' : 'Maps', 'items' : [ { 'N' : 'Parks', 'A' : 'parks', 'I' : '' }
@@ -1584,13 +1563,10 @@ function load_menu_data() {
 }
 
 async function load_content(values) {
-    //const [ lang_data, lang_map_data, slider_data ] = values;
-    const [ lang_data, slider_data ] = values;
+    const [ lang_data, lang_map_data, slider_data ] = values;
     if (lang_data === undefined) return;
     window.tree_lang_data = lang_data;
-    // window.tree_lang_map_data = lang_map_data;
-    lang_name_init();
-    transliterate_search_init();
+    window.tree_lang_map_data = lang_map_data;
     load_menu_data();
     const tree_id = window.url_params['tid'];
     if (tree_id === undefined) {
@@ -1625,7 +1601,7 @@ function get_geo_location() {
 
 function tree_main_init() {
     window.render_language = 'English';
-    window.GOT_LANGUAGE = MAP_LANG_DICT[window.render_language]
+    window.GOT_LANGUAGE = 'English';
     window.COLOR_SCHEME = d3.select('html').attr('data-bs-theme');
     window.tree_region = 'bangalore';
     window.info_initialized = true;
@@ -1663,10 +1639,9 @@ function tree_main_init() {
 
     const lang = window.render_language;
     const l_lang = lang.toLowerCase();
-    // const url_list = [ d3.json(LANGUAGE_URL), d3.json(`${l_lang}_map.json`), d3.json(get_region_url('intro')) ];
-    const url_list = [ d3.json(LANGUAGE_URL), d3.json(get_region_url('intro')) ];
+    const url_list = [ d3.json(LANGUAGE_URL), d3.json(`${l_lang}_map.json`), d3.json(get_region_url('intro')) ];
     Promise.all(url_list).then((values) => { load_content(values); });
 
-    init_input_keyboard();
+    transliterator_init();
 }
 

@@ -1,71 +1,88 @@
 
-let REVERSE_LANG_DICT = {}
-for (let k in MAP_LANG_DICT) {
-    REVERSE_LANG_DICT[MAP_LANG_DICT[k]] = k;
-}
-
-const ENGLISH_REPLACE_LIST = [ 
-                               [ /\./g, '' ],
-                               [ /_/g, '' ],
-                               [ /G/g, 'n' ],
-                               [ /J/g, 'n' ]
+const ENGLISH_REPLACE_LIST = [
+                               [ /\./g, ''  ],
+                               [ /_/g,  ''  ],
+                               [ /G/g,  'n' ],
+                               [ /J/g,  'n' ]
                              ];
+
+function lists_to_map(l1, l2) {
+    const d = new Map();
+    for (let i = 0; i < l1.length; i++) {
+        d.set(l1[i], l2[i]);
+    }
+    return d;
+}
 
 /*
      Transliteration
 */
 
-function transliterate_search_init() {
-    const char_map = window.id_map.char_map;
-    const char_map_key_list = Object.keys(char_map);
-    const max_len = d3.max(char_map_key_list, d => d.length);
-    const token_set = new Set(char_map_key_list);
-    window.INDIC_CHAR_MAP = [ char_map, token_set, max_len ];
-}
-
-function transliterate_search_text(word) {
-    const [ char_map, token_set, maxlen ] = window.INDIC_CHAR_MAP;
+function get_simple_parser_text(char_map_list, data) {
+    const [ char_map, token_list, max_len ] = char_map_list;
+    const char_list = [];
     let current = 0;
-    const tokenlist = [];
-    word = word.toString();
-    const word_len = word.length;
-    while (current < word_len) {
-        const nextstr = word.slice(current, current+maxlen);
-        let p = nextstr[0];
+    while (current < data.length) {
+        let p = data[current];
         let j = 1;
-        let i = maxlen;
-        while (i > 0) {
-            let s = nextstr.slice(0, i);
-            if (token_set.has(s)) {
-                p = s;
-                j = i;
-                break
+        const m = token_list.has(p) ? token_list.get(p) : 0;
+        if (m > 1) {
+            let next_str = data.slice(current, current + max_len)
+            for (let k = m; k > 0; k -= 1) {
+                const s = next_str.slice(0, k);
+                if (char_map.has(s)) {
+                    p = s;
+                    j = k;
+                    break
+                }
             }
-            i -= 1;
         }
-        if (p in char_map) p = char_map[p];
-        tokenlist.push(p);
+        p = char_map.has(p) ? char_map.get(p) : p
+        char_list.push(p);
         current += j;
     }
-    let new_word = tokenlist.join('');
+    return char_list.join('');
+}
+
+function get_char_map_list(n_hk, n_freq, n_len) {
+    const map_data = window.tree_lang_map_data;
+    const [ from_keys, to_keys ] = map_data[n_hk];
+    const char_map = lists_to_map(from_keys.split(' '), to_keys.split(' '));
+    const [ freq_keys, freq_values ] = map_data[n_freq];
+    const key_list = freq_keys.split(',');
+    const value_list = [];
+    for (const v of freq_values.split(',')) {
+        value_list.push(+v);
+    }
+    const f_map = lists_to_map(key_list, value_list);
+    const max_len = map_data[n_len];
+    const char_map_list = [ char_map, f_map, max_len ];
+    return char_map_list;
+}
+
+function transliterator_lang_init(lang) {
+    window.SEARCH_CHAR_MAP = get_char_map_list('to_hk', 'to_freq', 'to_length');
+}
+
+function transliterate_lang_to_hk(word) {
+    let new_word = get_simple_parser_text(window.SEARCH_CHAR_MAP, word);
     if (word !== new_word) {
         for (const expr of ENGLISH_REPLACE_LIST) {
             new_word = new_word.replace(expr[0], expr[1]);
         }
     }
-    // console.log('transliterate_search_text:', new_word);
+    // console.log('transliterate_lang_to_hk:', word, new_word);
     return new_word;
 }
-
 
 /*
      Language Keyboards
 */
 
-const ROW_SIZE = 9;
-
 const SUPERSCRIPT_CODES = [ 0x00B2, 0x00B3, 0x2074 ];
 const superscript_code_list = new Set(SUPERSCRIPT_CODES.map(i => String.fromCharCode(i)));
+
+const ROW_SIZE = 9;
 
 function render_keys(lang_dict) {
     const row_list = [];
@@ -163,7 +180,7 @@ function on_key_click() {
        event.stopPropagation();
        element = element.parentElement;
    }
-   let id = element.getAttribute('id');
+   const id = element.getAttribute('id');
    const nid = parseInt(id.replace(/key_/, ''));
    const c = element.innerHTML;
    const s = c[0];
@@ -179,11 +196,11 @@ function on_key_click() {
    } else if (id === lang_dict['enter']) {
        load_search_data();
    } else if (lang_dict['consonant'].includes(s) || lang_dict['middle'].includes(s)) {
-       let pos = c.length - 1;
+       const pos = c.length - 1;
        r_key = c;
-       let l = text[text.length - pos];
+       const l = text[text.length - pos];
        if (l !== undefined && l.charCodeAt(0) === f) {
-           let p = text.length - 1;
+           const p = text.length - 1;
            if (superscript_code_list.has(text[p])) {
                text = text.slice(0, p) + c[pos - 1] + c[pos];
            } else {
@@ -206,28 +223,24 @@ function on_key_click() {
    load_search_data();
 };
 
-function set_input_keyboard(lang) {
-    const lang_dict = MAP_KEYBOARD_DICT[lang];
-    window.script_lang_dict = lang_dict;
-    window.script_combo_list = lang_dict['glyph'];
-    window.script_vowel_size = lang_dict['glyph'].length;
-    const [info_list, key_dict] = render_keys(lang_dict);
+function set_input_keyboard(kbd_dict) {
+    const base = kbd_dict['base'];
+    if (typeof base === 'string') kbd_dict['base'] = parseInt(base, 16);
+    window.script_lang_dict = kbd_dict;
+    window.script_combo_list = kbd_dict['glyph'];
+    window.script_vowel_size = kbd_dict['glyph'].length;
+    const [info_list, key_dict] = render_keys(kbd_dict);
     for (let i = 0; i < info_list.length; i++) {
         const info_dict = info_list[i];
         const key_name = info_dict['A'];
         if (key_name !== undefined) {
-            lang_dict[key_name] = 'key_' + info_dict['I'];
+            kbd_dict[key_name] = 'key_' + info_dict['I'];
         }
     } 
     window.input_key_dict = info_list;
     render_template_data('lang-key-template', 'GENKBD', key_dict);
 }
 
-function init_input_keyboard(lang) {
-    for (let lang in MAP_KEYBOARD_DICT) {
-        const info_dict = MAP_KEYBOARD_DICT[lang];
-        const base = parseInt(info_dict['base'], 16);
-        info_dict['base'] = base;
-    }
+function transliterator_init() {
 }
 
