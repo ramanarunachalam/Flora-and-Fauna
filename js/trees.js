@@ -107,7 +107,7 @@ class LangMap {
         this.map_dict = lang_data['Keys'];
         this.lang_name_map = lang_data['Name'];
         this.lang_key_image = lang_data['Image'];
-        const english_map = lang_data['English Info'];
+        const english_map = window.tree_eng_map_data;
         this.english_key_image = english_map['Image'];
         this.english_key_name = english_map['Key Name'];
     }
@@ -1563,10 +1563,13 @@ function load_menu_data() {
 }
 
 async function load_content(values) {
-    const [ lang_data, lang_map_data, slider_data ] = values;
+    const [ lang_data, english_map_data, slider_data ] = values;
     if (lang_data === undefined) return;
     window.tree_lang_data = lang_data;
-    window.tree_lang_map_data = lang_map_data;
+    window.tree_eng_map_data = english_map_data;
+    const lang = window.render_language;
+    const l_lang = lang.toLowerCase();
+    window.tree_lang_map_data = await d3.json(`${l_lang}_map.json`);
     load_menu_data();
     const tree_id = window.url_params['tid'];
     if (tree_id === undefined) {
@@ -1616,6 +1619,7 @@ function tree_main_init() {
     window.area_latlong = [];
     window.tree_image_list = [];
     window.tree_lang_data = {};
+    window.tree_eng_map_data = {};
     window.tree_lang_map_data = {};
     window.tree_count_data = {};
     window.stats_data = {};
@@ -1637,9 +1641,7 @@ function tree_main_init() {
 
     get_geo_location();
 
-    const lang = window.render_language;
-    const l_lang = lang.toLowerCase();
-    const url_list = [ d3.json(LANGUAGE_URL), d3.json(`${l_lang}_map.json`), d3.json(get_region_url('intro')) ];
+    const url_list = [ d3.json(LANGUAGE_URL), d3.json(`english_map.json`), d3.json(get_region_url('intro')) ];
     Promise.all(url_list).then((values) => { load_content(values); });
 
     transliterator_init();
