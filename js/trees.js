@@ -14,6 +14,9 @@ const IMP_COUNT  = 4;
 const MAP_ICON_SIZE  = [24, 24];
 const MAP_ANCHOR_POS = [12, 24];
 
+const MAP_MARKER_COUNT = 1000;
+const MAP_MARKER_TIME  = 100;
+
 const SEARCH_OPTIONS  = { prefix: true, boost: { title: 2 }, combineWith: 'AND', fuzzy: null };
 const SEARCH_END_CHAR = '.';
 const SEARCH_MAP_DICT = { 'c' : 's', 'p' : 'b' };
@@ -624,23 +627,11 @@ function load_search_history(data) {
 }
 
 function get_zoom(osm_map, tid) {
-    let zoom = (osm_map !== null) ? osm_map.getZoom() : NATIVE_ZOOM;
-    if (window.area_type === 'trees') {
-        const count = window.tree_count_data[tid];
-        if (osm_map !== null) {
-            zoom = (!window.map_area_move && zoom <= TREE_ZOOM) ? TREE_ZOOM : zoom;
-            zoom = (!window.map_area_move && count >= TREE_MAX_COUNT) ? MIN_ZOOM : zoom;
-        } else {
-            zoom = (count < TREE_MIN_COUNT) ? TREE_ZOOM : MIN_ZOOM;
-        }
-    } else {
-        if (window.map_area_click) zoom = NATIVE_ZOOM;
-    }
-    return zoom;
+    return (osm_map !== null && !window.map_area_click) ? osm_map.getZoom() : NATIVE_ZOOM;
 }
 
 function get_min_zoom() {
-    return (window.area_type === 'trees' || window.map_state !== '') ? 1 : MIN_ZOOM;
+    return 1;
 }
 
 function set_min_zoom(area) {
@@ -1022,12 +1013,37 @@ function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
     const marker = new L.marker([m_lat, m_long], {icon: icon});
     marker.tree_id = i_tree_id;
     marker.blooming = blooming;
+    const center = window.map_osm_map.getCenter();
+    marker.distance = center.distanceTo(marker.getLatLng());
     marker.on('mouseover', marker_on_mouseover);
     marker.on('mouseout', marker_on_mouseout);
     marker.on('click', marker_on_click);
     marker.on('dblclick', marker_on_doubleclick);
     marker.on('contextmenu', marker_on_contextmenu);
     return marker;
+}
+
+function area_map_callback() {
+    const osm_map = window.map_osm_map;
+    let count = 0;
+    for (let i = window.area_marker_offset; i < window.area_marker_list.length; i++) {
+        const marker = window.area_marker_list[i];
+        if (window.map_state === 'heatmap') {
+            const pos = marker.getLatLng();
+            window.heat_layer.addLatLng([ pos.lat, pos.lng, 1.0 ]);
+        } else if (window.map_state === 'cluster') {
+            window.cluster_layer.addLayer(marker);
+        } else {
+            osm_map.addLayer(marker);
+        }
+        count++;
+        if (count >= MAP_MARKER_COUNT) break;
+    }
+    window.area_marker_offset += count;
+    if (window.area_marker_offset < window.area_marker_list.length) {
+        setTimeout(() => { area_map_callback(); }, MAP_MARKER_TIME);
+    } else window.area_marker_offset = 0;
+    // console.log('area_map_callback:', window.area_marker_list.length, count, window.area_marker_offset);
 }
 
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
@@ -1039,7 +1055,6 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
     const area_marker_list = [];
-    const heat_map_list = [];
     const tree_dict = {};
     const is_tree = (area === 'trees');
     const c_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
@@ -1049,32 +1064,23 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_id = i_tree_id.toString();
         const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
-        if (window.map_state === 'heatmap') {
-            heat_map_list.push([ m_lat, m_long, 1.0 ]);
-        } else {
-            const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
-            if (window.map_state !== 'cluster') osm_map.addLayer(marker);
-            area_marker_list.push(marker);
-        }
+        const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
+        area_marker_list.push(marker);
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
+    area_marker_list.sort(function (a, b) { return a.distance - b.distance; });
+    window.area_marker_offset = 0;
     window.area_marker_list = area_marker_list;
     if (window.map_state === 'heatmap') {
-        window.heat_layer = L.heatLayer(heat_map_list, { radius: MAX_RADIUS });
-        window.heat_layer.addTo(osm_map);
+        window.heat_layer = L.heatLayer([], { radius: MAX_RADIUS });
+        osm_map.addLayer(window.heat_layer);
     } else if (window.map_state === 'cluster') {
         window.cluster_layer = L.markerClusterGroup();
-        for (const marker of area_marker_list) {
-            window.cluster_layer.addLayer(marker);
-        }
         osm_map.addLayer(window.cluster_layer);
     } else {
-        const alen = area_marker_list.length;
-        if (is_tree && !window.map_area_move && 0 < alen && alen < TREE_MIN_COUNT) {
-            const layer = new L.featureGroup(area_marker_list);
-            osm_map.fitBounds(layer.getBounds());
-        }
+        // default
     }
+    area_map_callback();
 
     const tree_stat_list = [];
     const tree_image_list = [];
@@ -1615,6 +1621,7 @@ function tree_main_init() {
     window.tree_popstate = false;
     window.map_state = '';
     window.map_tree_id = 0;
+    window.area_marker_offset = 0;
     window.area_marker_list = [];
     window.area_latlong = [];
     window.tree_image_list = [];
