@@ -45,9 +45,8 @@ const OSM_ATTRIBUTION  = `&copy; <a href="${OSM_ATTR_URL}">OpenStreetMap</a>`;
 const TREE_MIN_COUNT = 200;
 const TREE_MAX_COUNT = 750;
 
-const TREE_ZOOM   = 12;
-const MISC_ZOOM   = 13;
-const MIN_ZOOM    = 16;
+const MIN_ZOOM    = 12;
+const MISC_ZOOM   = 12;
 const NATIVE_ZOOM = 18;
 const MAX_ZOOM    = 21;
 
@@ -66,7 +65,6 @@ const SEARCH_REPLACE_LIST =  [ [ /(e)\1+/g, 'i' ],
                                [ /([sd])v/g, '$1w' ],
                                [ /([ao])u/g, 'ow' ]
                              ];
-
 
 const INTRO_SWIPER_OPTIONS = {
     direction: 'horizontal',
@@ -627,11 +625,8 @@ function load_search_history(data) {
 }
 
 function get_zoom(osm_map, tid) {
-    return (osm_map !== null && !window.map_area_click) ? osm_map.getZoom() : NATIVE_ZOOM;
-}
-
-function get_min_zoom() {
-    return 1;
+    if (window.map_area_click) return (window.area_type === 'trees') ? MIN_ZOOM : NATIVE_ZOOM;
+    return (osm_map !== null) ? osm_map.getZoom() : NATIVE_ZOOM;
 }
 
 function set_min_zoom(area) {
@@ -643,7 +638,7 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
                            rotate: true,
                            touchRotate: true,
                            zoom: get_zoom(null, tid),
-                           minZoom: get_min_zoom(),
+                           minZoom: MIN_ZOOM,
                            maxZoom: MAX_ZOOM
                          };
     const osm_map = new L.map(id_name, map_options);
@@ -659,8 +654,8 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
     }
 
     /*
-  <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
-    const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
+    <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
+      const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
     */
 
     return osm_map;
@@ -684,22 +679,32 @@ function get_needed_icon(selected, blooming) {
 }
 
 function clean_layers() {
+    if (!window.map_initialized) return;
     const osm_map = window.map_osm_map;
 
     if (window.heat_layer !== null) {
+        console.log('Removed Heat Layer', window.heat_layer);
         osm_map.removeLayer(window.heat_layer);
         window.heat_layer = null;
     }
 
     if (window.cluster_layer !== null) {
+        console.log('Removed Cluster Layer', window.cluster_layer);
         osm_map.removeLayer(window.cluster_layer);
         window.cluster_layer = null;
     }
 
     if (window.ward_boundary !== null) {
+        console.log('Removed Polygon Layer', window.ward_boundary);
         osm_map.removeLayer(window.ward_boundary);
         window.ward_boundary = null;
     }
+
+    console.log('Removed Marker Layer', window.area_marker_list.length);
+    for (const marker of window.area_marker_list) {
+        osm_map.removeLayer(marker);
+    }
+    window.area_marker_list = [];
 }
 
 function special_set_view(state, latlong) {
@@ -708,20 +713,9 @@ function special_set_view(state, latlong) {
     window.quad_tree = (window.map_state === 'removed') ? window.deleted_quad_tree : window.all_quad_tree;
     const osm_map = window.map_osm_map;
     const zoom = (window.map_state !== '') ? MISC_ZOOM : NATIVE_ZOOM;
-    osm_map.options.minZoom = get_min_zoom();
-    if (window.map_state !== '') {
-        const osm_map = window.map_osm_map;
-        for (const marker of window.area_marker_list) {
-            osm_map.removeLayer(marker);
-        }
-        window.area_marker_list = [];
-    } else {
-        latlong = get_area_centre();
-    }
+    osm_map.options.minZoom = MIN_ZOOM;
+    if (window.map_state === '') latlong = get_area_centre();
     osm_map.setView(latlong, zoom);
-    setTimeout(() => {
-        draw_map_on_move(null);
-    }, 0);
 }
 
 function render_heatmap() {
@@ -923,12 +917,8 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     let osm_map;
     if (window.map_initialized) {
         osm_map = window.map_osm_map;
-        for (const marker of window.area_marker_list) {
-            osm_map.removeLayer(marker);
-        }
-        window.area_marker_list = [];
         const zoom = get_zoom(osm_map, tid);
-        osm_map.options.minZoom = get_min_zoom();
+        osm_map.options.minZoom = MIN_ZOOM;
         osm_map.setView([c_lat, c_long], zoom);
         // console.log('osm initialized', window.area_type, a_name, aid, tid, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     } else {
@@ -1041,9 +1031,10 @@ function area_map_callback() {
     }
     window.area_marker_offset += count;
     if (window.area_marker_offset < window.area_marker_list.length) {
-        setTimeout(() => { area_map_callback(); }, MAP_MARKER_TIME);
-    } else window.area_marker_offset = 0;
-    // console.log('area_map_callback:', window.area_marker_list.length, count, window.area_marker_offset);
+        const timer_id = setTimeout(() => { area_map_callback(); }, MAP_MARKER_TIME);
+        window.area_marker_timer_list.push(timer_id);
+    }
+    // console.log('area_map_callback:', window.map_state, window.area_marker_list.length, count, window.area_marker_offset);
 }
 
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
@@ -1080,6 +1071,11 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     } else {
         // default
     }
+    for (const timer_id of window.area_marker_timer_list) {
+        clearTimeout(timer_id);
+    }
+    window.area_marker_timer_list = [];
+    // console.log('Timer: after', window.area_marker_timer_list.length, window.area_marker_timer_list);
     area_map_callback();
 
     const tree_stat_list = [];
@@ -1622,6 +1618,7 @@ function tree_main_init() {
     window.map_state = '';
     window.map_tree_id = 0;
     window.area_marker_offset = 0;
+    window.area_marker_timer_list = [];
     window.area_marker_list = [];
     window.area_latlong = [];
     window.tree_image_list = [];
