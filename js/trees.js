@@ -68,6 +68,7 @@ const SEARCH_REPLACE_LIST =  [ [ /(e)\1+/g, 'i' ],
 
 const INTRO_SWIPER_OPTIONS = {
     direction: 'horizontal',
+    speed: 500,
     effect: 'fade',
     fadeEffect: { crossFade: true },
     autoplay: { delay: 5000, disableOnInteraction: false }
@@ -92,6 +93,10 @@ function get_url_params() {
         function(m, key, value) { args[key] = value;
     });
     return args;
+}
+
+async function wait_sleep(msec) {
+    return new Promise(resolve => setTimeout(resolve, msec))
 }
 
 class LangMap {
@@ -624,24 +629,23 @@ function load_search_history(data) {
     handle_search_word(search_word);
 }
 
-function get_zoom(osm_map, tid) {
-    if (window.map_area_click) return (window.area_type === 'trees') ? MIN_ZOOM : NATIVE_ZOOM;
-    return (osm_map !== null) ? osm_map.getZoom() : NATIVE_ZOOM;
+function get_zoom(osm_map) {
+    let zoom = NATIVE_ZOOM;
+    if (osm_map !== null && !window.map_area_click) zoom = osm_map.getZoom();
+    if (window.area_type === 'trees') zoom = MIN_ZOOM;
+    // console.log('get_zoom:', window.area_type, window.map_area_click, zoom);
+    return zoom;
 }
 
-function set_min_zoom(area) {
-    if (area === 'trees' || window.map_state !== '') window.map_osm_map.options.minZoom = 1;
-}
-
-function create_osm_map(module, id_name, c_lat, c_long, tid) {
+function create_osm_map(module, c_lat, c_long, zoom) {
     const map_options  = { center: [ c_lat, c_long ],
                            rotate: true,
                            touchRotate: true,
-                           zoom: get_zoom(null, tid),
+                           zoom: zoom,
                            minZoom: MIN_ZOOM,
                            maxZoom: MAX_ZOOM
                          };
-    const osm_map = new L.map(id_name, map_options);
+    const osm_map = new L.map('MAPINFO', map_options);
     osm_map.on('zoomend dragend', draw_map_on_move);
 
     const tile_layer = new L.tileLayer(OSM_TILE_URL, TILE_OPTIONS);
@@ -657,7 +661,6 @@ function create_osm_map(module, id_name, c_lat, c_long, tid) {
     <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
       const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
     */
-
     return osm_map;
 }
 
@@ -683,24 +686,24 @@ function clean_layers() {
     const osm_map = window.map_osm_map;
 
     if (window.heat_layer !== null) {
-        console.log('Removed Heat Layer', window.heat_layer);
+        // console.log('Removed Heat Layer', window.heat_layer);
         osm_map.removeLayer(window.heat_layer);
         window.heat_layer = null;
     }
 
     if (window.cluster_layer !== null) {
-        console.log('Removed Cluster Layer', window.cluster_layer);
+        // console.log('Removed Cluster Layer', window.cluster_layer);
         osm_map.removeLayer(window.cluster_layer);
         window.cluster_layer = null;
     }
 
     if (window.ward_boundary !== null) {
-        console.log('Removed Polygon Layer', window.ward_boundary);
+        // console.log('Removed Polygon Layer', window.ward_boundary);
         osm_map.removeLayer(window.ward_boundary);
         window.ward_boundary = null;
     }
 
-    console.log('Removed Marker Layer', window.area_marker_list.length);
+    // console.log('Removed Marker Layer', window.area_marker_list.length);
     for (const marker of window.area_marker_list) {
         osm_map.removeLayer(marker);
     }
@@ -708,12 +711,10 @@ function clean_layers() {
 }
 
 function special_set_view(state, latlong) {
-    clean_layers();
     window.map_state = (window.map_state === state) ? '' : state;
     window.quad_tree = (window.map_state === 'removed') ? window.deleted_quad_tree : window.all_quad_tree;
     const osm_map = window.map_osm_map;
     const zoom = (window.map_state !== '') ? MISC_ZOOM : NATIVE_ZOOM;
-    osm_map.options.minZoom = MIN_ZOOM;
     if (window.map_state === '') latlong = get_area_centre();
     osm_map.setView(latlong, zoom);
 }
@@ -885,7 +886,7 @@ async function fetch_grid_data() {
     }
 }
 
-function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
+async function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     const lang = window.render_language;
     const area = window.area_type;
     const old_a_name = window.map_area_name;
@@ -912,25 +913,24 @@ function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
     }
     d3.select('#TITLE_HEADER').html(n_name);
 
-    clean_layers();
-
     let osm_map;
+    let zoom = NATIVE_ZOOM;
+    const map_state = (window.map_initialized) ? 'initialized' : 'created';
     if (window.map_initialized) {
         osm_map = window.map_osm_map;
-        const zoom = get_zoom(osm_map, tid);
-        osm_map.options.minZoom = MIN_ZOOM;
+        zoom = get_zoom(osm_map);
         osm_map.setView([c_lat, c_long], zoom);
-        // console.log('osm initialized', window.area_type, a_name, aid, tid, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     } else {
-        osm_map = create_osm_map('area', 'MAPINFO', c_lat, c_long, tid);
+        zoom = get_zoom(null);
+        osm_map = create_osm_map('area', c_lat, c_long, zoom);
         window.map_osm_map = osm_map;
         window.map_area_move = false;
         window.map_initialized = true;
     }
+    // console.log('osm:', map_state, window.area_type, a_name, aid, tid, c_lat, c_long, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     if (tid !== undefined && tid !== 0) {
         set_chosen_image(tid);
     }
-    set_min_zoom(area);
     draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long);
     window.area_latlong = [];
 }
@@ -942,7 +942,10 @@ function draw_map_on_move(ev) {
     const tid = window.map_tree_id;
     const latlong = osm_map.getCenter();
     window.map_area_move = true;
-    show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
+    clean_layers();
+    setTimeout(() => {
+        show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
+    }, 0);
     window.map_area_move = false;
 }
 
@@ -950,9 +953,12 @@ function load_area_latlong_in_osm(a_type, a_name, aid, tid, c_lat, c_long) {
     window.area_type = a_type;
     window.area_latlong = [];
     window.map_area_move = false;
+    clean_layers();
     window.map_area_click = true;
-    show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
-    window.map_area_click = false;
+    setTimeout(() => {
+        show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
+        window.map_area_click = false;
+    }, 0);
     add_history('maps', { 'type' : a_type, 'id' : aid });
 }
 
@@ -1241,7 +1247,12 @@ async function tree_area_init(area, aid, item_data) {
         }
         if (tid === 0) tid = aid;
     }
-    show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
+    clean_layers();
+    window.map_area_click = true;
+    setTimeout(() => {
+        show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
+        window.map_area_click = false;
+    }, 0);
 }
 
 async function load_area_data(area_type, area_id, area_latlong) {
