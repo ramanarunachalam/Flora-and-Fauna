@@ -46,7 +46,7 @@ const TREE_MIN_COUNT = 200;
 const TREE_MAX_COUNT = 750;
 
 const MIN_ZOOM      = 12;
-const AREA_MIN_ZOOM = 15;
+const AREA_MIN_ZOOM = 16;
 const NATIVE_ZOOM   = 18;
 const MAX_ZOOM      = 21;
 
@@ -685,14 +685,17 @@ function get_needed_icon(selected, blooming) {
     return window.green_tree_icon;
 }
 
-function clean_layers() {
+function clear_layers() {
     if (!window.map_initialized) return;
+    if (window.map_state === '' && !window.map_area_click) return;
+    console.log('clear_layers:', window.area_marker_list.length);
     const osm_layer = window.map_osm_layer;
     osm_layer.clearLayers();
     window.heat_layer = null;
     window.cluster_layer = null;
     window.ward_boundary = null;
     window.area_marker_list = [];
+    window.area_marker_dict = {};
 }
 
 function special_set_view(state, latlong) {
@@ -701,9 +704,11 @@ function special_set_view(state, latlong) {
     const osm_map = window.map_osm_map;
     const zoom = (window.map_state !== '') ? MIN_ZOOM : NATIVE_ZOOM;
     latlong = get_area_centre();
-    clean_layers();
+    window.map_area_click = true;
+    clear_layers();
     setTimeout(() => {
         osm_map.setView(latlong, zoom);
+        window.map_area_click = false;
     }, 0);
 }
 
@@ -919,13 +924,13 @@ async function show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long) {
 }
 
 function draw_map_on_move(ev) {
+    if (window.map_area_click) return;
     const osm_map = window.map_osm_map;
     const a_name = window.map_area_name;
     const aid = window.map_area_id;
     const tid = window.map_tree_id;
     const latlong = osm_map.getCenter();
     window.map_area_move = true;
-    clean_layers();
     setTimeout(() => {
         show_area_latlong_in_osm(a_name, aid, tid, latlong.lat, latlong.lng);
     }, 0);
@@ -936,8 +941,8 @@ function load_area_latlong_in_osm(a_type, a_name, aid, tid, c_lat, c_long) {
     window.area_type = a_type;
     window.area_latlong = [];
     window.map_area_move = false;
-    clean_layers();
     window.map_area_click = true;
+    clear_layers();
     setTimeout(() => {
         show_area_latlong_in_osm(a_name, aid, tid, c_lat, c_long);
         window.map_area_click = false;
@@ -990,6 +995,7 @@ function area_carousel_init() {
 function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
     const icon = get_needed_icon(c_tree_id === i_tree_id, blooming);
     const marker = new L.marker([m_lat, m_long], {icon: icon});
+    marker.state = 'new';
     marker.tree_id = i_tree_id;
     marker.blooming = blooming;
     const center = window.map_osm_map.getCenter();
@@ -1005,25 +1011,29 @@ function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
 function area_map_callback() {
     const osm_layer = window.map_osm_layer;
     let count = 0;
+    let new_count = 0;
+    const marker_list = [];
     for (let i = window.area_marker_offset; i < window.area_marker_list.length; i++) {
         const marker = window.area_marker_list[i];
         if (window.map_state === 'heatmap') {
             const pos = marker.getLatLng();
             window.heat_layer.addLatLng([ pos.lat, pos.lng, 1.0 ]);
+            new_count++;
         } else if (window.map_state === 'cluster') {
-            window.cluster_layer.addLayer(marker);
+            if (marker.state === 'new') { marker_list.push(marker); new_count++; }
         } else {
-            osm_layer.addLayer(marker);
+            if (marker.state === 'new') { osm_layer.addLayer(marker); new_count++; }
         }
         count++;
-        if (count >= MAP_MARKER_COUNT) break;
+        if (new_count >= MAP_MARKER_COUNT) break;
     }
+    if (window.map_state === 'cluster') window.cluster_layer.addLayers(marker_list);
     window.area_marker_offset += count;
     if (window.area_marker_offset < window.area_marker_list.length) {
         const timer_id = setTimeout(() => { area_map_callback(); }, MAP_MARKER_TIME);
         window.area_marker_timer_list.push(timer_id);
     }
-    // console.log('area_map_callback:', window.map_state, window.area_marker_list.length, count, window.area_marker_offset);
+    // console.log('area_map_callback:', window.map_state, window.area_marker_list.length, count, new_count, window.area_marker_offset);
 }
 
 function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
@@ -1036,30 +1046,54 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
     const area_marker_list = [];
+    const area_marker_dict = {};
     const tree_dict = {};
     const is_tree = (area === 'trees');
     const c_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
     const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? c_tree_id : 0);
+    let old_count = 0;
+    let new_count = 0; 
     for (const point of point_list) {
         const [ m_lat, m_long, i_tree_id ] = point;
         tree_id = i_tree_id.toString();
         const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
-        const marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
+        let marker = window.area_marker_dict[[m_lat, m_long]];
+        if (marker === undefined) {
+            marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
+            new_count++;
+        } else {
+            marker.state = 'old';
+            old_count++;
+        }
         area_marker_list.push(marker);
+        area_marker_dict[[m_lat, m_long]] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
+    let deleted = 0;
+    for (const ll in window.area_marker_dict) {
+        const marker = window.area_marker_dict[ll];
+        if (area_marker_dict[ll] === undefined) {
+            if (window.map_state === '') osm_layer.removeLayer(marker);
+            if (window.map_state === 'cluster') window.cluster_layer.removeLayer(marker);
+            deleted++;
+        }
+    }
+    // console.log('Draw markers:', old_count, new_count, deleted);
+    window.area_marker_dict = area_marker_dict;
     area_marker_list.sort(function (a, b) { return a.distance - b.distance; });
     window.area_marker_offset = 0;
     window.area_marker_list = area_marker_list;
     if (window.map_state === 'heatmap') {
-        window.heat_layer = L.heatLayer([], { radius: MAX_RADIUS });
-        osm_layer.addLayer(window.heat_layer);
+        if (window.heat_layer === null) {
+            window.heat_layer = L.heatLayer([], { radius: MAX_RADIUS });
+            osm_layer.addLayer(window.heat_layer);
+        }
     } else if (window.map_state === 'cluster') {
-        window.cluster_layer = L.markerClusterGroup();
-        osm_layer.addLayer(window.cluster_layer);
-    } else {
-        // default
+        if (window.cluster_layer === null) {
+            window.cluster_layer = L.markerClusterGroup();
+            osm_layer.addLayer(window.cluster_layer);
+        }
     }
     for (const timer_id of window.area_marker_timer_list) {
         clearTimeout(timer_id);
@@ -1231,8 +1265,8 @@ async function tree_area_init(area, aid, item_data) {
         }
         if (tid === 0) tid = aid;
     }
-    clean_layers();
     window.map_area_click = true;
+    clear_layers();
     setTimeout(() => {
         show_area_latlong_in_osm(name, aid, tid, lat_long[0], lat_long[1]);
         window.map_area_click = false;
@@ -1615,6 +1649,7 @@ function tree_main_init() {
     window.area_marker_offset = 0;
     window.area_marker_timer_list = [];
     window.area_marker_list = [];
+    window.area_marker_dict = {};
     window.area_latlong = [];
     window.tree_image_list = [];
     window.tree_lang_data = {};
