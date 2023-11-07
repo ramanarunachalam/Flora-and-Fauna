@@ -688,7 +688,7 @@ function get_needed_icon(selected, blooming) {
 function clear_layers() {
     if (!window.map_initialized) return;
     if (window.map_state === '' && !window.map_area_click) return;
-    console.log('clear_layers:', window.area_marker_list.length);
+    // console.log('clear_layers:', window.area_marker_list.length);
     const osm_layer = window.map_osm_layer;
     osm_layer.clearLayers();
     window.heat_layer = null;
@@ -1085,10 +1085,9 @@ function draw_area_latlong_in_osm(n_name, a_name, aid, tid, c_lat, c_long) {
     window.area_marker_offset = 0;
     window.area_marker_list = area_marker_list;
     if (window.map_state === 'heatmap') {
-        if (window.heat_layer === null) {
-            window.heat_layer = L.heatLayer([], { radius: MAX_RADIUS });
-            osm_layer.addLayer(window.heat_layer);
-        }
+        if (window.heat_layer !== null) osm_layer.removeLayer(window.heat_layer);
+        window.heat_layer = L.heatLayer([], { radius: MAX_RADIUS });
+        osm_layer.addLayer(window.heat_layer);
     } else if (window.map_state === 'cluster') {
         if (window.cluster_layer === null) {
             window.cluster_layer = L.markerClusterGroup();
