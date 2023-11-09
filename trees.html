@@ -223,19 +223,19 @@
         <ul class="list-unstyled BODY_BG">
           <li>
             <p class="mt-3"></p> &nbsp; &nbsp;
-            <a href="javascript:render_heatmap();">
+            <a href="javascript:render_map_type('heatmap');">
               <i class="bi bi-soundwave ICON_FONT"></i>&nbsp; Heatmap
             </a>
           </li>
           <li>
             <p class="mt-3"></p> &nbsp; &nbsp;
-            <a href="javascript:render_cluster();">
+            <a href="javascript:render_map_type('cluster');">
               <i class="bi bi-dpad ICON_FONT"></i>&nbsp; Cluster</span>
             </a>
           </li>
           <li>
             <p class="mt-3"></p> &nbsp; &nbsp;
-            <a href="javascript:render_deleted_data();">
+            <a href="javascript:render_map_type('removed');">
               <i class="bi bi-x ICON_FONT"></i> Removed (<font class="NUM_COLOR">{{R}}</font>)
             </a>
           </li>
@@ -431,7 +431,7 @@
             {{#parks}}
             <li>
               {{PID}}. 
-              <a href="javascript:load_area_latlong_in_osm('parks', '{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">{{PN}}</a>
+              <a href="javascript:load_area_map('parks', '{{PN}}', '{{PID}}', 0, '{{PLAT}}', '{{PLONG}}');">{{PN}}</a>
             </li>
             {{/parks}}
           </ul>
@@ -441,7 +441,7 @@
       <ol>
         {{#wardinfo}}
         <li>
-          <a href="javascript:load_area_latlong_in_osm('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
+          <a href="javascript:load_area_map('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
             {{AN}} : {{AID}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
           </a>
         </li>
@@ -450,7 +450,7 @@
       <ol>
         {{#mapinfo}}
         <li>
-          <a href="javascript:load_area_latlong_in_osm('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
+          <a href="javascript:load_area_map('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
             {{AN}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
           </a>
         </li>
