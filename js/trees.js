@@ -658,9 +658,7 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
     tile_layer.addTo(osm_map);
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
-    if (module === 'area') {
-        geocoder.on('finishgeocode', handle_geocoder_mark);
-    }
+    if (module === 'area') geocoder.on('finishgeocode', handle_geocoder_mark);
 
     /*
     <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
@@ -724,6 +722,7 @@ function create_map_layer(map_type) {
 }
 
 async function render_map_type(map_type) {
+    window.map_area_click = true;
     const old_map_type = window.map_type;
     clear_layers();
     map_type = (old_map_type === map_type) ? 'basic' : map_type;
@@ -740,9 +739,9 @@ async function render_map_type(map_type) {
     else if (map_type === 'cluster') latlong = window.default_latlong;
     else if (map_type === 'removed') latlong = HEATMAP_CENTER;
 
-    window.map_area_click = true;
+    osm_map.setView(latlong, zoom);
+    // console.log('render_map_type:', map_type, latlong[0], latlong[1], zoom, osm_map.getZoom());
     setTimeout(() => {
-        osm_map.setView(latlong, zoom);
         window.map_area_click = false;
         draw_map_on_move();
     }, 0);
@@ -1000,6 +999,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         area_marker_dict[[m_lat, m_long]] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
+    // console.log('draw_area_map:', point_list.length, area_marker_list.length, Object.keys(window.area_marker_dict).length, old_count, new_count);
     for (const ll in window.area_marker_dict) {
         const marker = window.area_marker_dict[ll];
         if (area_marker_dict[ll] === undefined) {
@@ -1014,7 +1014,6 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         clearTimeout(timer_id);
     }
     window.area_marker_timer_list = [];
-    // console.log('Timer: after', window.area_marker_timer_list.length, window.area_marker_timer_list);
     if (window.map_type === 'heatmap') create_map_layer('heatmap');
     area_map_callback();
 
@@ -1104,10 +1103,10 @@ async function show_area_map(a_name, aid, tid, c_lat, c_long) {
     let osm_map;
     let zoom = DEFAULT_ZOOM;
     const min_zoom = (window.map_type === 'basic' && area !== 'trees') ? AREA_MIN_ZOOM : MIN_ZOOM;
-    const map_type = (window.map_initialized) ? 'initialized' : 'created';
+    const map_state = (window.map_initialized) ? 'initialized' : 'created';
     if (window.map_initialized) {
         osm_map = window.map_osm_map;
-        osm_map.options.minZoom = min_zoom;
+        osm_map.setMinZoom(min_zoom);
         zoom = get_zoom(osm_map);
         osm_map.setView([c_lat, c_long], zoom);
     } else {
@@ -1116,7 +1115,7 @@ async function show_area_map(a_name, aid, tid, c_lat, c_long) {
         window.map_area_move = false;
         window.map_initialized = true;
     }
-    // console.log('osm:', map_type, window.area_type, a_name, aid, tid, c_lat, c_long, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
+    // console.log('show_area_map:', map_state, window.area_type, a_name, aid, tid, c_lat, c_long, zoom, osm_map.options.minZoom, osm_map.options.maxZoom);
     if (tid !== undefined && tid !== 0) set_chosen_image(tid);
     draw_area_map(n_name, a_name, aid, tid, c_lat, c_long);
     window.area_latlong = [];
