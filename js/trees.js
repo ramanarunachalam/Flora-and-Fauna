@@ -734,10 +734,7 @@ async function render_map_type(map_type) {
 
     const osm_map = window.map_osm_map;
     const zoom = (map_type !== 'basic' && map_type !== 'cluster') ? MIN_ZOOM : DEFAULT_ZOOM;
-    let latlong = get_area_centre();
-    if (map_type === 'heatmap') latlong = HEATMAP_CENTER;
-    else if (map_type === 'cluster') latlong = window.default_latlong;
-    else if (map_type === 'removed') latlong = HEATMAP_CENTER;
+    const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
 
     osm_map.setView(latlong, zoom);
     // console.log('render_map_type:', map_type, latlong[0], latlong[1], zoom, osm_map.getZoom());
@@ -814,7 +811,7 @@ function marker_on_contextmenu(e) {
     get_bs_modal('#CONTEXT_MODAL').show();
 }
 
-function get_area_centre() {
+function get_area_center() {
     if (window.map_osm_map === null) return [];
     const latlong = window.map_osm_map.getCenter();
     const area_latlong = [ latlong.lat, latlong.lng ];
@@ -1487,7 +1484,7 @@ function add_history(context, data) {
         } else if (context === 'trees') {
             title += ' ' + data['module'];
         } else if (context === 'maps') {
-            data['latlong'] = get_area_centre();
+            data['latlong'] = get_area_center();
             title += ' ' + capitalize_word(data['type']);
             // console.log('HISTORY PUSH: ', data['latlong']);
         }
