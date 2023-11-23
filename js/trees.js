@@ -685,22 +685,21 @@ function get_needed_icon(selected, blooming) {
 }
 
 async function set_removed_data() {
-    let deleted_data = null;
-    if (window.deleted_quad_tree === null) {
+    let removed_data = null;
+    if (window.removed_quad_tree === null) {
         const history_data = await d3.json(HISTORY_URL);
         if (history_data === null) return;
-        deleted_data = history_data['deleted'];
-        if (deleted_data === null) return;
+        removed_data = history_data['deleted'];
+        if (removed_data === null) return;
     }
-    if (window.deleted_quad_tree === null && deleted_data !== null) {
+    if (window.removed_quad_tree === null && removed_data !== null) {
         const quad_tree = d3.quadtree();
-        for (const tree_id in deleted_data) {
-            const latlong_list = deleted_data[tree_id];
-            for (const latlong of deleted_data[tree_id]) {
+        for (const tree_id in removed_data) {
+            for (const latlong of removed_data[tree_id]) {
                 quad_tree.add([+latlong[0], +latlong[1], +tree_id]);
             }
         }
-        window.deleted_quad_tree = quad_tree;
+        window.removed_quad_tree = quad_tree;
     }
 }
 
@@ -730,7 +729,7 @@ async function render_map_type(map_type) {
     create_map_layer(map_type);
 
     if (map_type === 'removed') await set_removed_data();
-    window.quad_tree = (map_type === 'removed') ? window.deleted_quad_tree : window.all_quad_tree;
+    window.quad_tree = (map_type === 'removed') ? window.removed_quad_tree : window.all_quad_tree;
 
     const osm_map = window.map_osm_map;
     const zoom = (map_type !== 'basic' && map_type !== 'cluster') ? MIN_ZOOM : DEFAULT_ZOOM;
@@ -1647,7 +1646,7 @@ function tree_main_init() {
     window.area_data = null;
     window.quad_tree = null;
     window.all_quad_tree = null;
-    window.deleted_quad_tree = null;
+    window.removed_quad_tree = null;
     window.ward_boundary = null;
     window.history_data = null;
     window.geocoder_nominatim = null;
