@@ -1129,6 +1129,7 @@ function draw_map_on_move(ev) {
 }
 
 function render_area_map(a_type, a_name, aid, tid, c_lat, c_long) {
+    window.map_area_click = true;
     clear_layers();
     window.map_type = 'basic';
     create_map_layer(window.map_type);
@@ -1136,7 +1137,6 @@ function render_area_map(a_type, a_name, aid, tid, c_lat, c_long) {
     window.area_type = a_type;
     window.area_latlong = [];
     window.map_area_move = false;
-    window.map_area_click = true;
     setTimeout(() => {
         show_area_map(a_name, aid, tid, c_lat, c_long);
         window.map_area_click = false;
