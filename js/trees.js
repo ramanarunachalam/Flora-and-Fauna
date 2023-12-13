@@ -659,11 +659,7 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
     if (module === 'area') geocoder.on('finishgeocode', handle_geocoder_mark);
-
-    /*
-    <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js" defer></script>
-      const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
-    */
+    // const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
     return osm_map;
 }
 
@@ -703,13 +699,17 @@ async function set_removed_data() {
     }
 }
 
+function clear_all_layers() {
+    window.ward_boundary = null;
+    window.area_marker_list = [];
+    window.area_marker_dict = {};
+}
+
 function clear_layers() {
     if (!window.map_initialized) return;
     if (window.map_type === 'basic' && !window.map_area_click) return;
     if (window.map_type !== 'heatmap') window.map_osm_layer.clearLayers();
-    window.ward_boundary = null;
-    window.area_marker_list = [];
-    window.area_marker_dict = {};
+    clear_all_layers();
 }
 
 function create_map_layer(map_type) {
@@ -811,7 +811,7 @@ function marker_on_contextmenu(e) {
 }
 
 function get_area_center() {
-    if (window.map_osm_map === null) return [];
+    if (window.map_osm_map === null) return BANGALORE_CENTER;
     const latlong = window.map_osm_map.getCenter();
     const area_latlong = [ latlong.lat, latlong.lng ];
     return area_latlong;
@@ -1452,7 +1452,8 @@ function handle_history_context(data) {
         load_module_data(data['id']);
     } else if (context === 'maps') {
         window.area_latlong = data['latlong'];
-        // console.log('HISTORY POP: ', window.area_latlong);
+        // console.log('HISTORY POP: ', data);
+        clear_all_layers();
         load_area_data(data['type'], data['id']);
     } else if (context === 'search') {
         load_search_history(data);
@@ -1485,7 +1486,7 @@ function add_history(context, data) {
         } else if (context === 'maps') {
             data['latlong'] = get_area_center();
             title += ' ' + capitalize_word(data['type']);
-            // console.log('HISTORY PUSH: ', data['latlong']);
+            // console.log('HISTORY PUSH: ', data);
         }
         // console.log('PUSH: ', data, window.tree_popstate);
         history.pushState(data, title, url);
