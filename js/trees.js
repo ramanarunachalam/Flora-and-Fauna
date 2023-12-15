@@ -1253,6 +1253,7 @@ async function tree_area_init(area, aid, item_data) {
 }
 
 async function load_area_data(area_type, area_id, area_latlong) {
+    clear_all_layers();
     window.map_type = 'basic';
     const lang = window.render_language;
     const area_info = { 'T' : get_lang_map_word('Tree'),
@@ -1453,7 +1454,6 @@ function handle_history_context(data) {
     } else if (context === 'maps') {
         window.area_latlong = data['latlong'];
         // console.log('HISTORY POP: ', data);
-        clear_all_layers();
         load_area_data(data['type'], data['id']);
     } else if (context === 'search') {
         load_search_history(data);
