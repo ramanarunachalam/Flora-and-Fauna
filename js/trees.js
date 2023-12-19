@@ -52,6 +52,15 @@ const SEARCH_OPTIONS   = { prefix: true, boost: { title: 2 }, combineWith: 'AND'
 const SEARCH_END_CHAR  = '.';
 const SEARCH_MAP_DICT  = { 'c' : 's', 'p' : 'b' };
 
+const ZOOM_DICT = {
+    'basic'   : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
+    'heatmap' : [ MIN_ZOOM,      MIN_ZOOM      ],
+    'cluster' : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
+    'grid'    : [ AREA_MIN_ZOOM, AREA_MIN_ZOOM ],
+    '3d'      : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
+    'removed' : [ MIN_ZOOM,      MIN_ZOOM      ]
+};
+
 const TILE_OPTIONS = {
     attribution: OSM_ATTRIBUTION,
     subdomains: ['a', 'b', 'c'],
@@ -659,7 +668,9 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
     if (module === 'area') geocoder.on('finishgeocode', handle_geocoder_mark);
-    // const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
+    if (window.map_type === '3d') {
+        const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
+    }
     return osm_map;
 }
 
@@ -712,30 +723,42 @@ function clear_layers() {
     clear_all_layers();
 }
 
+function destroy_osm_map() {
+    clear_layers();
+    window.map_osm_layer.removeFrom(window.map_osm_map);
+    window.map_osm_layer = null;
+    window.map_osm_map.remove();
+    window.map_osm_map = null;
+    window.map_initialized = false;
+}
+
 function create_map_layer(map_type) {
     if (window.map_osm_layer !== null) window.map_osm_map.removeLayer(window.map_osm_layer);
     if (map_type === 'heatmap') { window.map_osm_layer = L.heatLayer([], { radius: MAX_RADIUS });
     } else if (map_type === 'cluster') { window.map_osm_layer = L.markerClusterGroup();
+    } else if (map_type === 'grid') { window.map_osm_layer = L.maidenhead({color : 'rgba(255, 0, 0, 0.4)'});
     } else { window.map_osm_layer = new L.featureGroup(); }
     window.map_osm_map.addLayer(window.map_osm_layer);
 }
 
 async function render_map_type(map_type) {
+    const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
     window.map_area_click = true;
     const old_map_type = window.map_type;
-    clear_layers();
+    destroy_osm_map()
     map_type = (old_map_type === map_type) ? 'basic' : map_type;
     window.map_type = map_type;
-    create_map_layer(map_type);
 
     if (map_type === 'removed') await set_removed_data();
     window.quad_tree = (map_type === 'removed') ? window.removed_quad_tree : window.all_quad_tree;
 
-    const osm_map = window.map_osm_map;
-    const zoom = (map_type !== 'basic' && map_type !== 'cluster') ? MIN_ZOOM : DEFAULT_ZOOM;
-    const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
+    const [ zoom, m_zoom ] = ZOOM_DICT[map_type];
+    const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
+    window.map_osm_map = create_osm_map('area', latlong[0], latlong[1], zoom, min_zoom);
+    window.map_area_move = false;
+    window.map_initialized = true;
+    create_map_layer(map_type);
 
-    osm_map.setView(latlong, zoom);
     // console.log('render_map_type:', map_type, latlong[0], latlong[1], zoom, osm_map.getZoom());
     setTimeout(() => {
         window.map_area_click = false;
@@ -751,7 +774,7 @@ function set_chosen_image(tree_id) {
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
     const h_url = `javascript:load_module_data('${tree_id}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
-    const name_html = `<a href="${a_url}">${name}</a>`;
+    const name_html = `<a class="TEXT_COLOR" href="${a_url}">${name}</a>`;
     const img_html = `<center><a href="${h_url}"><div class="thumbnail"><img src="${FLORA_BASE}/${t_url}" class="shadow-box"></div></a></center>`;
     d3.select('#CHOSEN_ID').html(name_html);
     d3.select('#CHOSEN_IMG').html(img_html);
@@ -973,6 +996,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     const area_marker_list = [];
     const area_marker_dict = {};
     const tree_dict = {};
+    if (window.map_type === 'grid') window.area_marker_dict = {};
     const is_tree = (area === 'trees');
     const c_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
     const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? c_tree_id : 0);
@@ -1011,6 +1035,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     }
     window.area_marker_timer_list = [];
     if (window.map_type === 'heatmap') create_map_layer('heatmap');
+    if (window.map_type === 'grid') window.map_osm_layer.redraw();
     area_map_callback();
 
     const tree_stat_list = [];
@@ -1098,7 +1123,8 @@ async function show_area_map(a_name, aid, tid, c_lat, c_long) {
 
     let osm_map;
     let zoom = DEFAULT_ZOOM;
-    const min_zoom = (window.map_type === 'basic' && area !== 'trees') ? AREA_MIN_ZOOM : MIN_ZOOM;
+    const [ f_zoom, m_zoom ] = ZOOM_DICT[window.map_type];
+    const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
     const map_state = (window.map_initialized) ? 'initialized' : 'created';
     if (window.map_initialized) {
         osm_map = window.map_osm_map;
@@ -1263,11 +1289,13 @@ async function load_area_data(area_type, area_id, area_latlong) {
                         'R' : window.stats_data['R'],
                         'items' : [ { N: get_lang_map_word('Parks'), P: 'PARK', C: window.stats_data['P'] },
                                     { N: get_lang_map_word('Wards'), P: 'WARD', C: window.stats_data['W'] },
-                                    { N: get_lang_map_word('Trees'), P: 'TREE', C: window.stats_data['M'] },
+                                    { N: get_lang_map_word('Trees'), P: 'TREE', C: window.stats_data['M'] }
                                   ],
                         'types' : [ { N: 'Heatmap', P: 'heatmap', I: 'soundwave' },
-                                    { N: 'Cluster', P: 'cluster', I: 'dpad' }, 
-                                    { N: 'Removed', P: 'removed', I: 'x' },
+                                    { N: 'Cluster', P: 'cluster', I: 'dpad'      }, 
+                                    { N: 'Grid',    P: 'grid',    I: 'grid'      }, 
+                                    { N: '3D',      P: '3d',      I: '3d'        }, 
+                                    { N: 'Removed', P: 'removed', I: 'x'         }
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
