@@ -724,6 +724,7 @@ function clear_layers() {
 }
 
 function destroy_osm_map() {
+    if (!window.map_initialized) return;
     clear_layers();
     window.map_osm_layer.removeFrom(window.map_osm_map);
     window.map_osm_layer = null;
@@ -968,11 +969,13 @@ function area_map_callback() {
     for (let i = window.area_marker_offset; i < window.area_marker_list.length; i++) {
         const marker = window.area_marker_list[i];
         if (window.map_type === 'heatmap') {
-            const pos = marker.getLatLng();
-            window.map_osm_layer.addLatLng([ pos.lat, pos.lng, 1.0 ]);
+            window.map_osm_layer.addLatLng(marker.getLatLng());
             new_count++;
-        } else if (window.map_type === 'cluster' && marker.state === 'new') { marker_list.push(marker); new_count++;
-        } else if (marker.state === 'new') { window.map_osm_layer.addLayer(marker); new_count++; }
+        } else if (marker.state === 'new') {
+            if (window.map_type === 'cluster') marker_list.push(marker);
+            else window.map_osm_layer.addLayer(marker);
+            new_count++;
+        }
         count++;
         if (new_count >= MAP_MARKER_COUNT) break;
     }
