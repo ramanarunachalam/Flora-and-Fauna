@@ -741,7 +741,8 @@
       "Strawberry Guava Tree",
       "Blue Latan Tree",
       "Senegal Date Tree",
-      "Spiked Powder Puff Tree"
+      "Spiked Powder Puff Tree",
+      "Bottle Palm Tree"
     ]
   },
   "Assamese": {
@@ -1477,6 +1478,7 @@
       "",
       "",
       "অটকুৰী",
+      "",
       "",
       "",
       "",
@@ -2231,6 +2233,7 @@
       "",
       "",
       "",
+      "",
       ""
     ]
   },
@@ -2963,6 +2966,7 @@
       "",
       "",
       "અખરોટ",
+      "",
       "",
       "",
       "",
@@ -3721,6 +3725,7 @@
       "",
       "",
       "",
+      "",
       ""
     ]
   },
@@ -4443,6 +4448,7 @@
       "",
       "",
       "ಶ್ರೀಗಂಧ ಮರ",
+      "",
       "",
       "",
       "",
@@ -5211,6 +5217,7 @@
       "",
       "",
       "",
+      "",
       ""
     ]
   },
@@ -5956,6 +5963,7 @@
       "",
       "",
       "",
+      "",
       ""
     ]
   },
@@ -6193,6 +6201,7 @@
       "Spine Tender"
     ],
     "Name": [
+      "",
       "",
       "",
       "",
@@ -7446,6 +7455,7 @@
       "",
       "",
       "",
+      "",
       ""
     ]
   },
@@ -8183,6 +8193,7 @@
       "",
       "கருப்பாலை மரம்",
       "வெள்வேல மரம்",
+      "",
       "",
       "",
       "",
@@ -8936,6 +8947,7 @@
       "",
       "",
       "",
+      "",
       ""
     ]
   },
@@ -9609,6 +9621,17 @@
       34,
       1,
       11
+    ],
+    "509": [
+      "Bottle Palm Tree",
+      "Arecaceae",
+      "Hyophorbe",
+      "lagenicaulis",
+      "(L.H.Bailey) H.E.Moore",
+      false,
+      34,
+      1,
+      3
     ],
     "425": [
       "Bracelet Honey Myrtle Tree",
@@ -14598,6 +14621,7 @@
     "453": "6,76,1,0000,0001,0002",
     "426": "34,6,88,76,1,4,0000,0001,0002,0003,0004,0005,0006,0007,0008,0009,0010,0011",
     "304": "36,37,34,40,59,6,85,88,76,1,4,0000,0001,0002,0003,0004,0005,0006,0007,0008,0009,0010,0011,0012,0013,0014,0015,0016,0017,0018,0019,0020,0021,0022,0023,0024,0025",
+    "509": "34,59,6,76,0000",
     "425": "34,40,59,6,85,76,1,0000,0001,0002,0003,0004,0005,0006,0007,0008",
     "87": "35,53,34,40,65,72,73,74,59,6,85,89,90,76,1,0000,0001,0002,0003,0004,0005,0006,0007,0008,0009,0010,0011,0012,0013,0014,0015,0016,0017,0018,0019,0020,0021,0022,0023,0024,0025,0026,0027,0028,0029,0030,0031,0032,0033,0034,0035,0036,0037",
     "503": "34,6,76,1,0000,0001,0002,0003,0004,0005,0006,0007,0008,0009",
@@ -17524,36 +17548,37 @@
     "303": "Gavipuram:Dr. Rajkumar Park",
     "304": "Gavipuram:Park 1",
     "305": "Gavipuram:Park 2",
-    "306": "Gavipuram:Rama Anjaneya Temple",
-    "307": "Gavipuram:Kempambudhi Kere",
-    "308": "Gavipuram:Playground 1",
-    "309": "V. V. Puram:Sajjan Rao Circle",
-    "310": "V. V. Puram:Park 1",
-    "311": "Banashankari:Water Tank Park",
-    "312": "Banashankari:Brindavana Park",
-    "313": "Banashankari:Kuvempu Udyanavana",
-    "314": "Banashankari:Uma Maheshwara Park",
-    "315": "Jayanagar:Madhavan Park",
-    "316": "Jayanagar:Yediyur Lake park",
-    "317": "Jayanagar:Laxman Rao Park 1",
-    "318": "Jayanagar:Laxman Rao Park 2",
-    "319": "Jayanagar:Vishnuvardhan Park",
-    "320": "Jayanagar:Brindavana Park",
-    "321": "Jayanagar:Gopalakrishna Adiga Park",
-    "322": "Jayanagar:Visvesvaraya Park",
-    "323": "Jayanagar:Putha Narasimhachar Park",
-    "324": "Jayanagar:4th Block Park",
-    "325": "Jayanagar:Nandanvan Children's Park",
-    "326": "Jayanagar:MES Playground",
-    "327": "Jayanagar:Chandragupta Maurya Playground",
-    "328": "Jayanagar:Park 1",
-    "329": "Jayanagar:Park 2",
-    "330": "Jayanagar:Park 3",
-    "331": "Jayanagar:Park 4",
-    "332": "JP Nagar:Durga Parameshwari Grounds",
-    "333": "Wilson Garden:Kitturu Rani Chennamma Park",
-    "334": "BTM Layout:Nandanavana Park",
-    "335": "Bellandur:Iblur Lake Park"
+    "306": "Gavipuram:Kumaraswamy Temple",
+    "307": "Gavipuram:Rama Anjaneya Temple",
+    "308": "Gavipuram:Kempambudhi Kere",
+    "309": "Gavipuram:Playground 1",
+    "310": "V. V. Puram:Sajjan Rao Circle",
+    "311": "V. V. Puram:Park 1",
+    "312": "Banashankari:Water Tank Park",
+    "313": "Banashankari:Brindavana Park",
+    "314": "Banashankari:Kuvempu Udyanavana",
+    "315": "Banashankari:Uma Maheshwara Park",
+    "316": "Jayanagar:Madhavan Park",
+    "317": "Jayanagar:Yediyur Lake park",
+    "318": "Jayanagar:Laxman Rao Park 1",
+    "319": "Jayanagar:Laxman Rao Park 2",
+    "320": "Jayanagar:Vishnuvardhan Park",
+    "321": "Jayanagar:Brindavana Park",
+    "322": "Jayanagar:Gopalakrishna Adiga Park",
+    "323": "Jayanagar:Visvesvaraya Park",
+    "324": "Jayanagar:Putha Narasimhachar Park",
+    "325": "Jayanagar:4th Block Park",
+    "326": "Jayanagar:Nandanvan Children's Park",
+    "327": "Jayanagar:MES Playground",
+    "328": "Jayanagar:Chandragupta Maurya Playground",
+    "329": "Jayanagar:Park 1",
+    "330": "Jayanagar:Park 2",
+    "331": "Jayanagar:Park 3",
+    "332": "Jayanagar:Park 4",
+    "333": "JP Nagar:Durga Parameshwari Grounds",
+    "334": "Wilson Garden:Kitturu Rani Chennamma Park",
+    "335": "BTM Layout:Nandanavana Park",
+    "336": "Bellandur:Iblur Lake Park"
   },
   "Wards": {
     "56": "A Narayanapura",
