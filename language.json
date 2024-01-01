@@ -8990,7 +8990,7 @@
       "Pouteria",
       "gardneriana",
       "(A. DC.) Radlk.",
-      false,
+      true,
       34,
       0,
       11
@@ -9034,7 +9034,7 @@
       "Euphorbia",
       "umbellata",
       "(Pax) Bruyns",
-      false,
+      true,
       34,
       1,
       9
@@ -9045,7 +9045,7 @@
       "Elaeis",
       "guineensis",
       "Jacq.",
-      true,
+      false,
       34,
       1,
       3
@@ -9056,7 +9056,7 @@
       "Spathodea",
       "campanulata",
       "P.Beauv.",
-      true,
+      false,
       34,
       0,
       10
@@ -9089,7 +9089,7 @@
       "Sesbania",
       "grandiflora",
       "(L.) Pers.",
-      true,
+      false,
       34,
       1,
       3
@@ -9144,7 +9144,7 @@
       "Sambucus",
       "canadensis",
       "L.",
-      false,
+      true,
       34,
       0,
       10
@@ -9221,7 +9221,7 @@
       "Catha",
       "edulis",
       "(Vahl) Forssk. ex Endl.",
-      true,
+      false,
       34,
       0,
       11
@@ -9254,7 +9254,7 @@
       "Tarenna",
       "asiatica",
       "(L.) Kuntze",
-      false,
+      true,
       34,
       1,
       8
@@ -9353,7 +9353,7 @@
       "Ficus",
       "benghalensis",
       "L.",
-      false,
+      true,
       24,
       3,
       11
@@ -9485,7 +9485,7 @@
       "Castanospermum",
       "australe",
       "A.Cunn & C.Fraser ex Hook.",
-      true,
+      false,
       34,
       3,
       10
@@ -9551,7 +9551,7 @@
       "Erythrina",
       "blakei",
       "hort.",
-      false,
+      true,
       34,
       3,
       16
@@ -9661,7 +9661,7 @@
       "Schizolobium",
       "parahyba",
       "(Vell.) S.F.Blake",
-      true,
+      false,
       34,
       0,
       2
@@ -9716,7 +9716,7 @@
       "Brachychiton",
       "australis",
       "(Schott & Endl.) A. Terracc.",
-      false,
+      true,
       34,
       0,
       14
@@ -9738,7 +9738,7 @@
       "Xylosma",
       "longifolia",
       "Clos",
-      true,
+      false,
       34,
       1,
       11
@@ -9782,7 +9782,7 @@
       "Pleiogynium",
       "timoriense",
       "(DC.) Leenh.",
-      true,
+      false,
       34,
       1,
       10
@@ -9870,7 +9870,7 @@
       "Sabal",
       "palmetto",
       "(Walter) Lodd. ex Schult. & Schult. f.",
-      true,
+      false,
       34,
       1,
       4
@@ -9892,7 +9892,7 @@
       "Gardenia",
       "gummifera",
       "L.f.",
-      true,
+      false,
       34,
       1,
       11
@@ -9925,7 +9925,7 @@
       "Senna",
       "alata",
       "(L.) Roxb.",
-      true,
+      false,
       34,
       1,
       3
@@ -9936,7 +9936,7 @@
       "Parmentiera",
       "cereifera",
       "Seem.",
-      true,
+      false,
       34,
       1,
       16
@@ -9980,7 +9980,7 @@
       "Anacardium",
       "occidentale",
       "L.",
-      false,
+      true,
       34,
       1,
       9
@@ -10057,7 +10057,7 @@
       "Tecoma",
       "castanifolia",
       "(D.Don) Melch.",
-      true,
+      false,
       34,
       1,
       16
@@ -10068,7 +10068,7 @@
       "Manilkara",
       "zapota",
       "(L.) P.Royen",
-      false,
+      true,
       34,
       1,
       11
@@ -10090,7 +10090,7 @@
       "Livistona",
       "chinensis",
       "(Jacq.) R. Br. ex Mart.",
-      false,
+      true,
       34,
       1,
       4
@@ -10178,7 +10178,7 @@
       "Ficus",
       "racemosa",
       "L.",
-      false,
+      true,
       24,
       0,
       11
@@ -10255,7 +10255,7 @@
       "Hibiscus",
       "mutabilis",
       "L.",
-      false,
+      true,
       34,
       1,
       14
@@ -10420,7 +10420,7 @@
       "Dombeya",
       "spectabilis",
       "Bojer",
-      true,
+      false,
       34,
       1,
       14
@@ -10453,7 +10453,7 @@
       "Duabanga",
       "grandiflora",
       "(Roxb. ex DC.) Walp.",
-      false,
+      true,
       34,
       1,
       11
@@ -10497,7 +10497,7 @@
       "Ficus",
       "tinctoria",
       "G.Forst.",
-      false,
+      true,
       24,
       3,
       12
@@ -10552,7 +10552,7 @@
       "Magnolia",
       "liliifera",
       "(L.) Baill.",
-      false,
+      true,
       34,
       1,
       11
@@ -10618,7 +10618,7 @@
       "Filicium",
       "decipiens",
       "(Wight & Arn.) Thwaites ex Hook. f.",
-      true,
+      false,
       34,
       1,
       10
@@ -10640,7 +10640,7 @@
       "Ficus",
       "lyrata",
       "Warb.",
-      false,
+      true,
       24,
       1,
       11
@@ -10684,7 +10684,7 @@
       "Butea",
       "monosperma",
       "(Lam.) Taub.",
-      false,
+      true,
       34,
       3,
       16
@@ -10695,7 +10695,7 @@
       "Saribus",
       "rotundifolius",
       "(Lam.) Blume",
-      false,
+      true,
       6,
       1,
       4
@@ -10706,7 +10706,7 @@
       "Eucalyptus",
       "tereticornis",
       "Sm.",
-      true,
+      false,
       34,
       1,
       5
@@ -10717,7 +10717,7 @@
       "Pachira",
       "aquatica",
       "Aubl.",
-      true,
+      false,
       34,
       1,
       13
@@ -10761,7 +10761,7 @@
       "Carallia",
       "brachiata",
       "(Lour.) Merr.",
-      true,
+      false,
       34,
       1,
       9
@@ -10772,7 +10772,7 @@
       "Oncoba",
       "spinosa",
       "Forssk.",
-      true,
+      false,
       34,
       0,
       11
@@ -10805,7 +10805,7 @@
       "Garuga",
       "pinnata",
       "Roxb.",
-      false,
+      true,
       34,
       0,
       3
@@ -10904,7 +10904,7 @@
       "Crescentia",
       "cujete",
       "L.",
-      true,
+      false,
       34,
       1,
       9
@@ -10915,7 +10915,7 @@
       "Citrus",
       "maxima",
       "(Burm.) Merr.",
-      false,
+      true,
       34,
       3,
       11
@@ -10992,7 +10992,7 @@
       "Sterculia",
       "villosa",
       "Roxb. ex Sm.",
-      false,
+      true,
       34,
       0,
       13
@@ -11003,7 +11003,7 @@
       "Haldina",
       "cordifolia",
       "(Roxb.) Ridsdale",
-      true,
+      false,
       34,
       0,
       12
@@ -11025,7 +11025,7 @@
       "Premna",
       "serratifolia",
       "L.",
-      false,
+      true,
       34,
       1,
       12
@@ -11047,7 +11047,7 @@
       "Gyrocarpus",
       "americanus",
       "Jacq.",
-      true,
+      false,
       34,
       0,
       12
@@ -11135,7 +11135,7 @@
       "Lannea",
       "coromandelica",
       "(Houtt.) Merr.",
-      false,
+      true,
       34,
       0,
       10
@@ -11157,7 +11157,7 @@
       "Gardenia",
       "latifolia",
       "Aiton",
-      true,
+      false,
       34,
       1,
       12
@@ -11212,7 +11212,7 @@
       "Holoptelea",
       "integrifolia",
       "(Roxb.) Planch.",
-      false,
+      true,
       34,
       0,
       11
@@ -11322,7 +11322,7 @@
       "Ficus",
       "elastica",
       "Roxb. ex Hornem.",
-      false,
+      true,
       24,
       1,
       11
@@ -11333,7 +11333,7 @@
       "Euphorbia",
       "neriifolia",
       "L.",
-      false,
+      true,
       34,
       1,
       9
@@ -11421,7 +11421,7 @@
       "Artocarpus",
       "heterophyllus",
       "Lam.",
-      true,
+      false,
       34,
       1,
       11
@@ -11432,7 +11432,7 @@
       "Ficus",
       "amplissima",
       "Sm.",
-      false,
+      true,
       24,
       1,
       11
@@ -11443,7 +11443,7 @@
       "Muntingia",
       "calabura",
       "L.",
-      false,
+      true,
       34,
       1,
       12
@@ -11476,7 +11476,7 @@
       "Ligustrum",
       "japonicum",
       "Thunb.",
-      false,
+      true,
       34,
       1,
       11
@@ -11509,7 +11509,7 @@
       "Ardisia",
       "humilis",
       "Vahl",
-      true,
+      false,
       34,
       0,
       11
@@ -11520,7 +11520,7 @@
       "Artocarpus",
       "hirsutus",
       "Lam.",
-      true,
+      false,
       59,
       1,
       11
@@ -11564,7 +11564,7 @@
       "Mallotus",
       "philippensis",
       "(Lam.) Muell. Arg.",
-      true,
+      false,
       34,
       1,
       12
@@ -11663,7 +11663,7 @@
       "Garcinia",
       "indica",
       "(Thouars) Choisy",
-      false,
+      true,
       34,
       1,
       11
@@ -11674,7 +11674,7 @@
       "Ficus",
       "benghalensis var. krishnae",
       "C. DC.",
-      false,
+      true,
       24,
       0,
       11
@@ -11751,7 +11751,7 @@
       "Ficus",
       "microcarpa",
       "L. f.",
-      false,
+      true,
       24,
       0,
       11
@@ -11762,7 +11762,7 @@
       "Litchi",
       "chinensis",
       "Sonn.",
-      false,
+      true,
       34,
       1,
       3
@@ -11839,7 +11839,7 @@
       "Vernonia",
       "colorata",
       "(Willd.) Drake",
-      false,
+      true,
       34,
       1,
       11
@@ -11905,7 +11905,7 @@
       "Magnolia",
       "grandiflora",
       "L.",
-      false,
+      true,
       34,
       1,
       11
@@ -11938,7 +11938,7 @@
       "Melia",
       "dubia",
       "Cav.",
-      false,
+      true,
       34,
       0,
       1
@@ -11960,7 +11960,7 @@
       "Mangifera",
       "indica",
       "L.",
-      false,
+      true,
       34,
       3,
       12
@@ -12004,7 +12004,7 @@
       "Prosopis",
       "juliflora",
       "(Sw.) DC.",
-      true,
+      false,
       34,
       0,
       2
@@ -12081,7 +12081,7 @@
       "Millettia",
       "peguensis",
       "Ali",
-      false,
+      true,
       34,
       0,
       10
@@ -12103,7 +12103,7 @@
       "Ficus",
       "virens var. virens",
       "Aiton",
-      false,
+      true,
       24,
       0,
       12
@@ -12202,7 +12202,7 @@
       "Markhamia",
       "lutea",
       "(Benth.) K. Schum.",
-      true,
+      false,
       34,
       1,
       10
@@ -12213,7 +12213,7 @@
       "Araucaria",
       "heterophylla",
       "(Salisb.) Franco",
-      true,
+      false,
       18,
       1,
       7
@@ -12290,7 +12290,7 @@
       "Caesalpinia",
       "pulcherrima",
       "(L.) Sw.",
-      true,
+      false,
       34,
       3,
       2
@@ -12301,7 +12301,7 @@
       "Ficus",
       "benjamina var. benjamina",
       "L.",
-      false,
+      true,
       24,
       3,
       11
@@ -12411,7 +12411,7 @@
       "Carica",
       "papaya",
       "L.",
-      true,
+      false,
       34,
       3,
       14
@@ -12433,7 +12433,7 @@
       "Simarouba",
       "glauca",
       "DC.",
-      false,
+      true,
       34,
       1,
       10
@@ -12499,7 +12499,7 @@
       "Melia",
       "azedarach",
       "L.",
-      true,
+      false,
       34,
       0,
       1
@@ -12543,7 +12543,7 @@
       "Dombeya",
       "wallichii",
       "(Lindl.) Benth. ex Baill.",
-      true,
+      false,
       34,
       1,
       14
@@ -12631,7 +12631,7 @@
       "Caesalpinia",
       "pulcherrima",
       "(L.) Sw.",
-      true,
+      false,
       34,
       3,
       2
@@ -12642,7 +12642,7 @@
       "Calliandra",
       "brevipes",
       "Benth.",
-      false,
+      true,
       34,
       1,
       3
@@ -12785,7 +12785,7 @@
       "Aglaia",
       "elaeagnoidea",
       "(A.Juss.) Benth.",
-      false,
+      true,
       34,
       1,
       10
@@ -12851,7 +12851,7 @@
       "Syagrus",
       "romanzoffiana",
       "(Cham.) Glassman",
-      true,
+      false,
       34,
       1,
       3
@@ -12972,7 +12972,7 @@
       "Calliandra",
       "haematocephala",
       "Hassk.",
-      false,
+      true,
       34,
       1,
       3
@@ -12994,7 +12994,7 @@
       "Ficus",
       "benjamina var. nudo",
       "(Miq.) M. F. Barrett",
-      false,
+      true,
       24,
       3,
       11
@@ -13005,7 +13005,7 @@
       "Eucalyptus",
       "brownii",
       "Maiden & Cambage",
-      true,
+      false,
       34,
       1,
       5
@@ -13071,7 +13071,7 @@
       "Memecylon",
       "royenii",
       "Blume",
-      true,
+      false,
       34,
       1,
       12
@@ -13082,7 +13082,7 @@
       "Elaeocarpus",
       "grandiflorus",
       "Sm.",
-      true,
+      false,
       34,
       1,
       11
@@ -13148,7 +13148,7 @@
       "Fagraea",
       "berteroana",
       "A.Gray ex Benth.",
-      true,
+      false,
       34,
       1,
       11
@@ -13269,7 +13269,7 @@
       "Alstonia",
       "scholaris",
       "(L.) R. Br.",
-      true,
+      false,
       34,
       1,
       9
@@ -13280,7 +13280,7 @@
       "Syzygium",
       "grande",
       "(Wight) Walp.",
-      true,
+      false,
       34,
       1,
       11
@@ -13291,7 +13291,7 @@
       "Coccoloba",
       "uvifera",
       "(L.) L.",
-      true,
+      false,
       34,
       1,
       11
@@ -13313,7 +13313,7 @@
       "Cerbera",
       "manghas",
       "L.",
-      true,
+      false,
       34,
       1,
       11
@@ -13346,7 +13346,7 @@
       "Erythrina",
       "mitis",
       "Jacq.",
-      false,
+      true,
       34,
       3,
       16
@@ -13423,7 +13423,7 @@
       "Persea",
       "americana",
       "Mill.",
-      true,
+      false,
       34,
       1,
       11
@@ -13632,7 +13632,7 @@
       "Suregada",
       "lanceolata",
       "(Willd.) Kuntze",
-      false,
+      true,
       34,
       1,
       11
@@ -13643,7 +13643,7 @@
       "Eugenia",
       "uniflora",
       "L.",
-      true,
+      false,
       34,
       1,
       11
@@ -13687,7 +13687,7 @@
       "Citrus",
       "sinensis",
       "(L.) Osbeck",
-      true,
+      false,
       34,
       3,
       12
@@ -13698,7 +13698,7 @@
       "Eucalyptus",
       "saligna",
       "Sm.",
-      true,
+      false,
       6,
       1,
       5
@@ -13775,7 +13775,7 @@
       "Cordia",
       "boissieri",
       "A.DC.",
-      true,
+      false,
       34,
       1,
       11
@@ -13797,7 +13797,7 @@
       "Mischodon",
       "zeylanicus",
       "Thwaites",
-      true,
+      false,
       34,
       1,
       11
@@ -13808,7 +13808,7 @@
       "Thrinax",
       "parviflora",
       "Sw.",
-      true,
+      false,
       34,
       1,
       4
@@ -13852,7 +13852,7 @@
       "Ravenala",
       "madagascariensis",
       "Sonn.",
-      false,
+      true,
       34,
       1,
       8
@@ -13896,7 +13896,7 @@
       "Ficus",
       "natalensis ssp. leprieurii",
       "(Miq.) C.C.Berg",
-      true,
+      false,
       24,
       3,
       9
@@ -13951,7 +13951,7 @@
       "Macaranga",
       "peltata",
       "(Roxb.) Mueller",
-      false,
+      true,
       6,
       1,
       11
@@ -14006,7 +14006,7 @@
       "Schotia",
       "brachypetala",
       "Sond.",
-      false,
+      true,
       34,
       1,
       3
@@ -14105,7 +14105,7 @@
       "Ficus",
       "virens var. sublanceolata",
       "Miq. Corner",
-      false,
+      true,
       24,
       0,
       11
@@ -14149,7 +14149,7 @@
       "Sideroxylon",
       "inerme",
       "L.",
-      true,
+      false,
       34,
       1,
       11
@@ -14215,7 +14215,7 @@
       "Calliandra",
       "haematocephala",
       "Hassk.",
-      true,
+      false,
       34,
       1,
       3
@@ -14226,7 +14226,7 @@
       "Casimiroa",
       "edulis",
       "La Llave",
-      true,
+      false,
       34,
       1,
       13
@@ -14303,7 +14303,7 @@
       "Ficus",
       "benjamina var. nudo",
       "(Miq.) M. F. Barrett",
-      false,
+      true,
       59,
       3,
       11
@@ -14325,7 +14325,7 @@
       "Sterculia",
       "foetida",
       "L.",
-      false,
+      true,
       34,
       0,
       13
@@ -14501,7 +14501,7 @@
       "Caesalpinia",
       "pulcherrima f. flava",
       "(O. Deg.) H. St. John",
-      true,
+      false,
       34,
       3,
       2
@@ -14545,7 +14545,7 @@
       "Ficus",
       "benjamina var. comosa",
       "(Roxb.) Kurz",
-      true,
+      false,
       24,
       3,
       11
@@ -17536,49 +17536,51 @@
     "291": "Basavangudi:Bugle Rock Park",
     "292": "Basavangudi:Shamanna Park",
     "293": "Basavangudi:Ambavani Temple Park",
-    "294": "Basavangudi:APS Playground",
-    "295": "Basavangudi:Metro Park 1",
-    "296": "Basavangudi:Ashoka Pillar Circle",
-    "297": "Basavangudi:Krishna Rao Park",
-    "298": "Basavangudi:Jayanthi Park",
-    "299": "Basavangudi:Netta Kalappa Circle",
-    "300": "Basavangudi:Arumugam Circle",
-    "301": "Basavangudi:Madhava Rao Circle",
-    "302": "Gavipuram:Hanumanth Nagar Park",
-    "303": "Gavipuram:Dr. Rajkumar Park",
-    "304": "Gavipuram:Park 1",
-    "305": "Gavipuram:Park 2",
-    "306": "Gavipuram:Kumaraswamy Temple",
-    "307": "Gavipuram:Rama Anjaneya Temple",
-    "308": "Gavipuram:Kempambudhi Kere",
-    "309": "Gavipuram:Playground 1",
-    "310": "V. V. Puram:Sajjan Rao Circle",
-    "311": "V. V. Puram:Park 1",
-    "312": "Banashankari:Water Tank Park",
-    "313": "Banashankari:Brindavana Park",
-    "314": "Banashankari:Kuvempu Udyanavana",
-    "315": "Banashankari:Uma Maheshwara Park",
-    "316": "Jayanagar:Madhavan Park",
-    "317": "Jayanagar:Yediyur Lake park",
-    "318": "Jayanagar:Laxman Rao Park 1",
-    "319": "Jayanagar:Laxman Rao Park 2",
-    "320": "Jayanagar:Vishnuvardhan Park",
-    "321": "Jayanagar:Brindavana Park",
-    "322": "Jayanagar:Gopalakrishna Adiga Park",
-    "323": "Jayanagar:Visvesvaraya Park",
-    "324": "Jayanagar:Putha Narasimhachar Park",
-    "325": "Jayanagar:4th Block Park",
-    "326": "Jayanagar:Nandanvan Children's Park",
-    "327": "Jayanagar:MES Playground",
-    "328": "Jayanagar:Chandragupta Maurya Playground",
-    "329": "Jayanagar:Park 1",
-    "330": "Jayanagar:Park 2",
-    "331": "Jayanagar:Park 3",
-    "332": "Jayanagar:Park 4",
-    "333": "JP Nagar:Durga Parameshwari Grounds",
-    "334": "Wilson Garden:Kitturu Rani Chennamma Park",
-    "335": "BTM Layout:Nandanavana Park",
-    "336": "Bellandur:Iblur Lake Park"
+    "294": "Basavangudi:Chennammanakere Park",
+    "295": "Basavangudi:Poornaprajna Vidyaapeetha",
+    "296": "Basavangudi:APS Playground",
+    "297": "Basavangudi:Metro Park 1",
+    "298": "Basavangudi:Ashoka Pillar Circle",
+    "299": "Basavangudi:Krishna Rao Park",
+    "300": "Basavangudi:Jayanthi Park",
+    "301": "Basavangudi:Netta Kalappa Circle",
+    "302": "Basavangudi:Arumugam Circle",
+    "303": "Basavangudi:Madhava Rao Circle",
+    "304": "Gavipuram:Hanumanth Nagar Park",
+    "305": "Gavipuram:Dr. Rajkumar Park",
+    "306": "Gavipuram:Park 1",
+    "307": "Gavipuram:Park 2",
+    "308": "Gavipuram:Kumaraswamy Temple",
+    "309": "Gavipuram:Rama Anjaneya Temple",
+    "310": "Gavipuram:Kempambudhi Kere",
+    "311": "Gavipuram:Playground 1",
+    "312": "V. V. Puram:Sajjan Rao Circle",
+    "313": "V. V. Puram:Park 1",
+    "314": "Banashankari:Water Tank Park",
+    "315": "Banashankari:Brindavana Park",
+    "316": "Banashankari:Kuvempu Udyanavana",
+    "317": "Banashankari:Uma Maheshwara Park",
+    "318": "Jayanagar:Madhavan Park",
+    "319": "Jayanagar:Yediyur Lake park",
+    "320": "Jayanagar:Laxman Rao Park 1",
+    "321": "Jayanagar:Laxman Rao Park 2",
+    "322": "Jayanagar:Vishnuvardhan Park",
+    "323": "Jayanagar:Brindavana Park",
+    "324": "Jayanagar:Gopalakrishna Adiga Park",
+    "325": "Jayanagar:Visvesvaraya Park",
+    "326": "Jayanagar:Putha Narasimhachar Park",
+    "327": "Jayanagar:4th Block Park",
+    "328": "Jayanagar:Nandanvan Children's Park",
+    "329": "Jayanagar:MES Playground",
+    "330": "Jayanagar:Chandragupta Maurya Playground",
+    "331": "Jayanagar:Park 1",
+    "332": "Jayanagar:Park 2",
+    "333": "Jayanagar:Park 3",
+    "334": "Jayanagar:Park 4",
+    "335": "JP Nagar:Durga Parameshwari Grounds",
+    "336": "Wilson Garden:Kitturu Rani Chennamma Park",
+    "337": "BTM Layout:Nandanavana Park",
+    "338": "Bellandur:Iblur Lake Park"
   },
   "Wards": {
     "56": "A Narayanapura",
