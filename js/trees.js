@@ -771,11 +771,14 @@ function set_chosen_image(tree_id) {
     const imap = window.id_map;
     const name = imap.lang_name_map[tree_id];
     const h = imap.handle_map[tree_id];
+    const blooming = h[H_BLOOM];
     const image_id = h[H_PART];
+    let icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
+    if (window.map_tree_id === tree_id) icon = (blooming) ? 'icons/marker_bloom_red.png' : 'icons/marker_tree_red.png';
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
     const h_url = `javascript:load_module_data('${tree_id}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
-    const name_html = `<a class="TEXT_COLOR" href="${a_url}">${name}</a>`;
+    const name_html = `<a class="TEXT_COLOR" href="${a_url}"><img class="ICON" src="${icon}" alt="${name}" /> ${name}</a>`;
     const img_html = `<center><a href="${h_url}"><div class="thumbnail"><img src="${FLORA_BASE}/${t_url}" class="shadow-box"></div></a></center>`;
     d3.select('#CHOSEN_ID').html(name_html);
     d3.select('#CHOSEN_IMG').html(img_html);

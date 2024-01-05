@@ -215,6 +215,7 @@
     "સત્તા",
     "Bengali",
     "રંગ",
+    "Common",
     "સામાન્ય કુટુંબ",
     "સામાન્ય સબ ફેમિલી",
     "Coorgi",
@@ -921,7 +922,8 @@
     "Blue Latan Tree",
     "Senegal Date Tree",
     "Spiked Powder Puff Tree",
-    "Bottle Palm Tree"
+    "Bottle Palm Tree",
+    "Malay Apple Tree"
   ],
   "keyboard": {
     "base": "0xa80",

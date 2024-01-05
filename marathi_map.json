@@ -215,6 +215,7 @@
     "प्राधिकरण",
     "Bengali",
     "रंग",
+    "Common",
     "सामान्य कौटुंबिक",
     "सामान्य उप कौटुंबिक",
     "Coorgi",
@@ -921,7 +922,8 @@
     "Blue Latan Tree",
     "Senegal Date Tree",
     "Spiked Powder Puff Tree",
-    "Bottle Palm Tree"
+    "Bottle Palm Tree",
+    "Malay Apple Tree"
   ],
   "keyboard": {
     "base": "0x900",

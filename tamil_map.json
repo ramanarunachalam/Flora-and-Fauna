@@ -215,6 +215,7 @@
     "ஆணையுரிமை",
     "Bengali",
     "நிறம்",
+    "Common",
     "பொதுக் குடும்பம்",
     "பொது துணை குடும்பம்",
     "Coorgi",
@@ -921,7 +922,8 @@
     "Blue Latan Tree",
     "Senegal Date Tree",
     "Spiked Powder Puff Tree",
-    "Bottle Palm Tree"
+    "Bottle Palm Tree",
+    "Malay Apple Tree"
   ],
   "keyboard": {
     "base": "0xb80",

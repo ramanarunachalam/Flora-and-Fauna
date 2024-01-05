@@ -215,6 +215,7 @@
     "কর্তৃপক্ষ",
     "Bengali",
     "রঙ",
+    "Common",
     "সাধারণ পরিবার",
     "সাধারণ সাব পরিবার",
     "Coorgi",
@@ -921,7 +922,8 @@
     "Blue Latan Tree",
     "Senegal Date Tree",
     "Spiked Powder Puff Tree",
-    "Bottle Palm Tree"
+    "Bottle Palm Tree",
+    "Malay Apple Tree"
   ],
   "keyboard": {
     "base": "0x980",
