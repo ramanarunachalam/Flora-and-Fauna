@@ -674,15 +674,25 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
     return osm_map;
 }
 
+function get_green_icon(blooming) {
+    return (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
+    // return (blooming) ? 'icons/new_bloom_green.svg' : 'icons/new_tree_green.svg';
+}
+
+function get_red_icon(blooming) {
+    return (blooming) ? 'icons/marker_bloom_red.png' : 'icons/marker_tree_red.png';
+    // return (blooming) ? 'icons/new_bloom_red.svg' : 'icons/new_tree_red.svg';
+}
+
 function create_marker_icon(file_name) {
-    return new L.icon({ iconUrl: `icons/${file_name}`, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
+    return new L.icon({ iconUrl: `${file_name}`, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
 }
 
 function create_icons() {
-    window.green_tree_icon = create_marker_icon('marker_tree_green.png');
-    window.green_bloom_icon = create_marker_icon('marker_bloom_green.png');
-    window.red_tree_icon = create_marker_icon('marker_tree_red.png');
-    window.red_bloom_icon = create_marker_icon('marker_bloom_red.png');
+    window.green_tree_icon = create_marker_icon(get_green_icon(false));
+    window.green_bloom_icon = create_marker_icon(get_green_icon(true));
+    window.red_tree_icon = create_marker_icon(get_red_icon(false));
+    window.red_bloom_icon = create_marker_icon(get_red_icon(true));
 }
 
 function get_needed_icon(selected, blooming) {
@@ -773,8 +783,7 @@ function set_chosen_image(tree_id) {
     const h = imap.handle_map[tree_id];
     const blooming = h[H_BLOOM];
     const image_id = h[H_PART];
-    let icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
-    if (window.map_tree_id === tree_id) icon = (blooming) ? 'icons/marker_bloom_red.png' : 'icons/marker_tree_red.png';
+    const icon = (window.map_tree_id === tree_id) ? get_red_icon(blooming) : get_green_icon(blooming);
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
     const h_url = `javascript:load_module_data('${tree_id}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
@@ -1050,8 +1059,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         if (!tree_dict.hasOwnProperty(tid)) continue;
         const t_name = imap.lang_name_map[tid];
         const h = imap.handle_map[tid];
-        const blooming = h[H_BLOOM];
-        const icon = (blooming) ? 'icons/marker_bloom_green.png' : 'icons/marker_tree_green.png';
+        const icon = get_green_icon(h[H_BLOOM]);
         tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid,
                               'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long
                            });
