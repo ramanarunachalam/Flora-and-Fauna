@@ -1447,7 +1447,8 @@ function speech_to_text_init() {
             }
             if (window.speech_final_transcript || interim_transcript) {
                 window.speech_recognition.stop();
-                d3.select('#MIC_IMAGE').attr('src', 'icons/mic-mute.svg');
+                const [ o, n ] = [ 'bi-mic', 'bi-mic-mute' ];
+                toggle_icon('MIC_IMAGE', o, n);
                 d3.select('#SEARCH_WORD').property('value', window.speech_final_transcript);
                 // console.log('Speech Final: ' + window.speech_final_transcript);
                 load_search_data();
@@ -1469,7 +1470,8 @@ function speech_start(event) {
     window.speech_recognition.start();
     window.speech_ignore_onend = false;
     window.speech_start_timestamp = event.timeStamp;
-    d3.select('#MIC_IMAGE').attr('src', 'icons/mic.svg');
+    const [ o, n ] = [ 'bi-mic-mute', 'bi-mic' ];
+    toggle_icon('MIC_IMAGE', o, n);
 }
 
 function load_keyboard(event) {
