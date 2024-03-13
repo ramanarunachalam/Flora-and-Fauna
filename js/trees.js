@@ -56,7 +56,6 @@ const ZOOM_DICT = {
     'basic'   : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'heatmap' : [ MIN_ZOOM,      MIN_ZOOM      ],
     'cluster' : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
-    'flower'  : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'grid'    : [ AREA_MIN_ZOOM, AREA_MIN_ZOOM ],
     '3d'      : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'removed' : [ MIN_ZOOM,      MIN_ZOOM      ]
@@ -691,12 +690,6 @@ function get_icon_file_name(shade, color) {
     return `icons/marker_${shade}_${color}.svg`;
 }
 
-function get_marker_icon_name(selected, blooming) {
-    const color = blooming ? 'pink' : 'green';
-    const shade = selected ? 'dark' : 'light';
-    return get_icon_file_name(shade, color);
-}
-
 function create_marker_icon(shade, color) {
     const file_name = get_icon_file_name(shade, color);
     return new L.icon({ iconUrl: `${file_name}`, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
@@ -713,15 +706,23 @@ function create_icons() {
     }
 }
 
-function get_needed_icon(tree_id, selected, blooming) {
+function get_marker_icon_args(tree_id, selected, blooming) {
     const shade = selected ? 'dark' : 'light';
     let color = blooming ? 'pink' : 'green';
-    if (window.map_type === 'flower' || window.area_type === 'trees') {
-        const new_color = window.tree_flower_dict[tree_id];
-        if (new_color !== undefined && new_color in window.tree_icon_dict[shade]) {
-            color = new_color;
-        }
+    const new_color = window.tree_flower_dict[tree_id];
+    if (new_color !== undefined && new_color in window.tree_icon_dict[shade]) {
+        color = new_color;
     }
+    return [ shade, color ];
+}
+
+function get_marker_icon_name(tree_id, selected, blooming) {
+    const [ shade, color ] = get_marker_icon_args(tree_id, selected, blooming);
+    return get_icon_file_name(shade, color);
+}
+
+function get_needed_icon(tree_id, selected, blooming) {
+    const [ shade, color ] = get_marker_icon_args(tree_id, selected, blooming);
     return window.tree_icon_dict[shade][color];
 }
 
@@ -809,7 +810,7 @@ function set_chosen_image(tree_id) {
     const name = imap.lang_name_map[tree_id];
     const h = imap.handle_map[tree_id];
     const image_id = h[H_PART];
-    const icon = get_marker_icon_name(window.map_tree_id === tree_id, h[H_BLOOM]);
+    const icon = get_marker_icon_name(tree_id, window.map_tree_id === tree_id, h[H_BLOOM]);
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
     const h_url = `javascript:load_module_data('${tree_id}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
@@ -1056,10 +1057,6 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
             marker.state = 'old';
             old_count++;
         }
-        if (window.map_type === 'flower') {
-            const icon = get_needed_icon(marker.tree_id, (marker.tree_id === c_tree_id), blooming);
-            marker.setIcon(icon);
-        }
         area_marker_list.push(marker);
         area_marker_dict[[m_lat, m_long]] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
@@ -1089,7 +1086,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         if (!tree_dict.hasOwnProperty(tid)) continue;
         const t_name = imap.lang_name_map[tid];
         const h = imap.handle_map[tid];
-        const icon = get_marker_icon_name(false, h[H_BLOOM]);
+        const icon = get_marker_icon_name(tid, false, h[H_BLOOM]);
         tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TI' : icon, 'AID' : aid,
                               'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long
                            });
@@ -1338,7 +1335,6 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                   ],
                         'types' : [ { N: 'Heatmap',      P: 'heatmap', I: 'soundwave' },
                                     { N: 'Cluster',      P: 'cluster', I: 'dpad'      }, 
-                                    { N: 'Flower Color', P: 'flower',  I: 'flower'    }, 
                                     { N: 'Grid',         P: 'grid',    I: 'grid'      }, 
                                     { N: '3D',           P: '3d',      I: '3d'        }, 
                                     { N: 'Vanished',     P: 'removed', I: 'x'         }
