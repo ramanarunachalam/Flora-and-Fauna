@@ -56,6 +56,7 @@ const ZOOM_DICT = {
     'basic'   : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'heatmap' : [ MIN_ZOOM,      MIN_ZOOM      ],
     'cluster' : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
+    'bloom'   : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'grid'    : [ AREA_MIN_ZOOM, AREA_MIN_ZOOM ],
     '3d'      : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'removed' : [ MIN_ZOOM,      MIN_ZOOM      ]
@@ -708,10 +709,12 @@ function create_icons() {
 
 function get_marker_icon_args(tree_id, selected, blooming) {
     const shade = selected ? 'dark' : 'light';
-    let color = blooming ? 'pink' : 'green';
-    const new_color = window.tree_flower_dict[tree_id];
-    if (new_color !== undefined && new_color in window.tree_icon_dict[shade]) {
-        color = new_color;
+    let color = 'tree';
+    if (window.map_type === 'bloom' || window.area_type === 'trees') {
+        const new_color = window.tree_flower_dict[tree_id];
+        if (new_color !== undefined && new_color in window.tree_icon_dict[shade]) {
+            color = new_color;
+        }
     }
     return [ shade, color ];
 }
@@ -1057,6 +1060,10 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
             marker.state = 'old';
             old_count++;
         }
+        if (window.map_type === 'bloom') {
+            const icon = get_needed_icon(marker.tree_id, (marker.tree_id === c_tree_id), blooming);
+            marker.setIcon(icon);
+        }
         area_marker_list.push(marker);
         area_marker_dict[[m_lat, m_long]] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
@@ -1335,6 +1342,7 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                   ],
                         'types' : [ { N: 'Heatmap',      P: 'heatmap', I: 'soundwave' },
                                     { N: 'Cluster',      P: 'cluster', I: 'dpad'      }, 
+                                    { N: 'Bloom',        P: 'bloom',   I: 'bloom'     }, 
                                     { N: 'Grid',         P: 'grid',    I: 'grid'      }, 
                                     { N: '3D',           P: '3d',      I: '3d'        }, 
                                     { N: 'Vanished',     P: 'removed', I: 'x'         }
