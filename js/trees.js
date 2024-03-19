@@ -53,13 +53,14 @@ const DEFAULT_ZOOM     = 18;
 const MAX_ZOOM         = 21;
 
 const ZOOM_DICT = {
-    'basic'   : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
-    'heatmap' : [ MIN_ZOOM,      MIN_ZOOM      ],
-    'cluster' : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
-    'bloom'   : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
-    'grid'    : [ AREA_MIN_ZOOM, AREA_MIN_ZOOM ],
-    '3d'      : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
-    'removed' : [ MIN_ZOOM,      MIN_ZOOM      ]
+    'basic'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
+    'heatmap'  : [ MIN_ZOOM,      MIN_ZOOM      ],
+    'cluster'  : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
+    'bloom'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
+    'blooming' : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
+    'grid'     : [ AREA_MIN_ZOOM, AREA_MIN_ZOOM ],
+    '3d'       : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
+    'removed'  : [ MIN_ZOOM,      MIN_ZOOM      ]
 };
 
 const TILE_OPTIONS = {
@@ -708,9 +709,9 @@ function create_icons() {
 }
 
 function get_marker_icon_args(tree_id, selected, blooming) {
-    const shade = selected ? 'dark' : 'light';
+    const shade = (window.area_type === 'trees' || !selected) ? 'light' : 'dark';
     let color = 'tree';
-    if (window.map_type === 'bloom' || window.area_type === 'trees') {
+    if (window.map_type === 'bloom' || (window.map_type === 'blooming' && blooming) || window.area_type === 'trees') {
         const new_color = window.tree_flower_dict[tree_id];
         if (new_color !== undefined && new_color in window.tree_icon_dict[shade]) {
             color = new_color;
@@ -1060,7 +1061,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
             marker.state = 'old';
             old_count++;
         }
-        if (window.map_type === 'bloom') {
+        if ((window.map_type === 'bloom') || (window.map_type === 'blooming' && blooming)) {
             const icon = get_needed_icon(marker.tree_id, (marker.tree_id === c_tree_id), blooming);
             marker.setIcon(icon);
         }
@@ -1340,12 +1341,13 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                     { N: get_lang_map_word('Wards'), P: 'WARD', C: window.stats_data['W'] },
                                     { N: get_lang_map_word('Trees'), P: 'TREE', C: window.stats_data['M'] }
                                   ],
-                        'types' : [ { N: 'Heatmap',      P: 'heatmap', I: 'soundwave' },
-                                    { N: 'Cluster',      P: 'cluster', I: 'dpad'      }, 
-                                    { N: 'Bloom',        P: 'bloom',   I: 'bloom'     }, 
-                                    { N: 'Grid',         P: 'grid',    I: 'grid'      }, 
-                                    { N: '3D',           P: '3d',      I: '3d'        }, 
-                                    { N: 'Vanished',     P: 'removed', I: 'x'         }
+                        'types' : [ { N: 'Heatmap',      P: 'heatmap',  I: 'soundwave' },
+                                    { N: 'Cluster',      P: 'cluster',  I: 'dpad'      }, 
+                                    { N: 'Bloom',        P: 'bloom',    I: 'bloom'     }, 
+                                    { N: 'Blooming',     P: 'blooming', I: 'blooming'     }, 
+                                    { N: 'Grid',         P: 'grid',     I: 'grid'      }, 
+                                    { N: '3D',           P: '3d',       I: '3d'        }, 
+                                    { N: 'Vanished',     P: 'removed',  I: 'x'         }
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
