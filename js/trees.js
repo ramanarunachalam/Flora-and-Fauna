@@ -54,7 +54,7 @@ const MAX_ZOOM         = 21;
 
 const ZOOM_DICT = {
     'basic'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
-    'heatmap'  : [ MIN_ZOOM,      MIN_ZOOM      ],
+    'heatmap'  : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
     'cluster'  : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
     'bloom'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'blooming' : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
@@ -781,13 +781,14 @@ function create_map_layer(map_type) {
     window.map_osm_map.addLayer(window.map_osm_layer);
 }
 
-async function render_map_type(map_type) {
+async function render_map_type(map_type, full) {
     const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
     window.map_area_click = true;
     const old_map_type = window.map_type;
     destroy_osm_map()
     map_type = (old_map_type === map_type) ? 'basic' : map_type;
     window.map_type = map_type;
+    window.full_map_type = (window.map_type === 'heatmap') ? full : undefined;
 
     toggle_icon(`Map_${old_map_type}`, 'bi-check2', 'bi-dot');
     toggle_icon(`Map_${map_type}`, 'bi-dot', 'bi-check2');
@@ -795,7 +796,7 @@ async function render_map_type(map_type) {
     if (map_type === 'removed') await set_removed_data();
     window.quad_tree = (map_type === 'removed') ? window.removed_quad_tree : window.all_quad_tree;
 
-    const [ zoom, m_zoom ] = ZOOM_DICT[map_type];
+    const [ zoom, m_zoom ] = (full === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[map_type];
     const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
     window.map_osm_map = create_osm_map('area', latlong[0], latlong[1], zoom, min_zoom);
     window.map_area_move = false;
@@ -1172,7 +1173,7 @@ async function show_area_map(a_name, aid, tid, c_lat, c_long) {
 
     let osm_map;
     let zoom = DEFAULT_ZOOM;
-    const [ f_zoom, m_zoom ] = ZOOM_DICT[window.map_type];
+    const [ f_zoom, m_zoom ] = (window.full_map_type === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[window.map_type];
     const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
     const map_state = (window.map_initialized) ? 'initialized' : 'created';
     if (window.map_initialized) {
@@ -1341,13 +1342,13 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                     { N: get_lang_map_word('Wards'), P: 'WARD', C: window.stats_data['W'] },
                                     { N: get_lang_map_word('Trees'), P: 'TREE', C: window.stats_data['M'] }
                                   ],
-                        'types' : [ { N: 'Heatmap',      P: 'heatmap',  I: 'soundwave' },
-                                    { N: 'Cluster',      P: 'cluster',  I: 'dpad'      }, 
-                                    { N: 'Bloom',        P: 'bloom',    I: 'bloom'     }, 
-                                    { N: 'Blooming',     P: 'blooming', I: 'blooming'     }, 
-                                    { N: 'Grid',         P: 'grid',     I: 'grid'      }, 
-                                    { N: '3D',           P: '3d',       I: '3d'        }, 
-                                    { N: 'Vanished',     P: 'removed',  I: 'x'         }
+                        'types' : [ { N: 'Heatmap',      P: 'heatmap',  I: 'soundwave', F: 'full' },
+                                    { N: 'Cluster',      P: 'cluster',  I: 'dpad'     }, 
+                                    { N: 'Bloom',        P: 'bloom',    I: 'bloom'    }, 
+                                    { N: 'Blooming',     P: 'blooming', I: 'blooming' }, 
+                                    { N: 'Grid',         P: 'grid',     I: 'grid'     }, 
+                                    { N: '3D',           P: '3d',       I: '3d'       }, 
+                                    { N: 'Vanished',     P: 'removed',  I: 'x'        }
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
