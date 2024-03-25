@@ -162,6 +162,12 @@ function toggle_brightness() {
     toggle_icon('BRIGHTNESS', o, n)
 }
 
+function get_template_data(template_name, data) {
+    const ul_template = d3.select('#' + template_name).html();
+    const template_html = Mustache.render(ul_template, data);
+    return template_html;
+}
+
 function render_template_data(template_name, id_name, data) {
     const ul_template = d3.select('#' + template_name).html();
     const template_html = Mustache.render(ul_template, data);
@@ -687,14 +693,36 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
 }
 
 const ICON_SHADE_LIST = [ 'light', 'dark' ];
+const BARK_COLOR      = '#65320b';
+const COLOR_DICT      = { 'tree'   : [ '#33b864', '#006400' ],
+                          'black'  : [ '#000000', '#000000' ],
+                          'blue'   : [ '#82cafa', '#0147ab' ],
+                          'brown'  : [ '#9a7b4f', '#652a0e' ],
+                          'cream'  : [ '#fffcd8', '#efdc75' ],
+                          'green'  : [ '#90ee90', '#088f8f' ],
+                          'grey'   : [ '#b9bbb6', '#828282' ],
+                          'orange' : [ '#fcae1e', '#ed7014' ],
+                          'pink'   : [ '#fec5e5', '#b22222' ],
+                          'purple' : [ '#e39ff6', '#710193' ],
+                          'red'    : [ '#e3242b', '#d0312d' ],
+                          'white'  : [ '#ffffff', '#ffffff' ],
+                          'yellow' : [ '#f7f1af', '#ffff00' ]
+                        };
 
 function get_icon_file_name(shade, color) {
     return `icons/marker_${shade}_${color}.svg`;
 }
 
 function create_marker_icon(shade, color) {
+    /*
     const file_name = get_icon_file_name(shade, color);
-    return new L.icon({ iconUrl: `${file_name}`, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
+    const icon =  new L.icon({ iconUrl: `${file_name}`, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
+    */
+    const s = (shade === 'dark') ? 1 : 0;
+    const c = COLOR_DICT[color][s];
+    const html_data = get_template_data('icon-template', { L: c, B: BARK_COLOR });
+    const icon = new L.divIcon({ className: '', html: html_data, iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS });
+    return icon;
 }
 
 function create_icons() {
