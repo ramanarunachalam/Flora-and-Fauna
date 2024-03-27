@@ -702,14 +702,15 @@ function create_icons(tree_intro_data) {
     window.flower_color_list = color_list;
     window.bark_color = tree_info['bark color'];;
     window.leaf_color = tree_info['leaf color'];;
-    const opt = { className: '', html: '', iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS };
+    const opt = { iconUrl: '', iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS };
     window.tree_icon_dict = {};
     for (const shade of tree_info['shade']) {
         window.tree_icon_dict[shade] = {};
         for (const c of window.flower_color_list) {
             const color = c.toLowerCase();
-            opt.html = get_icon_html(shade, color);
-            window.tree_icon_dict[shade][color] = L.divIcon(opt);
+            const html = get_icon_html(shade, color);
+            opt.iconUrl = `data:image/svg+xml,${html}`;
+            window.tree_icon_dict[shade][color] = L.icon(opt);
         }
     }
 }
@@ -854,7 +855,8 @@ function marker_on_mouseout() {
 }
 
 function marker_on_click(e) {
-    const tree_id = e.target.tree_id;
+    const marker = e.target;
+    const tree_id = marker.tree_id;
     window.map_tree_id = tree_id;
     for (const marker of window.area_marker_list) {
         const icon = get_needed_icon(marker.tree_id, (marker.tree_id === tree_id), marker.blooming);
