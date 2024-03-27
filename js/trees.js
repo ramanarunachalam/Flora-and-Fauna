@@ -708,8 +708,8 @@ function create_icons(tree_intro_data) {
         window.tree_icon_dict[shade] = {};
         for (const c of window.flower_color_list) {
             const color = c.toLowerCase();
-            const html = get_icon_html(shade, color);
-            opt.iconUrl = `data:image/svg+xml,${html}`;
+            const html = btoa(get_icon_html(shade, color));
+            opt.iconUrl = `data:image/svg+xml;base64,${html}`;
             window.tree_icon_dict[shade][color] = L.icon(opt);
         }
     }
