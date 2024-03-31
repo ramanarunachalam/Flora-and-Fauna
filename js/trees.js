@@ -725,14 +725,15 @@ function get_marker_icon_args(tree_id, selected, blooming) {
     return [ shade, color ];
 }
 
-function get_marker_icon_html(tree_id, selected, blooming) {
-    const [ shade, color ] = get_marker_icon_args(tree_id, selected, blooming);
+function get_marker_icon_html(tree_id, blooming) {
+    const [ shade, color ] = get_marker_icon_args(tree_id, tree_id === window.chosen_tree_id, blooming);
     return get_icon_html(shade, color);
 }
 
-function get_needed_icon(tree_id, selected, blooming) {
-    const [ shade, color ] = get_marker_icon_args(tree_id, selected, blooming);
-    return window.tree_icon_dict[shade][color];
+function set_marker_icon(marker) {
+    const [ shade, color ] = get_marker_icon_args(marker.tree_id, marker.tree_id === window.chosen_tree_id, marker.blooming);
+    const icon = window.tree_icon_dict[shade][color];
+    marker.setIcon(icon);
 }
 
 async function set_removed_data() {
@@ -820,7 +821,7 @@ function set_chosen_image(tree_id) {
     const name = imap.lang_name_map[tree_id];
     const h = imap.handle_map[tree_id];
     const image_id = h[H_PART];
-    const icon_html = get_marker_icon_html(tree_id, window.map_tree_id === tree_id, h[H_BLOOM]);
+    const icon_html = get_marker_icon_html(tree_id, h[H_BLOOM]);
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
     const h_url = `javascript:load_module_data('${tree_id}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
@@ -851,22 +852,20 @@ function marker_on_mouseover() {
 }
 
 function marker_on_mouseout() {
-    if (window.map_tree_id !== 0) set_chosen_image(window.map_tree_id);
+    if (window.chosen_tree_id !== 0) set_chosen_image(window.chosen_tree_id);
 }
 
 function marker_on_click(e) {
-    const marker = e.target;
-    const tree_id = marker.tree_id;
-    window.map_tree_id = tree_id;
+    const chosen_marker = e.target;
+    window.chosen_tree_id = chosen_marker.tree_id;
     for (const marker of window.area_marker_list) {
-        const icon = get_needed_icon(marker.tree_id, (marker.tree_id === tree_id), marker.blooming);
-        marker.setIcon(icon);
+        set_marker_icon(marker);
     }
-    find_area_carousel_tree(tree_id);
+    find_area_carousel_tree(window.chosen_tree_id);
 }
 
 function load_module_data_with_id(tree_id) {
-    window.map_tree_id = tree_id;
+    window.chosen_tree_id = tree_id;
     load_module_data(tree_id);
 }
 
@@ -965,13 +964,12 @@ function find_area_carousel_tree(tree_id) {
     return 0;
 }
 
-function area_chosen_tree(tree_id) {
-    window.map_tree_id = tree_id;
+function area_chosen_tree(chosen_tree_id) {
+    window.chosen_tree_id = chosen_tree_id;
     for (const marker of window.area_marker_list) {
-        const icon = get_needed_icon(marker.tree_id, (marker.tree_id === tree_id), marker.blooming);
-        marker.setIcon(icon);
+        set_marker_icon(marker);
     }
-    set_chosen_image(tree_id);
+    set_chosen_image(chosen_tree_id);
 }
 
 function area_highlight_tree(active_index) {
@@ -992,15 +990,14 @@ function area_carousel_init() {
         area_highlight_tree(ev.activeIndex);
     });
 
-    let start_id = find_area_carousel_tree(window.map_tree_id);
+    let start_id = find_area_carousel_tree(window.chosen_tree_id);
     area_highlight_tree(start_id);
 }
 
-function add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming) {
-    const icon = get_needed_icon(i_tree_id, c_tree_id === i_tree_id, blooming);
-    const marker = new L.marker([m_lat, m_long], {icon: icon});
+function add_marker(tree_id, m_lat, m_long, blooming) {
+    const marker = new L.marker([m_lat, m_long]);
     marker.state = 'new';
-    marker.tree_id = i_tree_id;
+    marker.tree_id = tree_id;
     marker.blooming = blooming;
     const center = window.map_osm_map.getCenter();
     marker.distance = center.distanceTo(marker.getLatLng());
@@ -1051,8 +1048,9 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     const tree_dict = {};
     if (window.map_type === 'grid') window.area_marker_dict = {};
     const is_tree = (area === 'trees');
-    const c_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
-    const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? c_tree_id : 0);
+    const chosen_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
+    window.chosen_tree_id = chosen_tree_id;
+    const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? chosen_tree_id : 0);
     let old_count = 0;
     let new_count = 0; 
     for (const point of point_list) {
@@ -1062,16 +1060,13 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         const blooming = h[H_BLOOM];
         let marker = window.area_marker_dict[[m_lat, m_long]];
         if (marker === undefined) {
-            marker = add_marker(i_tree_id, m_lat, m_long, c_tree_id, blooming);
+            marker = add_marker(i_tree_id, m_lat, m_long, blooming);
             new_count++;
         } else {
             marker.state = 'old';
             old_count++;
         }
-        if ((window.map_type === 'bloom') || (window.map_type === 'blooming' && blooming)) {
-            const icon = get_needed_icon(marker.tree_id, (marker.tree_id === c_tree_id), blooming);
-            marker.setIcon(icon);
-        }
+        set_marker_icon(marker);
         area_marker_list.push(marker);
         area_marker_dict[[m_lat, m_long]] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
@@ -1162,8 +1157,8 @@ async function show_area_map(a_name, aid, tid, c_lat, c_long) {
     const old_a_name = window.map_area_name;
     window.map_area_name = a_name;
     window.map_area_id = aid;
-    if (tid === 0 && window.map_tree_id !== 0) tid = window.map_tree_id;
-    window.map_tree_id = +tid;
+    if (tid === 0 && window.chosen_tree_id !== 0) tid = window.chosen_tree_id;
+    window.chosen_tree_id = +tid;
 
     let n_name = '';
     if (area === 'trees') {
@@ -1205,7 +1200,7 @@ function draw_map_on_move(ev) {
     const latlong = osm_map.getCenter();
     window.map_area_move = true;
     setTimeout(() => {
-        show_area_map(window.map_area_name, window.map_area_id, window.map_tree_id, latlong.lat, latlong.lng);
+        show_area_map(window.map_area_name, window.map_area_id, window.chosen_tree_id, latlong.lat, latlong.lng);
         window.map_area_move = false;
     }, 0);
 }
@@ -1305,7 +1300,7 @@ async function tree_area_init(area, aid, item_data) {
     if (window.all_quad_tree === null) return;
     window.map_initialized = false;
 
-    let tid = (window.map_tree_id !== 0) ? window.map_tree_id : 0;
+    let tid = (window.chosen_tree_id !== 0) ? window.chosen_tree_id : 0;
     if (area === 'trees') {
         const m_name = get_module_name(aid);
         if (aid !== 0) {
@@ -1716,7 +1711,7 @@ function tree_main_init() {
     window.map_area_click = false;
     window.tree_popstate = false;
     window.map_type = 'basic';
-    window.map_tree_id = 0;
+    window.chosen_tree_id = 0;
     window.area_marker_offset = 0;
     window.area_marker_timer_list = [];
     window.area_marker_list = [];

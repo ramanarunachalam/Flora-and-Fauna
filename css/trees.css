@@ -52,6 +52,11 @@ a:not([class*="btn"]):hover {
     height: 24px;
 }
 
+.TREEICON {
+    width: 64px;
+    height: 64px;
+}
+
 .NAV_ICON{
     font-size: 2rem;
 }
