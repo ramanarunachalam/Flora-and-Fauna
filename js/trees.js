@@ -8,7 +8,9 @@ const INIT_COUNT       = 5;
 const IMP_COUNT        = 4;
 
 const MAP_ICON_SIZE    = [24, 24];
+const BIG_ICON_SIZE    = [36, 36];
 const MAP_ANCHOR_POS   = [12, 24];
+const BIG_ANCHOR_POS   = [18, 36];
 
 const MAP_MARKER_COUNT = 1000;
 const MAP_MARKER_TIME  = 100;
@@ -687,32 +689,8 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
 
 function get_icon_html(shade, color) {
     const s = (shade === 'dark') ? 1 : 0;
-    return get_template_data('icon-template', { L: window.leaf_color[color][s], B: window.bark_color });
-}
-
-function create_icons(tree_intro_data) {
-    window.tree_flower_dict = {};
-    const tree_info = tree_intro_data['treeinfo'];
-    const color_list = tree_info['color'];
-    const tree_data = tree_info['info'];
-    for (const tree_id in tree_data) {
-        const attr_list = tree_data[tree_id];
-        window.tree_flower_dict[tree_id] = color_list[attr_list[0]].toLowerCase();
-    }
-    window.flower_color_list = color_list;
-    window.bark_color = tree_info['bark color'];;
-    window.leaf_color = tree_info['leaf color'];;
-    const opt = { iconUrl: '', iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS };
-    window.tree_icon_dict = {};
-    for (const shade of tree_info['shade']) {
-        window.tree_icon_dict[shade] = {};
-        for (const c of window.flower_color_list) {
-            const color = c.toLowerCase();
-            const html = btoa(get_icon_html(shade, color));
-            opt.iconUrl = `data:image/svg+xml;base64,${html}`;
-            window.tree_icon_dict[shade][color] = L.icon(opt);
-        }
-    }
+    const html = get_template_data('icon-template', { L: window.leaf_color[color][s], B: window.bark_color });
+    return `data:image/svg+xml;base64,${btoa(html)}`;
 }
 
 function get_marker_icon_args(tree_id, selected, blooming) {
@@ -730,9 +708,35 @@ function get_marker_icon_html(tree_id, blooming) {
     return get_icon_html(shade, color);
 }
 
+function create_icons(tree_intro_data) {
+    window.tree_flower_dict = {};
+    const tree_info = tree_intro_data['treeinfo'];
+    const color_list = [];
+    for (const color of tree_info['color']) {
+        color_list.push(color.toLowerCase());
+    }
+    const tree_data = tree_info['info'];
+    for (const tree_id in tree_data) {
+        const attr_list = tree_data[tree_id];
+        window.tree_flower_dict[tree_id] = color_list[attr_list[0]].toLowerCase();
+    }
+    window.bark_color = tree_info['bark color'];;
+    window.leaf_color = tree_info['leaf color'];;
+    window.tree_icon_dict = {};
+    for (const shade of tree_info['shade']) {
+        window.tree_icon_dict[shade] = {};
+        for (const color of color_list) {
+            const opt = { iconSize: MAP_ICON_SIZE, iconAnchor: MAP_ANCHOR_POS, iconUrl: get_icon_html(shade, color) };
+            window.tree_icon_dict[shade][color] = L.icon(opt);
+        }
+    }
+}
+
 function set_marker_icon(marker) {
     const [ shade, color ] = get_marker_icon_args(marker.tree_id, marker.tree_id === window.chosen_tree_id, marker.blooming);
-    const icon = window.tree_icon_dict[shade][color];
+    const icon = window.tree_icon_dict['light'][color];
+    const [size, pos] = (shade === 'dark') ? [BIG_ICON_SIZE, BIG_ANCHOR_POS] : [MAP_ICON_SIZE, MAP_ANCHOR_POS];
+    L.setOptions(icon, { iconSize: size, iconAnchor: pos });
     marker.setIcon(icon);
 }
 
@@ -825,7 +829,7 @@ function set_chosen_image(tree_id) {
     const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
     const h_url = `javascript:load_module_data('${tree_id}');`;
     const a_url = `javascript:load_area_data('trees', '${tree_id}');`;
-    const name_html = `<a class="TEXT_COLOR" href="${a_url}">${icon_html} ${name}</a>`;
+    const name_html = `<a class="TEXT_COLOR" href="${a_url}"><img width="24px" height="24px" src="${icon_html}"> ${name}</a>`;
     const img_html = `<center><a href="${h_url}"><div class="thumbnail"><img src="${FLORA_BASE}/${t_url}" class="shadow-box"></div></a></center>`;
     d3.select('#CHOSEN_ID').html(name_html);
     d3.select('#CHOSEN_IMG').html(img_html);
@@ -1048,9 +1052,8 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     const tree_dict = {};
     if (window.map_type === 'grid') window.area_marker_dict = {};
     const is_tree = (area === 'trees');
-    const chosen_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
-    window.chosen_tree_id = chosen_tree_id;
-    const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? chosen_tree_id : 0);
+    window.chosen_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
+    const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? window.chosen_tree_id : 0);
     let old_count = 0;
     let new_count = 0; 
     for (const point of point_list) {

@@ -17658,10 +17658,12 @@
     "377": "BTM Layout:Park 2",
     "378": "BTM Layout:Park 3",
     "379": "BTM Layout:Park 4",
-    "380": "BTM Layout:Playground 1",
-    "381": "Madivala:Daniel Park",
-    "382": "Madivala:Park 1",
-    "383": "Bellandur:Iblur Lake Park"
+    "380": "BTM Layout:playground 1",
+    "381": "BTM Layout:Playground 2",
+    "382": "BTM Layout:Playground 3",
+    "383": "Madivala:Daniel Park",
+    "384": "Madivala:Park 1",
+    "385": "Bellandur:Iblur Lake Park"
   },
   "Wards": {
     "56": "A Narayanapura",
