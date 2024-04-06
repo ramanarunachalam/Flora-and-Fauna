@@ -268,11 +268,13 @@ function tree_grid_init(type, data) {
         set_key_value_map(card, 'N');
         const new_row_list = [];
         let new_col_list = [];
+        let count = 0;
         for (const row of card['ROW']) {
             const [ tree_id, image_id ] = row.split(',');
             const h = imap.handle_map[tree_id];
             const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
             new_item = { CI: tree_id, CN: imap.lang_name_map[tree_id], CT: (image_id === '') ? EMPTY_THUMBNAIL : t_url };
+            count++;
             new_col_list.push(new_item);
             if (new_col_list.length >= MAX_COL) {
                 new_row_list.push({ COL: new_col_list });
@@ -282,6 +284,7 @@ function tree_grid_init(type, data) {
         if (new_col_list.length > 0) {
             new_row_list.push({ COL: new_col_list });
         }
+        card['C'] = count;
         card['ROW'] = new_row_list;
     }
     render_template_data('grid-card-info-template', 'CARDINFO', data);
