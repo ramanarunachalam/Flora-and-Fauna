@@ -1260,11 +1260,12 @@ async function tree_area_init(area, aid, item_data) {
     let area_list = data['parkinfo'];
     for (const [i, park_area] of area_list.entries()) {
         park_area['SN'] = i + 1;
+        const park_name = park_area['AN'];
         const park_list = park_area['parks'];
         for (const park of park_list) {
             if (aid !== '' && park['PID'] === aid) {
                 if (area === 'parks') {
-                    name = park['PN'];
+                    name = `${park_name}:${park['PN']}`;
                     lat_long = [ +park['PLAT'], +park['PLONG'] ];
                 }
             }
