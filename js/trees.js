@@ -795,6 +795,7 @@ function create_map_layer(map_type) {
 }
 
 async function render_map_type(map_type, full) {
+    const osm_map = window.map_osm_map;
     const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
     window.map_area_click = true;
     const old_map_type = window.map_type;
@@ -809,7 +810,9 @@ async function render_map_type(map_type, full) {
     if (map_type === 'removed') await set_removed_data();
     window.quad_tree = (map_type === 'removed') ? window.removed_quad_tree : window.all_quad_tree;
 
-    const [ zoom, m_zoom ] = (full === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[map_type];
+    let [ zoom, m_zoom ] = (full === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[map_type];
+    const map_zoom = osm_map.getZoom();
+    if (m_zoom <= map_zoom && map_zoom <= zoom) zoom = map_zoom;
     const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
     window.map_osm_map = create_osm_map('area', latlong[0], latlong[1], zoom, min_zoom);
     window.map_area_move = false;
