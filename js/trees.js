@@ -812,7 +812,7 @@ async function render_map_type(map_type, full) {
 
     let [ zoom, m_zoom ] = (full === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[map_type];
     const map_zoom = osm_map.getZoom();
-    if (m_zoom <= map_zoom && map_zoom <= zoom) zoom = map_zoom;
+    if (m_zoom <= map_zoom && map_zoom <= MAX_ZOOM) zoom = map_zoom;
     const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
     window.map_osm_map = create_osm_map('area', latlong[0], latlong[1], zoom, min_zoom);
     window.map_area_move = false;
