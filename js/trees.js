@@ -65,6 +65,8 @@ const ZOOM_DICT = {
     'removed'  : [ MIN_ZOOM,      MIN_ZOOM      ]
 };
 
+const MAP_NO_CHANGE_LIST = [ 'basic', 'bloom', 'blooming' ];
+
 const TILE_OPTIONS = {
     attribution: OSM_ATTRIBUTION,
     subdomains: ['a', 'b', 'c'],
@@ -797,16 +799,23 @@ function create_map_layer(map_type) {
 async function render_map_type(map_type, full) {
     const osm_map = window.map_osm_map;
     const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
-    window.map_area_click = true;
     const old_map_type = window.map_type;
-    destroy_osm_map()
+    const no_change = MAP_NO_CHANGE_LIST.includes(map_type) && MAP_NO_CHANGE_LIST.includes(old_map_type);
+    if (!no_change) {
+        window.map_area_click = true;
+        destroy_osm_map()
+    }
     map_type = (old_map_type === map_type) ? 'basic' : map_type;
     window.map_type = map_type;
     window.full_map_type = (window.map_type === 'heatmap') ? full : undefined;
-
     toggle_icon(`Map_${old_map_type}`, 'bi-check2', 'bi-dot');
     toggle_icon(`Map_${map_type}`, 'bi-dot', 'bi-check2');
-
+    if (no_change) {
+        for (const marker of window.area_marker_list) {
+            set_marker_icon(marker);
+        }
+        return;
+    }
     if (map_type === 'removed') await set_removed_data();
     window.quad_tree = (map_type === 'removed') ? window.removed_quad_tree : window.all_quad_tree;
 
