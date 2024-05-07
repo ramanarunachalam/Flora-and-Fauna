@@ -66,6 +66,7 @@ const ZOOM_DICT = {
 };
 
 const MAP_NO_CHANGE_LIST = [ 'basic', 'bloom', 'blooming' ];
+const MAP_CHANGE_LIST    = [ 'grid', 'removed' ];
 
 const TILE_OPTIONS = {
     attribution: OSM_ATTRIBUTION,
@@ -773,7 +774,7 @@ function clear_all_layers() {
 function clear_layers() {
     if (!window.map_initialized) return;
     if (window.map_type === 'basic' && !window.map_area_click) return;
-    if (window.map_type !== 'heatmap') window.map_osm_layer.clearLayers();
+    if (window.old_map_type !== 'heatmap') window.map_osm_layer.clearLayers();
     clear_all_layers();
 }
 
@@ -800,14 +801,11 @@ async function render_map_type(map_type, full) {
     const osm_map = window.map_osm_map;
     const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
     const old_map_type = window.map_type;
-    const no_change = MAP_NO_CHANGE_LIST.includes(map_type) && MAP_NO_CHANGE_LIST.includes(old_map_type);
-    if (!no_change) {
-        window.map_area_click = true;
-        destroy_osm_map()
-    }
+    window.old_map_type = old_map_type;
     map_type = (old_map_type === map_type) ? 'basic' : map_type;
     window.map_type = map_type;
-    window.full_map_type = (window.map_type === 'heatmap') ? full : undefined;
+    window.full_map_type = (map_type === 'heatmap') ? full : 'basic';
+    const no_change = (map_type !== old_map_type) && MAP_NO_CHANGE_LIST.includes(map_type) && MAP_NO_CHANGE_LIST.includes(old_map_type);
     toggle_icon(`Map_${old_map_type}`, 'bi-check2', 'bi-dot');
     toggle_icon(`Map_${map_type}`, 'bi-dot', 'bi-check2');
     if (no_change) {
@@ -816,19 +814,22 @@ async function render_map_type(map_type, full) {
         }
         return;
     }
+    window.map_area_click = true;
+    destroy_osm_map()
+
     if (map_type === 'removed') await set_removed_data();
     window.quad_tree = (map_type === 'removed') ? window.removed_quad_tree : window.all_quad_tree;
 
-    let [ zoom, m_zoom ] = (full === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[map_type];
+    let [ zoom, m_zoom ] = (window.full_map_type === 'full') ? [ MIN_ZOOM, MIN_ZOOM ] : ZOOM_DICT[map_type];
     const map_zoom = osm_map.getZoom();
-    if (m_zoom <= map_zoom && map_zoom <= MAX_ZOOM) zoom = map_zoom;
-    const min_zoom = (window.map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
+    if (window.full_map_type !== 'full' && !MAP_CHANGE_LIST.includes(map_type) && m_zoom <= map_zoom && map_zoom <= MAX_ZOOM) zoom = map_zoom;
+    const min_zoom = (map_type === 'basic' && window.area_type === 'trees') ? MIN_ZOOM : m_zoom;
     window.map_osm_map = create_osm_map('area', latlong[0], latlong[1], zoom, min_zoom);
     window.map_area_move = false;
     window.map_initialized = true;
     create_map_layer(map_type);
 
-    // console.log('render_map_type:', map_type, latlong[0], latlong[1], zoom, osm_map.getZoom());
+    //console.log('render_map_type:', map_type, old_map_type, window.full_map_type, latlong[0], latlong[1], zoom, min_zoom, osm_map.getZoom());
     setTimeout(() => {
         window.map_area_click = false;
         draw_map_on_move();
@@ -1730,6 +1731,8 @@ function tree_main_init() {
     window.map_area_click = false;
     window.tree_popstate = false;
     window.map_type = 'basic';
+    window.old_map_type = 'basic';
+    window.full_map_type = 'basic';
     window.chosen_tree_id = 0;
     window.area_marker_offset = 0;
     window.area_marker_timer_list = [];
