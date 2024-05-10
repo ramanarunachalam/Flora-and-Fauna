@@ -29,7 +29,7 @@ const TREE_MAX_COUNT   = 750;
 
 const MAX_RADIUS       = 12;
 
-const WARD_COLOR       = '#CE8CF8';
+const WARD_COLOR       = '#BDB5D5';
 
 const EMPTY_THUMBNAIL  = 'blank.svg';
 
