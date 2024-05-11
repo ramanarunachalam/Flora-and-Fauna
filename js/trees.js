@@ -61,7 +61,6 @@ const ZOOM_DICT = {
     'bloom'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'blooming' : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'grid'     : [ AREA_MIN_ZOOM, AREA_MIN_ZOOM ],
-    '3d'       : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'removed'  : [ MIN_ZOOM,      MIN_ZOOM      ]
 };
 
@@ -687,9 +686,6 @@ function create_osm_map(module, c_lat, c_long, zoom, min_zoom) {
     const geocoder = new L.Control.geocoder({ geocoder: get_geocoder_nominatim() });
     geocoder.addTo(osm_map);
     if (module === 'area') geocoder.on('finishgeocode', handle_geocoder_mark);
-    if (window.map_type === '3d') {
-        const osm_building = new OSMBuildings(osm_map).load(OSM_BUILDING_URL);
-    }
     return osm_map;
 }
 
@@ -1365,7 +1361,6 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                     { N: 'Bloom',        P: 'bloom',    I: 'bloom'    }, 
                                     { N: 'Blooming',     P: 'blooming', I: 'blooming' }, 
                                     { N: 'Grid',         P: 'grid',     I: 'grid'     }, 
-                                    { N: '3D',           P: '3d',       I: '3d'       }, 
                                     { N: 'Vanished',     P: 'removed',  I: 'x'        }
                                   ]
                       };
