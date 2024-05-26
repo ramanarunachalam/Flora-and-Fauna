@@ -1132,7 +1132,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         }
         if (!is_tree) {
             tin -= 1;
-            let n_title = `${n_name} (<font class="NUM_COLOR">${tin} / ${tcount}</font>)`;
+            let n_title = `${n_name.replace(':', ' : ')} (<font class="NUM_COLOR">${tin} / ${tcount}</font>)`;
             d3.select('#TITLE_HEADER').html(n_title);
         }
         let data = { 'trees' : tree_stat_list };
