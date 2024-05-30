@@ -515,9 +515,11 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
     const results = window.flora_search_engine.search(search_word, SEARCH_OPTIONS);
     if (results.length <= 0) return;
     const max_score = results[0].score;
-    const score_ratio = 400 / results[0].score;
-    const pop_ratio = 0.6;
-    const calculate_pop = search_word.length > 3;
+    const SCORE_MAX = 400.0;
+    const POP_MAX = 600.0;
+    const score_ratio = SCORE_MAX / results[0].score;
+    const pop_ratio = POP_MAX / 1000.0;
+    const calculate_pop = search_word.length > 0;
     for (const item of results) {
         if (id_list.has(item.id)) continue;
         // if (item.category === 'Maps' && item.count <= 0) continue;
@@ -540,11 +542,16 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
         }
         const category = get_lang_map_word(item.category);
         href = get_search_href(item.category, href);
-        const new_pop = (score_ratio * item.score) + (pop_ratio * item.pop);
-        let pop = (calculate_pop) ? new_pop : item.pop;
+        let new_score = Math.floor(score_ratio * item.score);
+        new_score = (new_score > SCORE_MAX) ? SCORE_MAX : new_score;
+        let new_pop = Math.floor(pop_ratio * item.pop);
+        new_pop = (new_pop > POP_MAX) ? POP_MAX : new_pop;
+        let pop = new_score + new_pop;
+        pop = (calculate_pop) ? pop : item.pop;
         if (item.category === 'Maps') pop -= 1;
         pop = base_pop + pop;
-        let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score, 'C' : item.count, 'I' : name_id };
+        let r_item = { 'T' : category, 'N' : name, 'H' : href, 'P' : pop, 'SC' : item.score, 'NS': new_score, 'NP': new_pop,
+                       'C' : item.count, 'I' : name_id };
         if (item.category === 'Trees' || item.category === 'Maps') {
             const h = imap.handle_map[name_id];
             r_item['G'] = h[H_GENUS];
@@ -577,7 +584,7 @@ function load_search_part(search_word, non_english) {
     let n_search_word = '';
     if (non_english) {
         n_search_word = get_tamil_phonetic_word(search_word);
-        get_search_results(n_search_word, item_list, id_list, SEARCH_BASE_3);
+        get_search_results(n_search_word, item_list, id_list, SEARCH_BASE_2);
     }
     if (search_word.length > 2) {
         SEARCH_OPTIONS.fuzzy = term => term.length > 3 ? 0.3 : null;
@@ -591,7 +598,7 @@ function load_search_part(search_word, non_english) {
     }
     item_list.sort(function (a, b) { return b.P - a.P; });
     const new_item_list = item_list.slice(0, MAX_RESULTS);
-    // console.log('Search results:', new_item_list);
+    console.log('Search results:', new_item_list);
     return new_item_list;
 }
 
