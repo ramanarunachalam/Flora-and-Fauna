@@ -9170,7 +9170,7 @@
       "Ficus",
       "maclellandii",
       "King",
-      true,
+      false,
       24,
       1,
       11
@@ -9192,7 +9192,7 @@
       "Sambucus",
       "canadensis",
       "L.",
-      false,
+      true,
       34,
       0,
       10
@@ -9412,7 +9412,7 @@
       "Adansonia",
       "digitata",
       "L.",
-      false,
+      true,
       34,
       0,
       13
@@ -9456,7 +9456,7 @@
       "Berrya",
       "javanica",
       "(Turcz.) Burret",
-      true,
+      false,
       34,
       0,
       11
@@ -9555,7 +9555,7 @@
       "Phyllanthus",
       "polyphyllus",
       "Willd.",
-      true,
+      false,
       34,
       0,
       3
@@ -9577,7 +9577,7 @@
       "Populus",
       "nigra",
       "L.",
-      true,
+      false,
       34,
       0,
       11
@@ -9852,7 +9852,7 @@
       "Pterocarpus",
       "indicus",
       "Willd.",
-      true,
+      false,
       34,
       0,
       3
@@ -9863,7 +9863,7 @@
       "Cassia",
       "javanica ssp. renigera",
       "(Wall. ex Benth.) K. Larsen",
-      true,
+      false,
       34,
       0,
       3
@@ -9896,7 +9896,7 @@
       "Clitoria",
       "arborea",
       "Benth.",
-      true,
+      false,
       34,
       0,
       16
@@ -9973,7 +9973,7 @@
       "Senna",
       "alata",
       "(L.) Roxb.",
-      true,
+      false,
       34,
       1,
       3
@@ -9995,7 +9995,7 @@
       "Aleurites",
       "moluccanus",
       "(L.) Willd.",
-      true,
+      false,
       34,
       1,
       11
@@ -10127,7 +10127,7 @@
       "Acacia",
       "donaldii",
       "Haines",
-      true,
+      false,
       34,
       0,
       2
@@ -10149,7 +10149,7 @@
       "Ziziphus",
       "jujuba",
       "Mill.",
-      false,
+      true,
       34,
       1,
       11
@@ -10160,7 +10160,7 @@
       "Juniperus",
       "chinensis",
       "L.",
-      false,
+      true,
       34,
       1,
       7
@@ -10193,7 +10193,7 @@
       "Annona",
       "cherimola",
       "Mill.",
-      true,
+      false,
       34,
       1,
       11
@@ -10490,7 +10490,7 @@
       "Moringa",
       "oleifera",
       "Lam.",
-      false,
+      true,
       34,
       0,
       1
@@ -10523,7 +10523,7 @@
       "Schefflera",
       "arboricola",
       "(Hayata) Merr.",
-      false,
+      true,
       34,
       1,
       13
@@ -10534,7 +10534,7 @@
       "Bauhinia",
       "acuminata",
       "L.",
-      false,
+      true,
       34,
       3,
       0
@@ -10622,7 +10622,7 @@
       "Dillenia",
       "indica",
       "L.",
-      true,
+      false,
       34,
       0,
       11
@@ -10699,7 +10699,7 @@
       "Pritchardia",
       "pacifica",
       "Seem. & H. Wendl.",
-      true,
+      false,
       34,
       1,
       4
@@ -10754,7 +10754,7 @@
       "Eucalyptus",
       "tereticornis",
       "Sm.",
-      true,
+      false,
       34,
       1,
       5
@@ -10985,7 +10985,7 @@
       "Acalypha",
       "wilkesiana",
       "Mull. Arg.",
-      false,
+      true,
       34,
       1,
       11
@@ -11018,7 +11018,7 @@
       "Delonix",
       "regia",
       "(Boj. ex Hook.) Raf.",
-      true,
+      false,
       34,
       3,
       2
@@ -11062,7 +11062,7 @@
       "Nyctanthes",
       "arbor-tristis",
       "L.",
-      false,
+      true,
       34,
       0,
       11
@@ -11392,7 +11392,7 @@
       "Toona",
       "ciliata",
       "M. Roem.",
-      true,
+      false,
       34,
       0,
       3
@@ -11579,7 +11579,7 @@
       "Neolamarckia",
       "cadamba",
       "(Roxb.) Bosser",
-      false,
+      true,
       34,
       0,
       11
@@ -11590,7 +11590,7 @@
       "Mitragyna",
       "parvifolia",
       "(Roxb.) Korth.",
-      true,
+      false,
       34,
       1,
       11
@@ -11821,7 +11821,7 @@
       "Corymbia",
       "citriodora",
       "(Hook.) K. D. Hill & L. A. S. Johnson",
-      false,
+      true,
       34,
       1,
       5
@@ -11865,7 +11865,7 @@
       "Bixa",
       "orellana",
       "L.",
-      false,
+      true,
       34,
       0,
       12
@@ -12096,7 +12096,7 @@
       "Murraya",
       "paniculata",
       "(L.) Jack",
-      true,
+      false,
       34,
       0,
       10
@@ -12206,7 +12206,7 @@
       "Byrsonima",
       "crassifolia",
       "(L.) Kunth",
-      true,
+      false,
       34,
       1,
       12
@@ -12437,7 +12437,7 @@
       "Pterospermum",
       "diversifolium",
       "Blume",
-      true,
+      false,
       34,
       0,
       6
@@ -12448,7 +12448,7 @@
       "Brownea",
       "macrophylla",
       "Linden ex Mast.",
-      true,
+      false,
       34,
       1,
       3
@@ -12580,7 +12580,7 @@
       "Senegalia",
       "modesta",
       "(Wall.) P. J. H. Hurter",
-      false,
+      true,
       34,
       0,
       2
@@ -12635,7 +12635,7 @@
       "Cassia",
       "javanica ssp. agnes",
       "(de Wit) K. Larsen",
-      true,
+      false,
       34,
       0,
       3
@@ -12646,7 +12646,7 @@
       "Melicope",
       "elleryana",
       "(F. Muell.) T.G. Hartley",
-      false,
+      true,
       34,
       0,
       16
@@ -12657,7 +12657,7 @@
       "Ceiba",
       "speciosa",
       "(A.St.-Hil.) Ravenna",
-      false,
+      true,
       34,
       0,
       13
@@ -12745,7 +12745,7 @@
       "Berrya",
       "cordifolia",
       "(Willd.) Burret",
-      true,
+      false,
       34,
       0,
       11
@@ -12910,7 +12910,7 @@
       "Syagrus",
       "romanzoffiana",
       "(Cham.) Glassman",
-      true,
+      false,
       34,
       1,
       3
@@ -12954,7 +12954,7 @@
       "Artocarpus",
       "lacucha",
       "Buch.-Ham.",
-      true,
+      false,
       34,
       1,
       11
@@ -13053,7 +13053,7 @@
       "Ficus",
       "benjamina var. nudo",
       "(Miq.) M. F. Barrett",
-      false,
+      true,
       24,
       3,
       11
@@ -13251,7 +13251,7 @@
       "Caesalpinia",
       "sappan",
       "L.",
-      false,
+      true,
       34,
       1,
       2
@@ -13273,7 +13273,7 @@
       "Kigelia",
       "africana",
       "(Lam.) Benth.",
-      true,
+      false,
       34,
       3,
       10
@@ -13328,7 +13328,7 @@
       "Alstonia",
       "scholaris",
       "(L.) R. Br.",
-      true,
+      false,
       34,
       1,
       9
@@ -13416,7 +13416,7 @@
       "Senna",
       "siamea",
       "(Lam.) H. S. Irwin & Barneby",
-      false,
+      true,
       34,
       3,
       3
@@ -13493,7 +13493,7 @@
       "Tecoma",
       "stans var. angustata",
       "Rehder",
-      false,
+      true,
       34,
       3,
       10
@@ -13669,7 +13669,7 @@
       "Senna",
       "surattensis subsp. sulfurea",
       "(DC. ex Collad.) Randell",
-      false,
+      true,
       34,
       3,
       3
@@ -13713,7 +13713,7 @@
       "Annona",
       "glabra",
       "L.",
-      true,
+      false,
       34,
       0,
       11
@@ -13801,7 +13801,7 @@
       "Tamarindus",
       "indica",
       "L.",
-      true,
+      false,
       34,
       0,
       3
@@ -13812,7 +13812,7 @@
       "Albizia",
       "odoratissima",
       "(L.f.) Benth.",
-      true,
+      false,
       34,
       3,
       2
@@ -13878,7 +13878,7 @@
       "Lagerstroemia",
       "duperreana",
       "Pierre ex Gagnep.",
-      false,
+      true,
       34,
       0,
       11
@@ -13955,7 +13955,7 @@
       "Ficus",
       "natalensis ssp. leprieurii",
       "(Miq.) C.C.Berg",
-      false,
+      true,
       24,
       3,
       9
@@ -13977,7 +13977,7 @@
       "Berrya",
       "cordifolia",
       "(Willd.) Burret",
-      true,
+      false,
       34,
       0,
       11
@@ -14032,7 +14032,7 @@
       "Juglans",
       "regia",
       "L.",
-      true,
+      false,
       34,
       0,
       10
@@ -14153,7 +14153,7 @@
       "Lagerstroemia",
       "tomentosa",
       "C. Presl",
-      false,
+      true,
       34,
       0,
       11
@@ -14263,7 +14263,7 @@
       "Calliandra",
       "haematocephala",
       "Hassk.",
-      false,
+      true,
       34,
       1,
       3
@@ -14274,7 +14274,7 @@
       "Calliandra",
       "haematocephala",
       "Hassk.",
-      false,
+      true,
       34,
       1,
       3
@@ -14373,7 +14373,7 @@
       "Salix",
       "alba",
       "L.",
-      true,
+      false,
       34,
       0,
       8
@@ -14417,7 +14417,7 @@
       "Magnolia",
       "pterocarpa",
       "Roxb.",
-      true,
+      false,
       34,
       1,
       12
@@ -14439,7 +14439,7 @@
       "Ligustrum",
       "robustum",
       "(Roxb.) Blume",
-      false,
+      true,
       34,
       1,
       11
@@ -14505,7 +14505,7 @@
       "Nauclea",
       "orientalis",
       "(L.) L.",
-      true,
+      false,
       34,
       1,
       11
