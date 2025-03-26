@@ -535,6 +535,7 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
             href = [ 'trees', name_id ];
         } else if (item.category === 'Parks') {
             name = imap.park_map[name_id];
+            name = name.replace(/:/g, ' : ');
             href = [ 'parks', name_id, name.replace("'", "") ];
         } else if (item.category === 'Wards') {
             name = imap.ward_map[name_id];
