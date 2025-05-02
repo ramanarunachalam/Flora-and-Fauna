@@ -2,7 +2,7 @@ const BANGALORE_LAT    = 12.97729;
 const BANGALORE_LONG   = 77.59973;
 const BANGALORE_CENTER = [ BANGALORE_LAT, BANGALORE_LONG ];
 const BANGALORE_BBOX   = '77.299805,12.762250,77.879333,13.170423';
-const HEATMAP_CENTER   = [ 12.96621, 77.60680 ]; // Shoolay Circle
+const DENSITY_CENTER   = [ 12.96621, 77.60680 ]; // Shoolay Circle
 
 const INIT_COUNT       = 5;
 const IMP_COUNT        = 4;
@@ -56,7 +56,7 @@ const MAX_ZOOM         = 21;
 
 const ZOOM_DICT = {
     'basic'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
-    'heatmap'  : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
+    'density'  : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
     'cluster'  : [ DEFAULT_ZOOM,  MIN_ZOOM      ],
     'bloom'    : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
     'blooming' : [ DEFAULT_ZOOM,  AREA_MIN_ZOOM ],
@@ -778,7 +778,7 @@ function clear_all_layers() {
 function clear_layers() {
     if (!window.map_initialized) return;
     if (window.map_type === 'basic' && !window.map_area_click) return;
-    if (window.old_map_type !== 'heatmap') window.map_osm_layer.clearLayers();
+    if (window.old_map_type !== 'density') window.map_osm_layer.clearLayers();
     clear_all_layers();
 }
 
@@ -794,7 +794,7 @@ function destroy_osm_map() {
 
 function create_map_layer(map_type) {
     if (window.map_osm_layer !== null) window.map_osm_map.removeLayer(window.map_osm_layer);
-    if (map_type === 'heatmap') { window.map_osm_layer = L.heatLayer([], { radius: MAX_RADIUS });
+    if (map_type === 'density') { window.map_osm_layer = L.heatLayer([], { radius: MAX_RADIUS });
     } else if (map_type === 'cluster') { window.map_osm_layer = L.markerClusterGroup();
     } else if (map_type === 'grid') { window.map_osm_layer = L.maidenhead({color : 'rgba(255, 0, 0, 0.4)'});
     } else { window.map_osm_layer = new L.featureGroup(); }
@@ -803,12 +803,12 @@ function create_map_layer(map_type) {
 
 async function render_map_type(map_type, full) {
     const osm_map = window.map_osm_map;
-    const latlong = (map_type === 'removed') ? HEATMAP_CENTER : get_area_center();
+    const latlong = (map_type === 'removed') ? DENSITY_CENTER : get_area_center();
     const old_map_type = window.map_type;
     window.old_map_type = old_map_type;
     map_type = (old_map_type === map_type) ? 'basic' : map_type;
     window.map_type = map_type;
-    window.full_map_type = (map_type === 'heatmap') ? full : 'basic';
+    window.full_map_type = (map_type === 'density') ? full : 'basic';
     const no_change = (map_type !== old_map_type) && MAP_NO_CHANGE_LIST.includes(map_type) && MAP_NO_CHANGE_LIST.includes(old_map_type);
     toggle_icon(`Map_${old_map_type}`, 'bi-check2', 'bi-dot');
     toggle_icon(`Map_${map_type}`, 'bi-dot', 'bi-check2');
@@ -1039,7 +1039,7 @@ function area_map_callback() {
     const marker_list = [];
     for (let i = window.area_marker_offset; i < window.area_marker_list.length; i++) {
         const marker = window.area_marker_list[i];
-        if (window.map_type === 'heatmap') {
+        if (window.map_type === 'density') {
             window.map_osm_layer.addLatLng(marker.getLatLng());
             new_count++;
         } else if (marker.state === 'new') {
@@ -1098,7 +1098,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     for (const ll in window.area_marker_dict) {
         const marker = window.area_marker_dict[ll];
         if (area_marker_dict[ll] === undefined) {
-            if (window.map_type !== 'heatmap') window.map_osm_layer.removeLayer(marker);
+            if (window.map_type !== 'density') window.map_osm_layer.removeLayer(marker);
         }
     }
     window.area_marker_dict = area_marker_dict;
@@ -1109,7 +1109,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         clearTimeout(timer_id);
     }
     window.area_marker_timer_list = [];
-    if (window.map_type === 'heatmap') create_map_layer('heatmap');
+    if (window.map_type === 'density') create_map_layer('density');
     if (window.map_type === 'grid') window.map_osm_layer.redraw();
     area_map_callback();
 
@@ -1364,12 +1364,12 @@ async function load_area_data(area_type, area_id, area_latlong) {
                                     { N: get_lang_map_word('Wards'), P: 'WARD', C: window.stats_data['W'] },
                                     { N: get_lang_map_word('Trees'), P: 'TREE', C: window.stats_data['M'] }
                                   ],
-                        'types' : [ { N: 'Heatmap',      P: 'heatmap',  I: 'soundwave', F: 'full' },
-                                    { N: 'Cluster',      P: 'cluster',  I: 'dpad'     }, 
-                                    { N: 'Bloom',        P: 'bloom',    I: 'bloom'    }, 
-                                    { N: 'Blooming',     P: 'blooming', I: 'blooming' }, 
-                                    { N: 'Grid',         P: 'grid',     I: 'grid'     }, 
-                                    { N: 'Vanished',     P: 'removed',  I: 'x'        }
+                        'types' : [ { N: get_lang_map_word('Density'),  P: 'density',  I: 'soundwave', F: 'full' },
+                                    { N: get_lang_map_word('Cluster'),  P: 'cluster',  I: 'dpad'     }, 
+                                    { N: get_lang_map_word('Bloom'),    P: 'bloom',    I: 'bloom'    }, 
+                                    { N: get_lang_map_word('Blooming'), P: 'blooming', I: 'blooming' }, 
+                                    { N: get_lang_map_word('Grid'),     P: 'grid',     I: 'grid'     }, 
+                                    { N: get_lang_map_word('Vanished'), P: 'removed',  I: 'x'        }
                                   ]
                       };
     render_template_data('map-template', 'SECTION', area_info);
