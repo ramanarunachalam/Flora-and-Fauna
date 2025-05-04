@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 2,57,000+ trees marked in 510+ Parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Sadashivnagar, Basavanagudi, Jayanagar, Rajajinagar, Koramangala, Vijayanagar, Frasertown, Chamarajpet, Banashankari, JP Nagar, Rajarajeshwari Nagar, 150+ BBMP Wards, and 475+ Maidenhead Grids in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+  <meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 2,58,000+ trees marked in 510+ Parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Sadashivnagar, Basavanagudi, Jayanagar, Rajajinagar, Koramangala, Vijayanagar, Frasertown, Chamarajpet, Banashankari, JP Nagar, Rajarajeshwari Nagar, 150+ BBMP Wards, and 475+ Maidenhead Grids in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
   <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
   <meta name="author" content="Raman Arunachalam"/>
   <link rel="icon" type="image/x-icon" href="favicon.ico"/>
@@ -24,7 +24,7 @@
   <header id="MENU_DATA" class="navbar navbar-expand sticky-top bg-body-tertiary nav-fill">
   </header>  
   
-  <div class="container">
+  <div class="container-fluid">
     <div id="SECTION" class="row">
     </div>
   </div>
@@ -227,13 +227,13 @@
         <ul class="list-unstyled BODY_BG">
           {{#types}}
           <li>
-            &nbsp; &nbsp; <i id="Map_{{P}}" class="bi bi-dot ICON_FONT"></i>
-            <a class="TEXT_COLOR" href="javascript:render_map_type('{{P}}');">
-              {{N}}
-            </a>
+            &nbsp; &nbsp;
+            <i id="Map_{{P}}" class="bi bi-dot ICON_FONT"></i>
+            <a class="TEXT_COLOR" href="javascript:render_map_type('{{P}}');">{{N}}</a>
             {{#F}}
+            &nbsp; &nbsp;
             <a class="TEXT_COLOR" href="javascript:render_map_type('{{P}}', '{{F}}');">
-              &nbsp; &nbsp; <i class="bi bi-arrows-fullscreen"></i>
+              <i class="bi bi-arrows-fullscreen"></i>
             </a>
             {{/F}}
             <hr class="my-1">
@@ -441,18 +441,16 @@
       <ol>
         {{#wardinfo}}
         <li>
-          <a href="javascript:render_area_map('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">
-            {{AN}} : {{AID}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
-          </a>
+          <a href="javascript:render_area_map('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">{{AN}} : {{AID}}</a>
+          (<em><font class="NUM_COLOR">{{AC}}</font></em>)
         </li>
         {{/wardinfo}}
       </ol>
       <ol>
         {{#mapinfo}}
         <li>
-          <a href="javascript:render_area_map('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">
-            {{AN}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
-          </a>
+          <a href="javascript:render_area_map('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">{{AN}}</a>
+          (<em><font class="NUM_COLOR">{{AC}}</font></em>)
         </li>
         {{/mapinfo}}
       </ol>

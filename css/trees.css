@@ -123,7 +123,7 @@ a:not([class*="btn"]):hover {
 }
 
 #MAPINFO {
-    width: 60vw;
+    width: 70vw;
     height: 640px;
     background-color: var(--trees-map-bg) !important;
 }
