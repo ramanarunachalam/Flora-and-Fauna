@@ -1146,7 +1146,17 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         }
         if (!is_tree) {
             tin -= 1;
-            let n_title = `${n_name.replace(':', ' : ')} (<font class="NUM_COLOR">${tin} / ${tcount}</font>)`;
+            let tstring = tcount.toString();
+            /*
+            t_string = tstring.split('').reverse().join('');
+            console.log(t_string);
+            if (tstring.length >= 4) { tstring = tstring.slice(0, 3) + ',' + tstring.slice(3); }
+            console.log(t_string);
+            if (tstring.length >= 7) { tstring = tstring.slice(0, 6) + ',' + tstring.slice(6); }
+            t_string = tstring.split('').reverse().join('');
+            console.log(t_string);
+            */
+            let n_title = `${n_name.replace(':', ' : ')} (<font class="NUM_COLOR">${tin} / ${tstring}</font>)`;
             d3.select('#TITLE_HEADER').html(n_title);
         }
         let data = { 'trees' : tree_stat_list };
