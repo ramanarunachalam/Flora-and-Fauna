@@ -1065,6 +1065,15 @@ function area_map_callback() {
     // console.log('area_map_callback:', window.map_type, window.area_marker_list.length, count, new_count, window.area_marker_offset);
 }
 
+function count_to_comma_string(tcount) {
+    let s = tcount.toString();
+    s = s.split('').reverse().join('');
+    if (s.length >= 4) s = s.slice(0, 3) + ',' + s.slice(3);
+    if (s.length >= 7) s = s.slice(0, 6) + ',' + s.slice(6);
+    s = s.split('').reverse().join('');
+    return s;
+}
+
 function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     const osm_map = window.map_osm_map;
     const area = window.area_type;
@@ -1127,8 +1136,8 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         const h = imap.handle_map[tid];
         const image_id = h[H_PART];
         const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
-        tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'AID' : aid,
-                              'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long,
+        tree_stat_list.push({ 'TN' : t_name, 'TC' : tree_dict[tid], 'TCC' : count_to_comma_string(tree_dict[tid]),
+                              'AID' : aid, 'TID' : tid, 'ALAT' : c_lat, 'ALONG' : c_long,
                               'SN' : t_name, 'SI' : t_url
                            });
         if (!is_tree) {
@@ -1146,17 +1155,8 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         }
         if (!is_tree) {
             tin -= 1;
-            let tstring = tcount.toString();
-            /*
-            t_string = tstring.split('').reverse().join('');
-            console.log(t_string);
-            if (tstring.length >= 4) { tstring = tstring.slice(0, 3) + ',' + tstring.slice(3); }
-            console.log(t_string);
-            if (tstring.length >= 7) { tstring = tstring.slice(0, 6) + ',' + tstring.slice(6); }
-            t_string = tstring.split('').reverse().join('');
-            console.log(t_string);
-            */
-            let n_title = `${n_name.replace(':', ' : ')} (<font class="NUM_COLOR">${tin} / ${tstring}</font>)`;
+            const s = count_to_comma_string(tcount);
+            let n_title = `${n_name.replace(':', ' : ')} (<font class="NUM_COLOR">${tin} / ${s}</font>)`;
             d3.select('#TITLE_HEADER').html(n_title);
         }
         let data = { 'trees' : tree_stat_list };
