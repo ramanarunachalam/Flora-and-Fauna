@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 3,22,000+ trees marked in 630+ Parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Sadashivnagar, Basavanagudi, Jayanagar, Rajajinagar, Koramangala, Vijayanagar, Frasertown, Chamarajpet, Banashankari, JP Nagar, Rajarajeshwari Nagar, 160+ BBMP Wards, and 560+ Maidenhead Grids in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+  <meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 3,23,000+ trees marked in 630+ Parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Sadashivnagar, Basavanagudi, Jayanagar, Rajajinagar, Koramangala, Vijayanagar, Frasertown, Chamarajpet, Banashankari, JP Nagar, Rajarajeshwari Nagar, 160+ BBMP Wards, and 560+ Maidenhead Grids in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
   <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
   <meta name="author" content="Raman Arunachalam"/>
   <link rel="icon" type="image/x-icon" href="favicon.ico"/>
@@ -426,7 +426,7 @@
     <div class="accordion-body">
       <ol>
         {{#parkinfo}}
-        <li>{{AN}} (<em><font class="NUM_COLOR">{{AC}}</font></em>)
+        <li>{{AN}} (<em><font class="NUM_COLOR">{{FC}}</font></em>)
           <ul class="H_LIST">
             {{#parks}}
             <li>
@@ -442,7 +442,7 @@
         {{#wardinfo}}
         <li>
           <a href="javascript:render_area_map('wards', '{{AN}}', '{{AID}}', 0, '{{ALAT}}', '{{ALONG}}');">{{AN}} : {{AID}}</a>
-          (<em><font class="NUM_COLOR">{{AC}}</font></em>)
+          (<em><font class="NUM_COLOR">{{FC}}</font></em>)
         </li>
         {{/wardinfo}}
       </ol>
@@ -450,7 +450,7 @@
         {{#mapinfo}}
         <li>
           <a href="javascript:render_area_map('trees', '{{AN}}', '{{AID}}', {{AID}}, '{{ALAT}}', '{{ALONG}}');">{{AN}}</a>
-          (<em><font class="NUM_COLOR">{{AC}}</font></em>)
+          (<em><font class="NUM_COLOR">{{FC}}</font></em>)
         </li>
         {{/mapinfo}}
       </ol>

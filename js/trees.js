@@ -1293,9 +1293,11 @@ async function tree_area_init(area, aid, item_data) {
     let area_list = data['parkinfo'];
     for (const [i, park_area] of area_list.entries()) {
         park_area['SN'] = i + 1;
+        park_area['FC'] = park_area['AC'].toLocaleString();
         const park_name = park_area['AN'];
         const park_list = park_area['parks'];
         for (const park of park_list) {
+            park['FC'] = park['PC'].toLocaleString();
             if (aid !== '' && park['PID'] === aid) {
                 if (area === 'parks') {
                     name = `${park_name}:${park['PN']}`;
@@ -1311,6 +1313,7 @@ async function tree_area_init(area, aid, item_data) {
     ward_list = data['wardinfo'];
     for (const [i, ward] of ward_list.entries()) {
         ward['SN'] = i + 1;
+        ward['FC'] = ward['AC'].toLocaleString();
         if (aid !== '' && ward['AID'] === aid) {
             if (area === 'wards') {
                 name = ward['AN'];
@@ -1328,6 +1331,7 @@ async function tree_area_init(area, aid, item_data) {
         const tree_id = +an['AID'];
         an['AN'] = imap.lang_name_map[tree_id];
         an['SN'] = i + 1;
+        an['FC'] = an['AC'].toLocaleString();
         if (tree_id === aid) {
             if (area === 'trees') {
                 lat_long = [ +an['ALAT'], +an['ALONG'] ];
