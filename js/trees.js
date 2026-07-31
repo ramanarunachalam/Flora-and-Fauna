@@ -797,10 +797,17 @@ function create_map_layer(map_type) {
     if (map_type === 'density') {
         const osm_map = window.map_osm_map;
         const map_zoom = osm_map.getZoom();
-        const radius = Math.trunc((MAX_RADIUS * 11) / map_zoom);  
+        const radius = Math.trunc((MAX_RADIUS * 11) / map_zoom);
+        const heat_zoom = Math.max(0, Math.min(1, (DEFAULT_ZOOM - map_zoom) / (DEFAULT_ZOOM - MIN_ZOOM)));
+        const heat_max = 1 + heat_zoom;
         // console.log(`create_map_layer: ${map_type} ${map_zoom} ${radius}`);
-        window.map_osm_layer = L.heatLayer([], { radius: radius });
-
+        const radius_dict = {
+            radius: radius,
+            max: heat_max,
+            blur: 15,
+            gradient: { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' }
+        };
+        window.map_osm_layer = L.heatLayer([], radius_dict);
     } else if (map_type === 'cluster') { window.map_osm_layer = L.markerClusterGroup();
     } else if (map_type === 'grid') { window.map_osm_layer = L.maidenhead({color : 'rgba(255, 0, 0, 0.4)'});
     } else { window.map_osm_layer = new L.featureGroup(); }
