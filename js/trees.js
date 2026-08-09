@@ -12,7 +12,8 @@ const BIG_ICON_SIZE    = [36, 36];
 const MAP_ANCHOR_POS   = [12, 24];
 const BIG_ANCHOR_POS   = [18, 36];
 
-const MAP_MARKER_COUNT = 1000;
+// const MAP_MARKER_COUNT = 1000;
+const MAP_MARKER_COUNT = 20000;
 const MAP_MARKER_TIME  = 100;
 
 const SEARCH_BASE_0    = 0;
@@ -1035,9 +1036,12 @@ function add_marker(tree_id, m_lat, m_long, blooming) {
     const marker = new L.marker([m_lat, m_long]);
     marker.state = 'new';
     marker.tree_id = tree_id;
-    marker.blooming = blooming;
     const center = window.map_osm_map.getCenter();
     marker.distance = center.distanceTo(marker.getLatLng());
+
+    if (window.map_type === 'density' || window.map_type === 'cluster') return marker;
+
+    marker.blooming = blooming;
     marker.on('mouseover', marker_on_mouseover);
     marker.on('mouseout', marker_on_mouseout);
     marker.on('click', marker_on_click);
@@ -1111,7 +1115,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
             marker.state = 'old';
             old_count++;
         }
-        set_marker_icon(marker);
+        if (window.map_type !== 'density' && window.map_type !== 'cluster') set_marker_icon(marker);
         area_marker_list.push(marker);
         area_marker_dict[[m_lat, m_long]] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
