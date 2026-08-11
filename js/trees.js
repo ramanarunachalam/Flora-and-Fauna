@@ -12,8 +12,7 @@ const BIG_ICON_SIZE    = [36, 36];
 const MAP_ANCHOR_POS   = [12, 24];
 const BIG_ANCHOR_POS   = [18, 36];
 
-// const MAP_MARKER_COUNT = 1000;
-const MAP_MARKER_COUNT = 20000;
+const MAP_MARKER_COUNT = 50000;
 const MAP_MARKER_TIME  = 100;
 
 const SEARCH_BASE_0    = 0;
