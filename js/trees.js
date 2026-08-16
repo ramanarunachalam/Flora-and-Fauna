@@ -1037,10 +1037,10 @@ function add_marker(tree_id, m_lat, m_long, blooming) {
     marker.tree_id = tree_id;
     const center = window.map_osm_map.getCenter();
     marker.distance = center.distanceTo(marker.getLatLng());
+    marker.blooming = blooming;
 
     if (window.map_type === 'density' || window.map_type === 'cluster') return marker;
 
-    marker.blooming = blooming;
     marker.on('mouseover', marker_on_mouseover);
     marker.on('mouseout', marker_on_mouseout);
     marker.on('click', marker_on_click);
@@ -1099,6 +1099,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
     const is_tree = (area === 'trees');
     window.chosen_tree_id = is_tree ? +aid : ((tid !== 0) ? +tid : 0);
     const point_list = quad_tree_find(window.quad_tree, sw.lat, sw.lng, ne.lat, ne.lng, is_tree ? window.chosen_tree_id : 0);
+    const need_icon = window.map_type !== 'density' && window.map_type !== 'cluster';
     let old_count = 0;
     let new_count = 0; 
     for (const point of point_list) {
@@ -1106,7 +1107,8 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
         tree_id = i_tree_id.toString();
         const h = imap.handle_map[tree_id];
         const blooming = h[H_BLOOM];
-        let marker = window.area_marker_dict[[m_lat, m_long]];
+        const ll = [m_lat, m_long];
+        let marker = window.area_marker_dict[ll];
         if (marker === undefined) {
             marker = add_marker(i_tree_id, m_lat, m_long, blooming);
             new_count++;
@@ -1114,16 +1116,16 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
             marker.state = 'old';
             old_count++;
         }
-        if (window.map_type !== 'density' && window.map_type !== 'cluster') set_marker_icon(marker);
+        if (need_icon) set_marker_icon(marker);
         area_marker_list.push(marker);
-        area_marker_dict[[m_lat, m_long]] = marker;
+        area_marker_dict[ll] = marker;
         tree_dict[tree_id] = (tree_dict[tree_id] || 0) + 1;
     }
     // console.log('draw_area_map:', point_list.length, area_marker_list.length, Object.keys(window.area_marker_dict).length, old_count, new_count);
-    for (const ll in window.area_marker_dict) {
-        const marker = window.area_marker_dict[ll];
-        if (area_marker_dict[ll] === undefined) {
-            if (window.map_type !== 'density') window.map_osm_layer.removeLayer(marker);
+    if (window.map_type !== 'density') {
+        for (const ll in window.area_marker_dict) {
+            const marker = window.area_marker_dict[ll];
+            if (area_marker_dict[ll] === undefined) window.map_osm_layer.removeLayer(marker);
         }
     }
     window.area_marker_dict = area_marker_dict;
