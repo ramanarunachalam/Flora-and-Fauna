@@ -723,12 +723,12 @@ function create_icons(tree_intro_data) {
     const tree_info = tree_intro_data['treeinfo'];
     const color_list = [];
     for (const color of tree_info['color']) {
-        color_list.push(color);
+        color_list.push(color.toLowerCase());
     }
     const tree_data = tree_info['info'];
     for (const tree_id in tree_data) {
         const attr_list = tree_data[tree_id];
-        window.tree_flower_dict[tree_id] = color_list[attr_list[0]];
+        window.tree_flower_dict[tree_id] = color_list[attr_list[0]].toLowerCase();
     }
     window.bark_color = tree_info['bark color'];;
     window.leaf_color = tree_info['leaf color'];;
