@@ -100,9 +100,31 @@ const SEARCH_REPLACE_LIST =  [ [ /(e)\1+/g, 'i' ],
 
 const [ H_NAME, H_FAMILY, H_GENUS, H_SPECIES, H_AUTH, H_BLOOM, H_PART, H_GROW, H_LEAF ] = [...Array(9).keys()];
 
+const BOTANICAL_PARTS = { 'Family': 'family', 'Sub Family': 'family', 'Genus': 'genus',
+                          'Species': 'species', 'Authority': 'authority' };
+
 
 function capitalize_word(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function botanical_word(s, kind) {
+    if (!s) return s;
+    const b = window.id_map.botanical;
+    let k = s;
+    if (kind === 'species') k = s.toLowerCase();
+    else if (kind === 'genus' || kind === 'family') k = capitalize_word(s.toLowerCase());
+    if (b[k] !== undefined) return b[k];
+    return (b[s] !== undefined) ? b[s] : s;
+}
+
+function botanical_name(h) {
+    return `${botanical_word(h[H_GENUS], 'genus')} ${botanical_word(h[H_SPECIES], 'species')}`;
+}
+
+function botanical_full_name(h) {
+    const a = botanical_word(h[H_AUTH], 'authority');
+    return a ? `${botanical_name(h)}, ${a}` : botanical_name(h);
 }
 
 function get_url_params() {
@@ -131,9 +153,12 @@ class LangMap {
         this.map_dict = lang_data['Keys'];
         this.lang_name_map = lang_data['Name'];
         this.lang_key_image = lang_data['Image'];
+        this.botanical = lang_data['Botanical'] || {};
         const english_map = window.tree_eng_map_data;
         this.english_key_image = english_map['Image'];
         this.english_key_name = english_map['Key Name'];
+        this.english_key_part = english_map['Key Part'];
+        this.english_key_group = english_map['Key Group'];
     }
 }
 
@@ -240,6 +265,7 @@ async function tree_module_init(data) {
     const h = imap.handle_map[tree_id];
     gallery_info['HH'] = key_group[gallery_info['HH']];
     gallery_info['HN'] = imap.lang_name_map[gallery_info['HN']];
+    gallery_info['HB'] = botanical_full_name(h);
     const gallery_list = gallery_info['gallery'].split(',');
     const new_gallery_list = [];
     for (const image_id of gallery_list) {
@@ -253,10 +279,13 @@ async function tree_module_init(data) {
     gallery_info['gallery'] = new_gallery_list;
     const info_list = card_data['cardinfo'];
     for (const cv_info of info_list) {
+        const is_info = (imap.english_key_group !== undefined && imap.english_key_group[cv_info['CN']] === 'Info');
         cv_info['CN'] = key_group[cv_info['CN']];
         for (const cv of cv_info['CV']) {
+            const part = imap.english_key_part[cv['N']];
             cv['N'] = key_part[cv['N']];
             set_key_value_map(cv, 'V');
+            if (is_info && part in BOTANICAL_PARTS) cv['V'] = botanical_word(cv['V'], BOTANICAL_PARTS[part]);
         }
     }
     render_template_data('module-card-info-template', 'CARDINFO', card_data);
@@ -330,7 +359,7 @@ function tree_intro_init(tree_intro_data) {
         const image_id = h[H_PART];
         const [ i_url, t_url ] = get_part_image_urls(h, imap.english_key_image[image_id]);
         const item = { SD: tree_id, SC: count, SN: imap.lang_name_map[tree_id],
-                       SB: `${h[H_GENUS]} ${h[H_SPECIES]}`, SA: h[H_AUTH],
+                       SB: botanical_name(h), SA: botanical_word(h[H_AUTH], 'authority'),
                        SI: i_url, ST: t_url
                      }
         slider_list.push(item);
@@ -428,8 +457,8 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
             new_image_list.push(new_item);
         }
         const new_item = { COLIMAGE: new_image_list };
-        new_item[col_name] = { CC: ++i, CI: tree_id, CN: imap.lang_name_map[tree_id], CF: h[H_FAMILY],
-                               CB: `${h[H_GENUS]} ${h[H_SPECIES]}`, CA: h[H_AUTH]
+        new_item[col_name] = { CC: ++i, CI: tree_id, CN: imap.lang_name_map[tree_id], CF: botanical_word(h[H_FAMILY], 'family'),
+                               CB: botanical_name(h), CA: botanical_word(h[H_AUTH], 'authority')
                              }
         new_row_list.push(new_item);
     }
@@ -555,8 +584,8 @@ function get_search_results(search_word, item_list, id_list, base_pop) {
                        'C' : item.count, 'I' : name_id };
         if (item.category === 'Trees' || item.category === 'Maps') {
             const h = imap.handle_map[name_id];
-            r_item['G'] = h[H_GENUS];
-            r_item['S'] = h[H_SPECIES];
+            r_item['G'] = botanical_word(h[H_GENUS], 'genus');
+            r_item['S'] = botanical_word(h[H_SPECIES], 'species');
         }
         if (name_id !== '') r_item['I'] = name_id;
         item_list.push(r_item);
