@@ -165,3 +165,11 @@ td.keycol:hover {
 .marker-cluster span {
     color: black;
 }
+
+.TREE_CUBE_WRAP { display: flex; justify-content: center; padding: 24px 0 40px; }
+#TREE_CUBE { width: min(640px, 80vw, 90vh); height: auto; aspect-ratio: 4 / 3; margin: 0; overflow: visible; }
+#TREE_CUBE .swiper-slide { border-radius: 8px; overflow: hidden; background: #000; }
+#TREE_CUBE .swiper-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#TREE_CUBE .TREE_CUBE_CAPTION { position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 8px; text-align: center;
+                                    color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.75)); pointer-events: none; }
+#TREE_CUBE .swiper-pagination { bottom: -28px; }

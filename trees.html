@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 3,58,000+ trees marked in 670+ Parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Sadashivnagar, Basavanagudi, Jayanagar, Rajajinagar, Koramangala, Vijayanagar, Frasertown, Chamarajpet, Banashankari, JP Nagar, Rajarajeshwari Nagar, 160+ BBMP Wards, and 600+ Maidenhead Grids in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
+  <meta name="description" content="Trees of Bangalore: It gives information in Tamil, Kannada, Telugu, Malayalam, Hindi, Marathi, Gujarati, Bengali, Punjabi, Odia and Assamese. It allows you to search, browse, and locate trees in Bangalore. Information about 500+ tree species in Bangalore, most of them have at least one tree specimen in Lalbagh. The 3,59,000+ trees marked in 670+ Parks (including Lalbagh, and Cubbon Park), Central Business District, Indiranagar, Malleshwaram, Sadashivnagar, Basavanagudi, Jayanagar, Rajajinagar, Koramangala, Vijayanagar, Frasertown, Chamarajpet, Banashankari, JP Nagar, Rajarajeshwari Nagar, 160+ BBMP Wards, and 600+ Maidenhead Grids in Bangalore. Mainly the tree locations are in OpenStreetMap and each individual tree location can be seen in Google Maps. The site is viewable, searchable, and supports a keyboard for typing in the above languages."/>
   <meta name="keywords" content="Trees, Bangalore, Bangalore Trees, Tree Maps, Trees in Wards, Tree Locations, Tree LatLong, OpenStreet Tree Maps, Google Tree Maps, Lalbagh Trees, Cubbon Park Trees, Trees in BBMP Parks"/>
   <meta name="author" content="Raman Arunachalam"/>
   <!-- Google tag (gtag.js) -->
@@ -61,6 +61,20 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="CUBE_MODAL" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CUBE_MODAL_LABEL" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="CUBE_MODAL_LABEL">Gallery</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="CUBE_SLOT"></div>
         </div>
       </div>
     </div>
@@ -523,6 +537,22 @@
       {{/sliderinfo}}
   </script>
 
+  <script type="text/html" id="cube-template">
+    <div class="TREE_CUBE_WRAP">
+      <div id="TREE_CUBE" class="swiper" style="visibility: hidden;">
+        <div class="swiper-wrapper">
+          {{#gallery}}
+          <div class="swiper-slide">
+            <img src="Flora/{{IN}}" alt="{{IC}}" />
+            <div class="TREE_CUBE_CAPTION">{{IC}}</div>
+          </div>
+          {{/gallery}}
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </script>
+
   <script type="text/html" id="module-template">
     <div id="CARDINFO" class="col-12">
     </div>
@@ -541,7 +571,11 @@
     <br/>
     <div id="PHOTO_GALLERY" class="card">
       <div class="card-header">
-        <h4 class="CARD_HEADER">{{HH}} ({{HC}})</h4>
+        <h4 class="CARD_HEADER">{{HH}} ({{HC}}) &nbsp;
+          <a href="javascript:show_cube_gallery();" title="Cube view">
+            <i class="bi bi-box ICON_FONT TEXT_COLOR"></i>
+          </a>
+        </h4>
       </div>
       <div class="card-body">
         <ul class="row justify-content-center shadow-box">

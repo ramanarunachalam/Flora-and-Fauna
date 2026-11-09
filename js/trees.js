@@ -90,6 +90,15 @@ const AREA_SWIPER_OPTIONS = {
     navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
 };
 
+const TREE_CUBE_SWIPER_OPTIONS = {
+    effect: 'cube',
+    grabCursor: true,
+    speed: 600,
+    cubeEffect: { shadow: true, slideShadows: true, shadowOffset: 20, shadowScale: 0.94 },
+    pagination: { el: '#TREE_CUBE .swiper-pagination', clickable: true },
+    autoplay: { delay: 4000, disableOnInteraction: true, pauseOnMouseEnter: true }
+};
+
 const SEARCH_REPLACE_LIST =  [ [ /(e)\1+/g, 'i' ],
                                [ /(o)\1+/g, 'u' ],
                                [ /(.)\1+/g, '$1' ],
@@ -277,6 +286,7 @@ async function tree_module_init(data) {
         new_gallery_list.push(new_item);
     }
     gallery_info['gallery'] = new_gallery_list;
+    window.tree_cube_data = { title: gallery_info['HN'], gallery: new_gallery_list };
     const info_list = card_data['cardinfo'];
     for (const cv_info of info_list) {
         const is_info = (imap.english_key_group !== undefined && imap.english_key_group[cv_info['CN']] === 'Info');
@@ -481,6 +491,24 @@ function tree_collection_init(type, letter, page_index, max_page, full_data) {
     render_template_data('collection-card-info-template', 'CARDINFO', new_data);
 
     window.paginator.set_grid_page(page_index, max_page);
+}
+
+function show_cube_gallery() {
+    const cube_data = window.tree_cube_data;
+    if (cube_data === undefined) return;
+    d3.select('#CUBE_MODAL_LABEL').text(cube_data.title);
+    render_template_data('cube-template', 'CUBE_SLOT', cube_data);
+    const modal_node = d3.select('#CUBE_MODAL').node();
+    let cube_swiper = null;
+    modal_node.addEventListener('shown.bs.modal', () => {
+        cube_swiper = new Swiper('#TREE_CUBE', TREE_CUBE_SWIPER_OPTIONS);
+        d3.select('#TREE_CUBE').style('visibility', 'visible');
+    }, { once: true });
+    modal_node.addEventListener('hidden.bs.modal', () => {
+        if (cube_swiper !== null) cube_swiper.destroy(true, true);
+        d3.select('#CUBE_SLOT').html('');
+    }, { once: true });
+    get_bs_modal('#CUBE_MODAL').show();
 }
 
 function get_bs_modal(id) {
@@ -1832,4 +1860,3 @@ function tree_main_init() {
 
     transliterator_init();
 }
-
