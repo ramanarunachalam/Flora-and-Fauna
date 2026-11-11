@@ -127,6 +127,47 @@ function botanical_word(s, kind) {
     return (b[s] !== undefined) ? b[s] : s;
 }
 
+// Season / size / count text that is not in the glossary because it holds digits or months
+// ('Feb-Mar', '20 cm', '4-8 pairs').  Months come from Intl, words/units from <lang>_map.json 'Keys'.
+const MEASURE_PARTS = { 'Size': 1, 'Height': 1, 'Spread': 1, 'Season': 1, 'Shed': 1,
+                        'Leaflet Numbers': 1, 'Leaflet Size': 1, 'Stalks': 1 };
+const MONTH_ABBR = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+const MONTH_RE = /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\b/g;
+const LANG_LOCALE = { 'Assamese': 'as', 'Bengali': 'bn', 'Gujarati': 'gu', 'Hindi': 'hi', 'Kannada': 'kn',
+                      'Malayalam': 'ml', 'Marathi': 'mr', 'Odia': 'or', 'Punjabi': 'pa', 'Tamil': 'ta', 'Telugu': 'te' };
+const UNIT_KEY = { 'cm': 'Cm', 'mm': 'Mm', 'm': 'M', 'ft': 'Ft', 'in': 'Inch', 'inch': 'Inch', 'inches': 'Inch' };
+const month_cache = {};
+
+function localized_month(loc, i) {
+    const k = `${loc}${i}`;
+    if (month_cache[k] === undefined) {
+        try {
+            month_cache[k] = new Intl.DateTimeFormat(loc, { month: 'long' }).format(new Date(2000, i, 15));
+        } catch (e) {
+            month_cache[k] = MONTH_ABBR[i];
+        }
+    }
+    return month_cache[k];
+}
+
+function localize_measure(s, part) {
+    const loc = LANG_LOCALE[window.render_language];
+    if (!loc || typeof s !== 'string' || !s) return s;
+    const w = get_lang_map_word;
+    const low = s.trim().toLowerCase();
+    if (low === 'once') return w('Once');
+    if (low === 'all year') return w('All Year');
+    if (low === 'unknown') return w('Unknown');
+    let out = s;
+    if (part === 'Season' || part === 'Shed') {
+        out = out.replace(MONTH_RE, (m, mm) => localized_month(loc, MONTH_ABBR.indexOf(mm)));
+    }
+    out = out.replace(/(\d)\s*(cm|mm|m|ft|inch(?:es)?|in)\b/gi, (m, d, u) => `${d} ${w(UNIT_KEY[u.toLowerCase()])}`);
+    out = out.replace(/\bpairs?\b/gi, () => w('Pairs'));
+    return out;
+}
+
+
 function botanical_name(h) {
     return `${botanical_word(h[H_GENUS], 'genus')} ${botanical_word(h[H_SPECIES], 'species')}`;
 }
@@ -293,9 +334,11 @@ async function tree_module_init(data) {
         cv_info['CN'] = key_group[cv_info['CN']];
         for (const cv of cv_info['CV']) {
             const part = imap.english_key_part[cv['N']];
+            const was_indexed = (cv['V'][0] === 1);
             cv['N'] = key_part[cv['N']];
             set_key_value_map(cv, 'V');
             if (is_info && part in BOTANICAL_PARTS) cv['V'] = botanical_word(cv['V'], BOTANICAL_PARTS[part]);
+            else if (!was_indexed && part in MEASURE_PARTS) cv['V'] = localize_measure(cv['V'], part);
         }
     }
     render_template_data('module-card-info-template', 'CARDINFO', card_data);
