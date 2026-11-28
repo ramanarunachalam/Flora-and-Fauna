@@ -29,7 +29,9 @@ const TREE_MAX_COUNT   = 750;
 
 const MAX_RADIUS       = 12;
 
-const WARD_COLOR       = '#BDB5D5';
+const WARD_COLOR       = '#BDB5D5';   // fill shade
+const WARD_BORDER_COLOR = '#4B2E83';  // darker purple boundary line
+const WARD_FILL_OPACITY = 0.1;        // 0 = no shading, higher = more opaque
 
 const EMPTY_THUMBNAIL  = 'blank.svg';
 
@@ -1294,7 +1296,7 @@ function draw_area_map(n_name, a_name, aid, tid, c_lat, c_long) {
             }
             polygon_list.push([ new_l_list ]);
         }
-        const options = { color: WARD_COLOR };
+        const options = { color: WARD_BORDER_COLOR, weight: 3, opacity: 1, fillColor: WARD_COLOR, fillOpacity: WARD_FILL_OPACITY };
         window.ward_boundary = L.polygon(polygon_list, options);
         window.map_osm_layer.addLayer(window.ward_boundary);
     }
